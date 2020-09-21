@@ -1,6 +1,6 @@
 import Head from 'next/head';
-import { Text } from '@chakra-ui/core';
-import Layout from '@/components/Layout';
+import { Text, Heading, Box, Button } from '@chakra-ui/core';
+import Layout, { projectName } from '@/components/Layout';
 
 export default function Home(): JSX.Element {
   return (
@@ -10,13 +10,27 @@ export default function Home(): JSX.Element {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Text as="h1" fontSize="3rem" textAlign="center">
-        Welcome to Issue Tracker
-      </Text>
+      <Box mt="10%" py={8} maxW="500px" mx="auto">
+        <Heading as="h1" size="xl">
+          Manage your project work
+        </Heading>
 
-      <Text as="p" color="gray.500" textAlign="center">
-        Track your project work
-      </Text>
+        <Text color="gray.500" mt={2}>
+          Welcome to {projectName}. The software for tracking and managing
+          project work, to help you and your team in creating great products
+          easier.
+        </Text>
+
+        <Button mt={4} colorScheme="green" size="lg">
+          Let&apos;s get started
+        </Button>
+      </Box>
+      {/* 
+      <Text>
+        It helps to plan what needs to be done next. Create an issue (bug, the
+        task, feature request), set the priority, assign people, manage
+        deadlines and have everything displayed on the kanban board.
+      </Text> */}
     </Layout>
   );
 }
