@@ -9,7 +9,7 @@ import {
 import { GoRocket } from 'react-icons/go';
 import { FiSun, FiMoon } from 'react-icons/fi';
 
-export const projectName = 'TheIssueTracker';
+export const projectName = 'IssueTracker';
 
 type Props = {
   children?: React.ReactNode;
@@ -29,7 +29,7 @@ const Layout: React.FC = ({ children }: Props) => {
           maxW="6xl"
           mx="auto"
           px={[2, 4]}
-          py={4}
+          py={[2, 4]}
         >
           <Flex align="center" fontSize="xl" fontWeight="medium">
             <Icon as={GoRocket} />
@@ -37,6 +37,7 @@ const Layout: React.FC = ({ children }: Props) => {
           </Flex>
           <Box>
             <IconButton
+              size="sm"
               onClick={toggleColorMode}
               aria-label="Toggle theme"
               icon={colorMode === 'dark' ? <FiMoon /> : <FiSun />}

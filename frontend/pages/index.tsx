@@ -1,7 +1,8 @@
 import Head from 'next/head';
-import { Text, Heading, Box, Flex, Button, Image } from '@chakra-ui/core';
+import { Text, Heading, Box, Flex, Button, Image, Icon } from '@chakra-ui/core';
 import NextLink from 'next/link';
 import Layout, { projectName } from '@/components/Layout';
+import { FiArrowRight } from 'react-icons/fi';
 
 function Home(): JSX.Element {
   return (
@@ -22,7 +23,7 @@ function Home(): JSX.Element {
         >
           <Box
             flexBasis={{ base: '100%', lg: '50%' }}
-            maxW={{ base: 'md', lg: 'full' }}
+            maxW={{ base: 'lg', lg: 'full' }}
             mx={{ base: 'auto', lg: 0 }}
             ml={{ lg: '1rem' }}
           >
@@ -30,7 +31,7 @@ function Home(): JSX.Element {
           </Box>
           <Box
             flexBasis={{ base: '100%', lg: '50%' }}
-            maxW={{ base: 'md', lg: 'full' }}
+            maxW={{ base: 'lg', lg: 'full' }}
             mt={{ base: 4, lg: 0 }}
             mx={{ base: 'auto', lg: 0 }}
           >
@@ -44,10 +45,11 @@ function Home(): JSX.Element {
               easier.
             </Text>
 
-            <Box mt={[4, 6]}>
+            <Box mt={6}>
               <NextLink href="/login">
                 <Button
                   as="a"
+                  rightIcon={<FiArrowRight />}
                   cursor="pointer"
                   colorScheme="green"
                   textTransform="uppercase"
