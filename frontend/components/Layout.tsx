@@ -26,7 +26,7 @@ const Layout: React.FC = ({ children }: Props) => {
           direction="row"
           justify="space-between"
           align="center"
-          maxW={1280}
+          maxW="6xl"
           mx="auto"
           px={[2, 4]}
           py={4}
@@ -50,7 +50,7 @@ const Layout: React.FC = ({ children }: Props) => {
         flex={1}
         direction="column"
         w="full"
-        maxW={1280}
+        maxW="6xl"
         mx="auto"
         px={[2, 4]}
         py={4}
@@ -59,7 +59,7 @@ const Layout: React.FC = ({ children }: Props) => {
       </Flex>
 
       <Box as="footer" w="full">
-        <Box w="full" px={[2, 4]} py={2} maxW={1280} mx="auto">
+        <Box w="full" px={[2, 4]} py={2} maxW="6xl" mx="auto">
           <Text align="center" color="gray.500">
             &copy;{projectName}
           </Text>
