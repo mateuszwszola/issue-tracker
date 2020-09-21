@@ -1,4 +1,3 @@
-import { ReactNode, FC } from 'react';
 import {
   Flex,
   Box,
@@ -10,29 +9,31 @@ import {
 import { GoRocket } from 'react-icons/go';
 import { FiSun, FiMoon } from 'react-icons/fi';
 
-type Props = {
-  children?: ReactNode;
-};
-
 export const projectName = 'TheIssueTracker';
 
-const Layout: FC = ({ children }: Props) => {
+type Props = {
+  children?: React.ReactNode;
+};
+
+const Layout: React.FC = ({ children }: Props) => {
   const { colorMode, toggleColorMode } = useColorMode();
 
   return (
     <Flex minH="100vh" direction="column">
-      <Box as="header" w="full" px={2} py={4}>
+      <Box as="header" w="full">
         <Flex
           w="full"
-          maxW={1280}
-          mx="auto"
           direction="row"
           justify="space-between"
           align="center"
+          maxW={1280}
+          mx="auto"
+          px={[2, 4]}
+          py={4}
         >
-          <Flex fontSize="xl" fontWeight="medium" align="center">
-            <Icon as={GoRocket} mr={1} />
-            <Text>{projectName}</Text>
+          <Flex align="center" fontSize="xl" fontWeight="medium">
+            <Icon as={GoRocket} />
+            <Text ml={1}>{projectName}</Text>
           </Flex>
           <Box>
             <IconButton
@@ -44,12 +45,25 @@ const Layout: FC = ({ children }: Props) => {
         </Flex>
       </Box>
 
-      <Box as="main" px={2} flex={1}>
+      <Flex
+        as="main"
+        flex={1}
+        direction="column"
+        w="full"
+        maxW={1280}
+        mx="auto"
+        px={[2, 4]}
+        py={4}
+      >
         {children}
-      </Box>
+      </Flex>
 
-      <Box as="footer" py={2} w="full">
-        <Text align="center">{projectName}</Text>
+      <Box as="footer" w="full">
+        <Box w="full" px={[2, 4]} py={2} maxW={1280} mx="auto">
+          <Text align="center" color="gray.500">
+            &copy;{projectName}
+          </Text>
+        </Box>
       </Box>
     </Flex>
   );
