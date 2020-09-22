@@ -51,7 +51,7 @@ export const Hero: React.FC = (props: FlexProps) => {
         </Text>
 
         <Box mt={6}>
-          <NextLink href="/login">
+          <NextLink href="/signup">
             <Button
               as="a"
               rightIcon={<FiArrowRight />}

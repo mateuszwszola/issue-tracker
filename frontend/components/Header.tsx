@@ -34,7 +34,7 @@ export const Header: React.FC = () => {
           </NextLink>
         </Box>
         <Flex align="center">
-          <NextLink href="/login">
+          <NextLink href="/signin">
             <Link>Sign In</Link>
           </NextLink>
 
