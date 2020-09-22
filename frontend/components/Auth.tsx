@@ -7,7 +7,8 @@ import {
   Input,
   Button,
   Stack,
-  Link
+  Link,
+  useColorModeValue
 } from '@chakra-ui/core';
 import { AiFillGithub } from 'react-icons/ai';
 import { FcGoogle } from 'react-icons/fc';
@@ -17,8 +18,18 @@ type Props = {
 };
 
 export const Auth: React.FC<Props> = ({ signin }: Props) => {
+  const boxBgColor = useColorModeValue('gray.50', 'gray.900');
+
   return (
-    <Box w="full" maxW="md" px={[4, 6]} py={[6, 8]} rounded="lg">
+    <Box
+      w="full"
+      maxW="md"
+      px={[4, 6]}
+      py={[6, 8]}
+      rounded="lg"
+      boxShadow="md"
+      bg={boxBgColor}
+    >
       <Heading textAlign="center">{signin ? 'Sign In' : 'Sign Up'}</Heading>
 
       <Stack mt={8} direction="row" spacing={4}>
@@ -53,19 +64,18 @@ export const Auth: React.FC<Props> = ({ signin }: Props) => {
           {signin ? 'Sign In' : 'Sign Up'}
         </Button>
       </Box>
-      <Box mt={4}>
+
+      <Stack mt={4} direction="column" spacing={2}>
         <NextLink href={signin ? '/signup' : '/signin'}>
-          <Link>
+          <Link color="teal.500">
             {signin
               ? 'Do not have an account? Sign Up now'
               : 'Already have an account? Sign In now'}
           </Link>
         </NextLink>
 
-        <Button mt={2} colorScheme="gray" variant="link">
-          Sign In as a Demo user
-        </Button>
-      </Box>
+        <Link color="teal.500">Sign In as a Demo user</Link>
+      </Stack>
     </Box>
   );
 };
