@@ -13,8 +13,8 @@ import { projectName } from '../pages/index';
 
 export const Hero: React.FC = (props: FlexProps) => {
   const headingText = 'Manage your project work';
-  const heroText = `Welcome to ${projectName}. The software for tracking and managing
-  project work, to help you and your team in creating great products
+  const heroText = `Welcome to ${projectName}. The software for managing
+  project work. Track tasks, bugs, and plan what needs to be done next. It will help you and your team in creating great products
   easier.`;
 
   return (
@@ -67,13 +67,6 @@ export const Hero: React.FC = (props: FlexProps) => {
           </NextLink>
         </Box>
       </Box>
-
-      {/* 
-  <Text>
-    It helps to plan what needs to be done next. Create an issue (bug, the
-    task, feature request), set the priority, assign people, manage
-    deadlines and have everything displayed on the kanban board.
-  </Text> */}
     </Flex>
   );
 };
