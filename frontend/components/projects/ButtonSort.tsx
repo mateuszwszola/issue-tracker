@@ -1,7 +1,7 @@
 import { IconButton, Icon } from '@chakra-ui/core';
 import { FaSort } from 'react-icons/fa';
 
-export const SortButton: React.FC = (props) => {
+export const ButtonSort: React.FC = (props) => {
   return (
     <IconButton
       {...props}

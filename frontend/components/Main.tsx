@@ -1,10 +1,10 @@
 import { Flex } from '@chakra-ui/core';
 
 type Props = {
-  children?: React.ReactNode;
+  children: React.ReactNode;
 };
 
-export const Main: React.FC = ({ children }: Props) => {
+export const Main: React.FC<Props> = ({ children }: Props) => {
   return (
     <Flex
       as="main"
