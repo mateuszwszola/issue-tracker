@@ -1,52 +1,21 @@
 import NextLink from 'next/link';
-import {
-  Box,
-  Heading,
-  FormControl,
-  FormLabel,
-  Input,
-  Button,
-  Stack,
-  Link,
-  useColorModeValue
-} from '@chakra-ui/core';
+import PropTypes from 'prop-types';
+import { Box, Heading, FormControl, FormLabel, Input, Button, Stack, Link, useColorModeValue } from '@chakra-ui/core';
 import { AiFillGithub } from 'react-icons/ai';
 import { FcGoogle } from 'react-icons/fc';
 
-type Props = {
-  signin: boolean;
-};
-
-export const Auth: React.FC<Props> = ({ signin }: Props) => {
+export const Auth = ({ signin }) => {
   const boxBgColor = useColorModeValue('gray.50', 'gray.900');
 
   return (
-    <Box
-      w="full"
-      maxW="md"
-      px={[4, 6]}
-      py={[6, 8]}
-      rounded="lg"
-      boxShadow="md"
-      bg={boxBgColor}
-    >
+    <Box w="full" maxW="md" px={[4, 6]} py={[6, 8]} rounded="lg" boxShadow="md" bg={boxBgColor}>
       <Heading textAlign="center">{signin ? 'Sign In' : 'Sign Up'}</Heading>
 
       <Stack mt={8} direction="row" spacing={4}>
-        <Button
-          w="full"
-          leftIcon={<AiFillGithub />}
-          colorScheme="gray"
-          variant="solid"
-        >
+        <Button w="full" leftIcon={<AiFillGithub />} colorScheme="gray" variant="solid">
           GitHub
         </Button>
-        <Button
-          w="full"
-          leftIcon={<FcGoogle />}
-          colorScheme="blue"
-          variant="outline"
-        >
+        <Button w="full" leftIcon={<FcGoogle />} colorScheme="blue" variant="outline">
           Google
         </Button>
       </Stack>
@@ -68,9 +37,7 @@ export const Auth: React.FC<Props> = ({ signin }: Props) => {
       <Stack mt={4} direction="column" spacing={2}>
         <NextLink href={signin ? '/signup' : '/signin'}>
           <Link color="teal.500">
-            {signin
-              ? 'Do not have an account? Sign Up now'
-              : 'Already have an account? Sign In now'}
+            {signin ? 'Do not have an account? Sign Up now' : 'Already have an account? Sign In now'}
           </Link>
         </NextLink>
 
@@ -78,4 +45,8 @@ export const Auth: React.FC<Props> = ({ signin }: Props) => {
       </Stack>
     </Box>
   );
+};
+
+Auth.propTypes = {
+  signin: PropTypes.bool.isRequired
 };

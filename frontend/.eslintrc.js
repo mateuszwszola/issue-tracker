@@ -1,7 +1,17 @@
 module.exports = {
-  plugins: ['react', '@typescript-eslint', 'simple-import-sort'],
   root: true,
-  parser: '@typescript-eslint/parser',
+  env: {
+    browser: true,
+    es2021: true,
+    node: true,
+    amd: true
+  },
+  extends: [
+    'eslint:recommended',
+    'plugin:react/recommended',
+    'plugin:jsx-a11y/recommended',
+    'plugin:prettier/recommended'
+  ],
   parserOptions: {
     ecmaFeatures: {
       jsx: true
@@ -14,21 +24,7 @@ module.exports = {
       version: 'detect'
     }
   },
-  env: {
-    browser: true,
-    es2021: true,
-    amd: true,
-    node: true
-  },
-  extends: [
-    'eslint:recommended',
-    'plugin:@typescript-eslint/eslint-recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:react/recommended',
-    'plugin:jsx-a11y/recommended',
-    'prettier/@typescript-eslint',
-    'plugin:prettier/recommended'
-  ],
+  plugins: ['react', 'simple-import-sort'],
   rules: {
     'prettier/prettier': ['error', {}, { usePrettierrc: true }],
     'react/react-in-jsx-scope': 'off',

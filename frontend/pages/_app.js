@@ -1,8 +1,8 @@
-import type { AppProps } from 'next/app';
 import { ChakraProvider } from '@chakra-ui/core';
 import theme from '../styles/theme';
 
-function MyApp({ Component, pageProps }: AppProps): JSX.Element {
+// eslint-disable-next-line react/prop-types
+function MyApp({ Component, pageProps }) {
   return (
     <ChakraProvider resetCSS theme={theme}>
       <Component {...pageProps} />

@@ -1,24 +1,23 @@
 import Head from 'next/head';
-import { Flex } from '@chakra-ui/core';
 import { Container } from '@/components/Container';
+import { Main } from '@/components/Main';
+import { Hero } from '@/components/Hero';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
-import { Main } from '@/components/Main';
-import { Auth } from '@/components/Auth';
 
-function Signin(): JSX.Element {
+export const projectName = 'IssueTracker';
+
+function Home() {
   return (
     <>
       <Head>
-        <title>Sign In | Issue Tracker</title>
+        <title>Issue Tracker</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Container>
+      <Container withOverlay>
         <Header />
         <Main>
-          <Flex flex={1} justify="center" align="center">
-            <Auth signin={true} />
-          </Flex>
+          <Hero />
         </Main>
         <Footer />
       </Container>
@@ -26,4 +25,4 @@ function Signin(): JSX.Element {
   );
 }
 
-export default Signin;
+export default Home;

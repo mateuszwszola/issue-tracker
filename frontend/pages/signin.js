@@ -1,21 +1,24 @@
 import Head from 'next/head';
+import { Flex } from '@chakra-ui/core';
 import { Container } from '@/components/Container';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Main } from '@/components/Main';
-import { Projects } from '@/components/Projects';
+import { Auth } from '@/components/Auth';
 
-function ProjectsPage(): JSX.Element {
+function Signin() {
   return (
     <>
       <Head>
-        <title>Projects | Issue Tracker</title>
+        <title>Sign In | Issue Tracker</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Container>
         <Header />
         <Main>
-          <Projects />
+          <Flex flex={1} justify="center" align="center">
+            <Auth signin={true} />
+          </Flex>
         </Main>
         <Footer />
       </Container>
@@ -23,4 +26,4 @@ function ProjectsPage(): JSX.Element {
   );
 }
 
-export default ProjectsPage;
+export default Signin;

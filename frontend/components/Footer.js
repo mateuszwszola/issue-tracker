@@ -2,7 +2,7 @@ import { Box, Text } from '@chakra-ui/core';
 
 import { projectName } from '../pages/index';
 
-export const Footer: React.FC = () => {
+export const Footer = () => {
   return (
     <Box as="footer" w="full">
       <Box w="full" px={[2, 4]} py={2} maxW="6xl" mx="auto">

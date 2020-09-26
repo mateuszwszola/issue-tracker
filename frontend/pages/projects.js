@@ -1,23 +1,21 @@
 import Head from 'next/head';
 import { Container } from '@/components/Container';
-import { Main } from '@/components/Main';
-import { Hero } from '@/components/Hero';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
+import { Main } from '@/components/Main';
+import { Projects } from '@/components/Projects';
 
-export const projectName = 'IssueTracker';
-
-function Home(): JSX.Element {
+function ProjectsPage() {
   return (
     <>
       <Head>
-        <title>Issue Tracker</title>
+        <title>Projects | Issue Tracker</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Container withOverlay>
+      <Container>
         <Header />
         <Main>
-          <Hero />
+          <Projects />
         </Main>
         <Footer />
       </Container>
@@ -25,4 +23,4 @@ function Home(): JSX.Element {
   );
 }
 
-export default Home;
+export default ProjectsPage;

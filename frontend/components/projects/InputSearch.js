@@ -1,14 +1,7 @@
-import {
-  Box,
-  InputGroup,
-  Input,
-  InputRightElement,
-  Icon,
-  useColorModeValue
-} from '@chakra-ui/core';
+import { Box, InputGroup, Input, InputRightElement, Icon, useColorModeValue } from '@chakra-ui/core';
 import { BsSearch } from 'react-icons/bs';
 
-export const InputSearch: React.FC = () => {
+export const InputSearch = () => {
   const inputBgColor = useColorModeValue('gray.50', 'gray.700');
 
   return (

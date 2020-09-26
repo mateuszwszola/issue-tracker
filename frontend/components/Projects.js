@@ -1,36 +1,11 @@
 import NextLink from 'next/link';
-import {
-  Heading,
-  Flex,
-  Button,
-  Link,
-  Text,
-  Avatar,
-  AvatarGroup
-} from '@chakra-ui/core';
+import PropTypes from 'prop-types';
+import { Heading, Flex, Button, Link, Text, Avatar, AvatarGroup } from '@chakra-ui/core';
 import { InputSearch } from '@/components/projects/InputSearch';
 import { ButtonSort } from '@/components/projects/ButtonSort';
 import { Table, THead, TBody, Tr, Th, Td } from '@/components/Table';
 
-type User = {
-  id: number;
-  name: string;
-  picture: string;
-};
-
-type Project = {
-  id: number;
-  key: string;
-  name: string;
-  lead: string;
-  users: User[];
-};
-
-export const Projects: React.FC<{ data?: Project[] }> = ({
-  data
-}: {
-  data?: Project[];
-}) => {
+export const Projects = ({ data }) => {
   return (
     <>
       <Flex direction="row" justify="space-between" align="center" wrap="wrap">
@@ -118,4 +93,8 @@ Projects.defaultProps = {
       ]
     }
   ]
+};
+
+Projects.propTypes = {
+  data: PropTypes.array.isRequired
 };

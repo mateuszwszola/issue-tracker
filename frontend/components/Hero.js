@@ -1,17 +1,9 @@
 import NextLink from 'next/link';
-import {
-  Flex,
-  Box,
-  Image,
-  Heading,
-  Text,
-  Button,
-  FlexProps
-} from '@chakra-ui/core';
+import { Flex, Box, Image, Heading, Text, Button } from '@chakra-ui/core';
 import { FiArrowRight } from 'react-icons/fi';
-import { projectName } from '../pages/index';
+import { projectName } from '@/pages/index';
 
-export const Hero: React.FC = (props: FlexProps) => {
+export const Hero = (props) => {
   const headingText = 'Manage your project work';
   const heroText = `Welcome to ${projectName}. The software for managing
   project work. Track tasks, bugs, and plan what needs to be done next. It will help you and your team in creating great products
