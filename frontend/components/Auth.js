@@ -1,6 +1,16 @@
 import NextLink from 'next/link';
 import PropTypes from 'prop-types';
-import { Box, Heading, FormControl, FormLabel, Input, Button, Stack, Link, useColorModeValue } from '@chakra-ui/core';
+import {
+  Box,
+  Heading,
+  FormControl,
+  FormLabel,
+  Input,
+  Button,
+  Stack,
+  Link as ChakraLink,
+  useColorModeValue
+} from '@chakra-ui/core';
 import { AiFillGithub } from 'react-icons/ai';
 import { FcGoogle } from 'react-icons/fc';
 
@@ -34,15 +44,17 @@ export const Auth = ({ signin }) => {
         </Button>
       </Box>
 
-      <Stack mt={4} direction="column" spacing={2}>
-        <NextLink href={signin ? '/signup' : '/signin'}>
-          <Link color="teal.500">
+      <Box mt={4}>
+        <NextLink href={signin ? '/signup' : '/signin'} passHref>
+          <ChakraLink color="teal.500">
             {signin ? 'Do not have an account? Sign Up now' : 'Already have an account? Sign In now'}
-          </Link>
+          </ChakraLink>
         </NextLink>
 
-        <Link color="teal.500">Sign In as a Demo user</Link>
-      </Stack>
+        <Button variant="link" color="teal.500">
+          Sign In as a Demo user
+        </Button>
+      </Box>
     </Box>
   );
 };

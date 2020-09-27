@@ -43,7 +43,7 @@ export const Hero = (props) => {
         </Text>
 
         <Box mt={6}>
-          <NextLink href="/signup">
+          <NextLink href="/signup" passHref>
             <Button
               as="a"
               rightIcon={<FiArrowRight />}

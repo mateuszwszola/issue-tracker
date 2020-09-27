@@ -5,7 +5,7 @@ import {
   Box,
   Flex,
   Button,
-  Link,
+  Link as ChakraLink,
   Text,
   Avatar,
   AvatarGroup,
@@ -73,10 +73,10 @@ export const Projects = ({ data }) => {
               data.map((project) => (
                 <Tr key={project.id} _hover={{ background: hoverColor[colorMode] }}>
                   <Td>
-                    <NextLink href="#">
-                      <Link d="block" px={2} py={[2, 4]}>
+                    <NextLink href="#" passHref>
+                      <ChakraLink d="block" px={2} py={[2, 4]}>
                         {project.name}
-                      </Link>
+                      </ChakraLink>
                     </NextLink>
                   </Td>
                   <Td px={2} py={[2, 4]}>
@@ -84,12 +84,12 @@ export const Projects = ({ data }) => {
                   </Td>
                   <Td colSpan={!showUsersColumn ? '2' : '1'}>
                     <NextLink href="#">
-                      <Link d="flex" px={2} py={[2, 4]} alignItems="center">
+                      <ChakraLink d="flex" alignItems="center" px={2} py={[2, 4]}>
                         <Avatar bg="red.500" size="sm" />
                         <Text as="span" ml={2}>
                           {project.lead}
                         </Text>
-                      </Link>
+                      </ChakraLink>
                     </NextLink>
                   </Td>
                   {showUsersColumn && (

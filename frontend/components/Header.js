@@ -1,5 +1,5 @@
 import NextLink from 'next/link';
-import { Box, Flex, Link, Icon, IconButton, useColorMode } from '@chakra-ui/core';
+import { Box, Flex, Link as ChakraLink, Icon, IconButton, useColorMode } from '@chakra-ui/core';
 import { GoRocket } from 'react-icons/go';
 import { FiMoon, FiSun } from 'react-icons/fi';
 import { projectName } from '../pages/index';
@@ -11,16 +11,16 @@ export const Header = () => {
     <Box as="header" w="full">
       <Flex w="full" direction="row" justify="space-between" align="center" maxW="6xl" mx="auto" p={[2, 4]}>
         <Box>
-          <NextLink href="/">
-            <Link fontSize="xl" fontWeight="medium" textDecoration="none">
+          <NextLink href="/" passHref>
+            <ChakraLink fontSize="xl" fontWeight="medium">
               <Icon as={GoRocket} mr={1} />
               {projectName}
-            </Link>
+            </ChakraLink>
           </NextLink>
         </Box>
         <Flex align="center">
-          <NextLink href="/signin">
-            <Link>Sign In</Link>
+          <NextLink href="/signin" passHref>
+            <ChakraLink>Sign In</ChakraLink>
           </NextLink>
 
           <IconButton

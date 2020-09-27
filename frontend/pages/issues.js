@@ -3,8 +3,9 @@ import { Container } from '@/components/Container';
 import { Main } from '@/components/Main';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
+import { Issues } from '@/components/Issues';
 
-function Issues() {
+function IssuesPage() {
   return (
     <>
       <Head>
@@ -14,7 +15,7 @@ function Issues() {
       <Container>
         <Header />
         <Main>
-          <h1>Issues</h1>
+          <Issues />
         </Main>
         <Footer />
       </Container>
@@ -22,4 +23,4 @@ function Issues() {
   );
 }
 
-export default Issues;
+export default IssuesPage;
