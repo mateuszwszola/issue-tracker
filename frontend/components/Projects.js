@@ -1,31 +1,20 @@
 import NextLink from 'next/link';
 import PropTypes from 'prop-types';
-import { Heading, Box, Flex, Button, Link, Text, Avatar, AvatarGroup } from '@chakra-ui/core';
+import { Heading, Box, Flex, Button, Link, Text, Avatar, AvatarGroup, Icon } from '@chakra-ui/core';
 import { InputSearch } from '@/components/projects/InputSearch';
-import { ButtonSort } from '@/components/projects/ButtonSort';
-import { Table, THead, TBody, TFoot, Tr, Th, Td } from '@/components/Table';
-
-const Caption = ({ children, ...props }) => {
-  return (
-    <Box as="caption" {...props}>
-      {children}
-    </Box>
-  );
-};
-
-Caption.propTypes = {
-  children: PropTypes.node.isRequired
-};
+import { Header as ProjectsHeader } from '@/components/projects/Header';
+import { Table, THead, TBody, TFoot, Tr, Th, Td, Caption } from '@/components/Table';
+import { FaSort } from 'react-icons/fa';
 
 export const Projects = ({ data }) => {
   return (
     <>
-      <Flex direction="row" justify="space-between" align="center" wrap="wrap">
+      <ProjectsHeader>
         <Heading size="lg">Projects</Heading>
         <Button size="sm" colorScheme="blue">
           Create project
         </Button>
-      </Flex>
+      </ProjectsHeader>
 
       <InputSearch />
 
@@ -38,41 +27,54 @@ export const Projects = ({ data }) => {
         <THead borderBottom="2px" borderColor="gray.200" bg="gray.100">
           <Tr>
             {['Name', 'Key', 'Lead', 'People'].map((name) => (
-              <Th px={2} py={1} key={name}>
-                <Flex align="center">
-                  <Text mr={2} fontSize={['xs', 'sm']} fontWeight="medium">
-                    {name}
-                  </Text>
-                  <ButtonSort />
-                </Flex>
+              <Th key={name}>
+                <Button
+                  d="block"
+                  w="full"
+                  textAlign="left"
+                  px={2}
+                  py={1}
+                  size="sm"
+                  variant="ghost"
+                  rightIcon={<Icon as={FaSort} aria-label={`Sort by ${name}`} color="gray.400" />}
+                >
+                  {name}
+                </Button>
               </Th>
             ))}
           </Tr>
         </THead>
-        <TBody borderBottom="2px" borderColor="gray.200">
+        <TBody borderBottom="2px" borderColor="gray.200" fontSize={['sm', 'md']}>
           {data &&
             data.map((project) => (
-              <Tr key={project.id} fontSize={['sm', 'md']}>
-                <Td px={2} py={[2, 4]}>
+              <Tr key={project.id} _hover={{ background: 'gray.50' }}>
+                <Td>
                   <NextLink href="#">
-                    <Link>{project.name}</Link>
+                    <Link>
+                      <Box px={2} py={[2, 4]}>
+                        {project.name}
+                      </Box>
+                    </Link>
                   </NextLink>
                 </Td>
                 <Td px={2} py={[2, 4]}>
-                  {project.key}
+                  <Text>{project.key}</Text>
                 </Td>
-                <Td px={2} py={[2, 4]}>
-                  <Flex align="center">
-                    <Avatar bg="red.500" size="sm" />
-                    <Text ml={2}>{project.lead}</Text>
-                  </Flex>
+                <Td>
+                  <NextLink href="#">
+                    <Link>
+                      <Flex px={2} py={[2, 4]} align="center">
+                        <Avatar bg="red.500" size="sm" />
+                        <Text ml={2}>{project.lead}</Text>
+                      </Flex>
+                    </Link>
+                  </NextLink>
                 </Td>
                 <Td px={2} py={[2, 4]}>
                   <AvatarGroup size="sm" max={2}>
-                    <Avatar />
-                    <Avatar />
-                    <Avatar />
-                    <Avatar />
+                    {project.users.map((user) => (
+                      <Avatar key={user.id} />
+                    ))}
                   </AvatarGroup>
                 </Td>
               </Tr>
@@ -110,6 +112,16 @@ Projects.defaultProps = {
         {
           id: 1,
           name: 'User name',
+          picture: 'picture'
+        },
+        {
+          id: 2,
+          name: 'User name 2',
+          picture: 'picture'
+        },
+        {
+          id: 3,
+          name: 'User name 3',
           picture: 'picture'
         }
       ]

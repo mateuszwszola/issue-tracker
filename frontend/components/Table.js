@@ -66,3 +66,13 @@ export const Td = ({ children, ...props }) => (
 );
 
 Td.propTypes = childrenPropTypes;
+
+export const Caption = ({ children, ...props }) => {
+  return (
+    <Box as="caption" {...props}>
+      {children}
+    </Box>
+  );
+};
+
+Caption.propTypes = childrenPropTypes;
