@@ -1,15 +1,23 @@
 import { Box } from '@chakra-ui/core';
 import PropTypes from 'prop-types';
 
+const styles = {
+  table: {
+    tableLayout: 'fixed'
+  }
+};
+
+const childrenPropTypes = {
+  children: PropTypes.node.isRequired
+};
+
 export const Table = ({ children, ...props }) => (
-  <Box as="table" {...props}>
+  <Box as="table" {...props} style={styles.table}>
     {children}
   </Box>
 );
 
-Table.propTypes = {
-  children: PropTypes.node.isRequired
-};
+Table.propTypes = childrenPropTypes;
 
 export const THead = ({ children, ...props }) => (
   <Box as="thead" {...props}>
@@ -17,9 +25,7 @@ export const THead = ({ children, ...props }) => (
   </Box>
 );
 
-THead.propTypes = {
-  children: PropTypes.node.isRequired
-};
+THead.propTypes = childrenPropTypes;
 
 export const TBody = ({ children, ...props }) => (
   <Box as="tbody" {...props}>
@@ -27,9 +33,15 @@ export const TBody = ({ children, ...props }) => (
   </Box>
 );
 
-TBody.propTypes = {
-  children: PropTypes.node.isRequired
-};
+TBody.propTypes = childrenPropTypes;
+
+export const TFoot = ({ children, ...props }) => (
+  <Box as="tfoot" {...props}>
+    {children}
+  </Box>
+);
+
+TFoot.propTypes = childrenPropTypes;
 
 export const Tr = ({ children, ...props }) => (
   <Box as="tr" {...props}>
@@ -37,9 +49,7 @@ export const Tr = ({ children, ...props }) => (
   </Box>
 );
 
-Tr.propTypes = {
-  children: PropTypes.node.isRequired
-};
+Tr.propTypes = childrenPropTypes;
 
 export const Th = ({ children, ...props }) => (
   <Box as="th" {...props}>
@@ -47,9 +57,7 @@ export const Th = ({ children, ...props }) => (
   </Box>
 );
 
-Th.propTypes = {
-  children: PropTypes.node.isRequired
-};
+Th.propTypes = childrenPropTypes;
 
 export const Td = ({ children, ...props }) => (
   <Box as="td" {...props}>
@@ -57,6 +65,4 @@ export const Td = ({ children, ...props }) => (
   </Box>
 );
 
-Td.propTypes = {
-  children: PropTypes.node.isRequired
-};
+Td.propTypes = childrenPropTypes;
