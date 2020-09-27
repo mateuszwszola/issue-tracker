@@ -13,7 +13,7 @@ import {
   useColorMode
 } from '@chakra-ui/core';
 import { Table, THead, TBody, TFoot, Tr, Th, Td, Caption } from '@/components/Table';
-import { InputSearch } from '@/components/projects/InputSearch';
+import { InputSearch } from '@/components/InputSearch';
 import { ButtonSort } from '@/components/projects/ButtonSort';
 import { Header as ProjectsHeader } from '@/components/projects/Header';
 
@@ -36,7 +36,9 @@ export const Projects = ({ data }) => {
         </Button>
       </ProjectsHeader>
 
-      <InputSearch />
+      <Box mt={4} w="full" maxW="12rem">
+        <InputSearch />
+      </Box>
 
       <Box mt={8}>
         <Table w="full" border="2px" borderColor={borderColor[colorMode]}>
