@@ -1,27 +1,13 @@
-import NextLink from 'next/link';
 import PropTypes from 'prop-types';
-import {
-  Heading,
-  Box,
-  Flex,
-  Button,
-  Link as ChakraLink,
-  Text,
-  Avatar,
-  AvatarGroup,
-  useBreakpoint,
-  useColorMode
-} from '@chakra-ui/core';
+import { Heading, Box, Flex, Button, Text, Avatar, AvatarGroup, useColorMode } from '@chakra-ui/core';
 import { Table, THead, TBody, TFoot, Tr, Th, Td, Caption } from '@/components/Table';
 import { InputSearch } from '@/components/InputSearch';
 import { ButtonSort } from '@/components/projects/ButtonSort';
 import { Header as ProjectsHeader } from '@/components/projects/Header';
+import { TableLink } from '@/components/projects/TableLink';
 
 export const Projects = ({ data }) => {
-  const breakpoint = useBreakpoint();
   const { colorMode } = useColorMode();
-
-  const showExtraInfo = breakpoint !== 'base';
 
   const borderColor = { light: 'gray.200', dark: 'gray.700' };
   const hoverColor = { light: 'gray.50', dark: 'gray.700' };
@@ -39,8 +25,8 @@ export const Projects = ({ data }) => {
         <InputSearch />
       </Box>
 
-      <Box mt={8}>
-        <Table w="full">
+      <Box mt={8} overflowX="auto">
+        <Table w="full" border="2px" borderColor="transparent">
           <Caption
             mb={1}
             fontSize="xs"
@@ -56,22 +42,20 @@ export const Projects = ({ data }) => {
           </Caption>
           <THead borderBottom="2px" borderColor={borderColor[colorMode]}>
             <Tr>
-              <Th w={showExtraInfo ? '25%' : '40%'}>
+              <Th>
                 <ButtonSort name="Name" />
               </Th>
-              <Th w={showExtraInfo ? '25%' : '20%'}>
+              <Th>
                 <ButtonSort name="Key" />
               </Th>
-              <Th w={showExtraInfo ? '25%' : '40%'} colSpan={!showExtraInfo ? '2' : '1'}>
+              <Th>
                 <ButtonSort name="Lead" />
               </Th>
-              {showExtraInfo && (
-                <Th w="25%" px={2} py={1}>
-                  <Text as="span" d="block" fontSize="sm" textAlign="left" fontWeight="semibold">
-                    People
-                  </Text>
-                </Th>
-              )}
+              <Th px={2} py={1} textAlign="left">
+                <Text as="span" fontSize="sm" fontWeight="semibold">
+                  People
+                </Text>
+              </Th>
             </Tr>
           </THead>
           <TBody fontSize={['sm', 'md']}>
@@ -79,32 +63,25 @@ export const Projects = ({ data }) => {
               data.map((project) => (
                 <Tr key={project.id} _hover={{ background: hoverColor[colorMode] }}>
                   <Td>
-                    <NextLink href="#" passHref>
-                      <ChakraLink d="block" p={2} color="blue.600">
-                        {project.name}
-                      </ChakraLink>
-                    </NextLink>
+                    <TableLink href={`/projects/${encodeURIComponent(project.name)}`}>{project.name}</TableLink>
                   </Td>
                   <Td p={2}>
                     <Text>{project.key}</Text>
                   </Td>
-                  <Td colSpan={!showExtraInfo ? '2' : '1'}>
-                    <NextLink href="#" passHref>
-                      <ChakraLink d="flex" alignItems="center" p={2} color="blue.600">
-                        {showExtraInfo && <Avatar bg="red.500" size="sm" mr={2} />}
-                        <Text as="span">{project.lead}</Text>
-                      </ChakraLink>
-                    </NextLink>
+                  <Td>
+                    <TableLink href={`/users/${encodeURIComponent(project.lead)}`}>
+                      <Avatar bg="red.500" size="sm" mr={2} />
+                      <Text as="span">{project.lead}</Text>
+                    </TableLink>
                   </Td>
-                  {showExtraInfo && (
-                    <Td p={2}>
-                      <AvatarGroup size="sm" max={2}>
-                        {project.users.map((user) => (
-                          <Avatar key={user.id} />
-                        ))}
-                      </AvatarGroup>
-                    </Td>
-                  )}
+
+                  <Td p={2}>
+                    <AvatarGroup size="sm" max={2}>
+                      {project.users.map((user) => (
+                        <Avatar key={user.id} />
+                      ))}
+                    </AvatarGroup>
+                  </Td>
                 </Tr>
               ))}
           </TBody>
