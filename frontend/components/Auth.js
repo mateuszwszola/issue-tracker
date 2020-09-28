@@ -47,11 +47,11 @@ export const Auth = ({ signin }) => {
       <Box mt={4}>
         <NextLink href={signin ? '/signup' : '/signin'} passHref>
           <ChakraLink color="teal.500">
-            {signin ? 'Do not have an account? Sign Up now' : 'Already have an account? Sign In now'}
+            {signin ? 'Do not have an account? Sign Up' : 'Already have an account? Sign In'}
           </ChakraLink>
         </NextLink>
 
-        <Button variant="link" color="teal.500">
+        <Button d="block" mt={2} variant="link" color="teal.500">
           Sign In as a Demo user
         </Button>
       </Box>

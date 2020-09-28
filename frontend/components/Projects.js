@@ -21,9 +21,8 @@ export const Projects = ({ data }) => {
   const breakpoint = useBreakpoint();
   const { colorMode } = useColorMode();
 
-  const showUsersColumn = breakpoint !== 'base';
+  const showExtraInfo = breakpoint !== 'base';
 
-  const bgColor = { light: 'gray.100', dark: 'gray.900' };
   const borderColor = { light: 'gray.200', dark: 'gray.700' };
   const hoverColor = { light: 'gray.50', dark: 'gray.700' };
 
@@ -41,61 +40,64 @@ export const Projects = ({ data }) => {
       </Box>
 
       <Box mt={8}>
-        <Table w="full" border="2px" borderColor={borderColor[colorMode]}>
+        <Table w="full">
           <Caption
             mb={1}
-            fontSize="sm"
+            fontSize="xs"
             textAlign="left"
             textTransform="uppercase"
             letterSpacing="wide"
             fontWeight="medium"
           >
-            Number of projects ({data.length})
+            Active projects{' '}
+            <Text as="span" d="inline-block" ml={2} fontWeight="semibold">
+              {data.length}
+            </Text>
           </Caption>
-          <THead borderBottom="2px" borderColor={borderColor[colorMode]} bg={bgColor[colorMode]}>
+          <THead borderBottom="2px" borderColor={borderColor[colorMode]}>
             <Tr>
-              <Th w={showUsersColumn ? '25%' : '40%'}>
+              <Th w={showExtraInfo ? '25%' : '40%'}>
                 <ButtonSort name="Name" />
               </Th>
-              <Th w={showUsersColumn ? '25%' : '20%'}>
+              <Th w={showExtraInfo ? '25%' : '20%'}>
                 <ButtonSort name="Key" />
               </Th>
-              <Th w={showUsersColumn ? '25%' : '40%'} colSpan={!showUsersColumn ? '2' : '1'}>
+              <Th w={showExtraInfo ? '25%' : '40%'} colSpan={!showExtraInfo ? '2' : '1'}>
                 <ButtonSort name="Lead" />
               </Th>
-              {showUsersColumn && (
-                <Th w="25%">
-                  <ButtonSort name="People" />
+              {showExtraInfo && (
+                <Th w="25%" px={2} py={1}>
+                  <Text as="span" d="block" fontSize="sm" textAlign="left" fontWeight="semibold">
+                    People
+                  </Text>
                 </Th>
               )}
             </Tr>
           </THead>
-          <TBody borderBottom="2px" borderColor={borderColor[colorMode]} fontSize={['sm', 'md']}>
+          <TBody fontSize={['sm', 'md']}>
             {data &&
               data.map((project) => (
                 <Tr key={project.id} _hover={{ background: hoverColor[colorMode] }}>
                   <Td>
                     <NextLink href="#" passHref>
-                      <ChakraLink d="block" px={2} py={[2, 4]}>
+                      <ChakraLink d="block" p={2} color="blue.600">
                         {project.name}
                       </ChakraLink>
                     </NextLink>
                   </Td>
-                  <Td px={2} py={[2, 4]}>
+                  <Td p={2}>
                     <Text>{project.key}</Text>
                   </Td>
-                  <Td colSpan={!showUsersColumn ? '2' : '1'}>
-                    <NextLink href="#">
-                      <ChakraLink d="flex" alignItems="center" px={2} py={[2, 4]}>
-                        <Avatar bg="red.500" size="sm" />
-                        <Text as="span" ml={2}>
-                          {project.lead}
-                        </Text>
+                  <Td colSpan={!showExtraInfo ? '2' : '1'}>
+                    <NextLink href="#" passHref>
+                      <ChakraLink d="flex" alignItems="center" p={2} color="blue.600">
+                        {showExtraInfo && <Avatar bg="red.500" size="sm" mr={2} />}
+                        <Text as="span">{project.lead}</Text>
                       </ChakraLink>
                     </NextLink>
                   </Td>
-                  {showUsersColumn && (
-                    <Td px={2} py={[2, 4]}>
+                  {showExtraInfo && (
+                    <Td p={2}>
                       <AvatarGroup size="sm" max={2}>
                         {project.users.map((user) => (
                           <Avatar key={user.id} />
@@ -107,7 +109,7 @@ export const Projects = ({ data }) => {
               ))}
           </TBody>
           <TFoot borderTop="2px" borderColor={borderColor[colorMode]}>
-            <Tr fontSize="sm">
+            <Tr>
               <Td p={2} colSpan="2">
                 <Flex align="center">
                   <Button size="sm" variant="link" colorScheme="blue">
@@ -116,7 +118,7 @@ export const Projects = ({ data }) => {
                 </Flex>
               </Td>
               <Td p={2} colSpan="2">
-                <Text textAlign="right" color="gray.500" fontWeight="medium">
+                <Text fontSize="sm" textAlign="right" color="gray.500" fontWeight="medium">
                   {data.length} of {data.length}
                 </Text>
               </Td>
@@ -134,7 +136,7 @@ Projects.defaultProps = {
       id: 1,
       key: 'PRO-1',
       name: 'Create React App',
-      lead: 'John Doe',
+      lead: 'Johnjohny Doe',
       users: [
         {
           id: 1,

@@ -1,11 +1,24 @@
 import PropTypes from 'prop-types';
-import { Heading, Box, Flex, Button, Icon, Menu, MenuButton, MenuItem, MenuList } from '@chakra-ui/core';
+import {
+  Heading,
+  Box,
+  Flex,
+  Button,
+  Icon,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  MenuOptionGroup,
+  MenuItemOption,
+  Stack
+} from '@chakra-ui/core';
 import { InputSearch } from './InputSearch';
 import { GoChevronDown } from 'react-icons/go';
 
 const FilterMenu = ({ label, children }) => {
   return (
-    <Menu>
+    <Menu closeOnSelect={false}>
       <MenuButton as={Button} size="sm" variant="ghost" rightIcon={<Icon as={GoChevronDown} />}>
         {label}
       </MenuButton>
@@ -27,31 +40,45 @@ export const Issues = () => {
       </Box>
 
       <Flex mt={4} direction={['column', null, 'row']} align="center">
-        <Box w="full" maxW={['100%', 'sm']}>
+        <Box w="full" maxW={['100%', 'xs']}>
           <InputSearch />
         </Box>
-        <Flex ml={{ md: 4 }} mt={[2, null, 0]} direction="row" spacing={[1, 2, 4]} align="center">
-          <FilterMenu label="Assignee">
-            <MenuItem>User 1</MenuItem>
-            <MenuItem>User 2</MenuItem>
-            <MenuItem>User 3</MenuItem>
-          </FilterMenu>
-          <FilterMenu label="Priority">
-            <MenuItem>P0</MenuItem>
-            <MenuItem>P1</MenuItem>
-            <MenuItem>P2</MenuItem>
-          </FilterMenu>
-          <FilterMenu label="State">
-            <MenuItem>To Do</MenuItem>
-            <MenuItem>In Progress</MenuItem>
-            <MenuItem>Done</MenuItem>
-          </FilterMenu>
-          <FilterMenu label="Label">
-            <MenuItem>Task</MenuItem>
-            <MenuItem>Bug</MenuItem>
-            <MenuItem>Feature Request</MenuItem>
-          </FilterMenu>
-        </Flex>
+
+        <Stack direction="row" align="center" space={2} ml={{ md: 4 }} mt={[2, null, 0]} flexWrap="wrap">
+          <Box>
+            <FilterMenu label="Assignee">
+              <MenuOptionGroup defaultValue="unassigned">
+                <MenuItemOption value="unassigned">Unassigned</MenuItemOption>
+                <MenuItemOption value="user-1">User 1</MenuItemOption>
+                <MenuItemOption value="user-2">User 2</MenuItemOption>
+              </MenuOptionGroup>
+            </FilterMenu>
+          </Box>
+          <Box>
+            <FilterMenu label="Priority">
+              <MenuOptionGroup defaultValue="unassigned">
+                <MenuItemOption value="unassigned">Unassigned</MenuItemOption>
+                <MenuItemOption value="P0">P0</MenuItemOption>
+                <MenuItemOption value="P1">P1</MenuItemOption>
+                <MenuItemOption value="P2">P2</MenuItemOption>
+              </MenuOptionGroup>
+            </FilterMenu>
+          </Box>
+          <Box>
+            <FilterMenu label="State">
+              <MenuItem>To Do</MenuItem>
+              <MenuItem>In Progress</MenuItem>
+              <MenuItem>Done</MenuItem>
+            </FilterMenu>
+          </Box>
+          <Box>
+            <FilterMenu label="Type">
+              <MenuItem>Task</MenuItem>
+              <MenuItem>Bug</MenuItem>
+              <MenuItem>Feature Request</MenuItem>
+            </FilterMenu>
+          </Box>
+        </Stack>
       </Flex>
     </>
   );
