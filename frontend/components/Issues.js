@@ -33,7 +33,7 @@ export const Issues = () => {
           <Box>
             <FilterMenu label="Status" options={['To Do', 'In Progress', 'Done']} />
           </Box>
-          <Box>
+          <Box width="auto">
             <FilterMenu label="Type" options={['Task', 'Bug', 'Feature Request']} />
           </Box>
         </SimpleGrid>

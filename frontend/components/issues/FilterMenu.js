@@ -7,7 +7,8 @@ import {
   MenuButton,
   MenuList,
   MenuOptionGroup,
-  MenuItemOption
+  MenuItemOption,
+  Flex
 } from '@chakra-ui/core';
 import { GoChevronDown } from 'react-icons/go';
 
@@ -20,8 +21,11 @@ export const FilterMenu = ({ label, options }) => {
 
   return (
     <Menu closeOnSelect={false}>
-      <MenuButton as={Button} size="sm" variant="ghost" rightIcon={<Icon as={GoChevronDown} />}>
-        {label} {numberOfFilters > 0 ? `(${numberOfFilters})` : ''}
+      <MenuButton as={Button} d="block" w="full" size="sm" variant="ghost">
+        <Flex justify="space-between" align="center">
+          {label} {numberOfFilters > 0 ? `(${numberOfFilters})` : ''}
+          <Icon as={GoChevronDown} />
+        </Flex>
       </MenuButton>
       <MenuList>
         <MenuOptionGroup type="checkbox" onChange={handleChange}>
