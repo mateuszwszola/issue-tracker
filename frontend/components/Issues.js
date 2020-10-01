@@ -15,14 +15,6 @@ export const Issues = () => {
           <InputSearch />
         </Box>
 
-        {/* <Stack
-          direction="row"
-          align="center"
-          flexWrap="wrap"
-          spacing={{ base: 0, sm: 1, md: 2 }}
-          ml={{ md: 4 }}
-          mt={{ base: 2, md: 0 }}
-        > */}
         <SimpleGrid mt={{ base: 2, md: 0 }} ml={{ md: 4 }} columns={[2, 4]} spacing={1}>
           <Box>
             <FilterMenu label="Assignee" options={['User #1', 'User #2']} />
@@ -37,7 +29,6 @@ export const Issues = () => {
             <FilterMenu label="Type" options={['Task', 'Bug', 'Feature Request']} />
           </Box>
         </SimpleGrid>
-        {/* </Stack> */}
       </Flex>
     </>
   );

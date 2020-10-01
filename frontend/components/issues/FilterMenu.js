@@ -24,7 +24,7 @@ export const FilterMenu = ({ label, options }) => {
       <MenuButton as={Button} d="block" w="full" size="sm" variant="ghost">
         <Flex justify="space-between" align="center">
           {label} {numberOfFilters > 0 ? `(${numberOfFilters})` : ''}
-          <Icon as={GoChevronDown} />
+          <Icon ml={1} as={GoChevronDown} />
         </Flex>
       </MenuButton>
       <MenuList>
