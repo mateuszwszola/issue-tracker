@@ -1,7 +1,8 @@
-const { Pool } = require('pg');
+import { Pool } from 'pg';
+import config from './config';
 const {
   db: { user, host, database, password, port },
-} = require('./config');
+} = config;
 
 const pool = new Pool({
   user,
@@ -11,4 +12,4 @@ const pool = new Pool({
   port,
 });
 
-module.exports = pool;
+export default pool;

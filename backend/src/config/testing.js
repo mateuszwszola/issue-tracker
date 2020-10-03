@@ -1,1 +1,1 @@
-exports.config = {};
+export const config = {};

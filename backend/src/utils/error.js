@@ -1,4 +1,4 @@
-const { isProd } = require('../config');
+import { isProd } from '../config';
 
 class ErrorHandler extends Error {
   constructor(statusCode, message) {
@@ -13,7 +13,6 @@ const handleNotFound = (req, res, next) => {
   next(error);
 };
 
-// eslint-disable-next-line
 const handleError = (err, req, res, next) => {
   if (res.headersSent) {
     next(err);
@@ -26,8 +25,4 @@ const handleError = (err, req, res, next) => {
   }
 };
 
-module.exports = {
-  ErrorHandler,
-  handleError,
-  handleNotFound,
-};
+export { ErrorHandler, handleError, handleNotFound };

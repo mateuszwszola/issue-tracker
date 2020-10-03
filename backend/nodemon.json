@@ -1,0 +1,22 @@
+{
+  "watch": [
+    "package.json",
+    "nodemon.json",
+    ".eslintrc.js",
+    ".babelrc",
+    ".prettierrc",
+    ".env",
+    "src/"
+  ],
+  "verbose": true,
+  "ignore": [
+    ".git",
+    "node_modules/**/node_modules",
+    "build",
+    "*.test.js",
+    "*.spec.js"
+  ],
+  "env": {
+    "NODE_ENV": "development"
+  }
+}

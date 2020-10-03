@@ -1,19 +1,21 @@
 #!/usr/bin/env node
-require('dotenv').config();
+/* eslint-disable no-unreachable */
 
 /**
  * Module dependencies.
  */
+import app from './app';
+import debug from 'debug';
+import http from 'http';
+import { port as configPort } from './config';
 
-const app = require('./app');
-const debug = require('debug')('backend:server');
-const http = require('http');
+debug('backend:server');
 
 /**
  * Get port from environment and store in Express.
  */
 
-const port = normalizePort(process.env.PORT || '3001');
+const port = normalizePort(configPort || '3001');
 app.set('port', port);
 
 /**
@@ -35,7 +37,7 @@ server.on('listening', onListening);
  */
 
 function normalizePort(val) {
-  var port = parseInt(val, 10);
+  const port = parseInt(val, 10);
 
   if (isNaN(port)) {
     // named pipe
