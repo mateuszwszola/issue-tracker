@@ -5,4 +5,4 @@ exports.up = async (knex) => {
   });
 };
 
-exports.down = function (knex) {};
+exports.down = async (knex) => {};
