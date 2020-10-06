@@ -1,6 +1,8 @@
-import { merge } from 'lodash';
 import dotenv from 'dotenv';
+import { merge } from 'lodash';
+
 dotenv.config();
+
 const env = process.env.NODE_ENV || 'development';
 
 const baseConfig = {
@@ -11,11 +13,9 @@ const baseConfig = {
   port: process.env.PORT || 3001,
   secrets: {},
   db: {
-    user: process.env.PG_USER,
-    host: process.env.PG_HOST,
-    database: process.env.PG_DATABASE,
-    password: process.env.PG_PASSWORD,
-    port: process.env.PG_PORT,
+    user: process.env.POSTGRES_USER,
+    password: process.env.POSTGRES_PASSWORD,
+    database: process.env.POSTGRES_DB,
   },
 };
 

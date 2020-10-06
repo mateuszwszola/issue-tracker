@@ -1,7 +1,7 @@
 import db from '../../db';
 
 const getUsers = async (req, res) => {
-  const results = await db.query('SELECT * FROM users ORDER BY id ASC');
+  const results = await db.query('SELECT * FROM users ORDER BY ID ASC');
 
   res.status(200).json({ users: results.rows });
 };
@@ -15,10 +15,10 @@ const getUserById = async (req, res) => {
 };
 
 const createUser = async (req, res) => {
-  const { name, email } = req.body;
+  const { username, email } = req.body;
 
   await db.query('INSERT INTO users (name, email) VALUES ($1, $2)', [
-    name,
+    username,
     email,
   ]);
 

@@ -14,7 +14,7 @@ app.use(json());
 app.use(urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use('/api/v1', apiRouter);
+app.use('/v1/api', apiRouter);
 
 app.use(handleNotFound);
 app.use(handleError);
