@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   user: 'User',
   role: 'Role',
   project: 'Project',
@@ -10,11 +10,12 @@ export default {
   ticket_type: 'Ticket_type',
   ticket_status: 'Ticket_status',
   ticket_priority: 'Ticket_priority',
-  ticket_history: 'Ticket_history',
   ticket_comment: 'Ticket_comment',
   ticket_engineer: 'Ticket_engineer',
-  sprint: 'Sprint',
   epic: 'Epic',
+  epic_ticket: 'epic_ticket',
+  sprint: 'Sprint',
+  sprint_ticket: 'Sprint_ticket',
   goal: 'Goal',
   attachment: 'Attachment',
 };

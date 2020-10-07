@@ -4,26 +4,30 @@ Entities:
 
 - [x] User
 - [x] Role
+- [x] Project
+- [x] Project Type (software)
+- [x] Project Status (active, archived)
+- [x] Project Engineer
 - [x] Ticket
 - [x] Sub Ticket
 - [x] Ticket Type (bug, task, feature_request, epic)
 - [x] Ticket Status (to do, in progress, under review, done)
-- [x] Project
-- [x] Project Type (software)
-- [x] Project State (active, archived)
-- [x] Goal
-- [x] Comment
+- [x] Ticket Priority
+- [x] Ticket Comment
+- [x] Ticket Engineer
 - [x] Epic
+- [x] Epic Ticket
 - [x] Sprint
+- [x] Sprint Ticket
+- [x] Goal
 - [x] Attachment
 
-- [] Pages (project docs in, maybe in markdown)
-- [] Notification
+- [ ] Pages (project docs, maybe in markdown)
+- [ ] Notification
 
 Every record will have:
   - Created At
   - Updated At
 
-We can implement soft delete instead of actual delete, that way we will archive the records instead of completely deleting it.
-In case of deleting things, we can run into the issue where we will also be deleting related records, and we may don't want that.
+Entities like Project and Ticket will also have deleted_at column (archive)
 
