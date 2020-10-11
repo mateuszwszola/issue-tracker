@@ -24,7 +24,8 @@ function referenceTable(
   rootTable
     .foreign(rootTableColumnName)
     .references(foreignColumnName)
-    .inTable(foreignTableName);
+    .inTable(foreignTableName)
+    .onDelete('cascade');
 }
 
 export { createNameTable, addTimestamps, addUrl, referenceTable };

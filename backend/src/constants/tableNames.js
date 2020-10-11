@@ -1,4 +1,4 @@
-export default {
+const tableNames = {
   user: 'User',
   role: 'Role',
   project: 'Project',
@@ -19,3 +19,31 @@ export default {
   goal: 'Goal',
   attachment: 'Attachment',
 };
+
+export const orderedTableNames = [
+  [
+    tableNames.project_engineer,
+    tableNames.ticket_engineer,
+    tableNames.sub_ticket,
+    tableNames.ticket_comment,
+    tableNames.attachment,
+    tableNames.sprint_ticket,
+    tableNames.epic_ticket,
+  ],
+  tableNames.sprint,
+  tableNames.ticket,
+  tableNames.project,
+  tableNames.user,
+  [
+    tableNames.role,
+    tableNames.project_type,
+    tableNames.project_status,
+    tableNames.ticket_type,
+    tableNames.ticket_status,
+    tableNames.ticket_priority,
+    tableNames.goal,
+    tableNames.epic,
+  ],
+];
+
+export default tableNames;
