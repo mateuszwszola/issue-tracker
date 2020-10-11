@@ -1,5 +1,5 @@
-const { addTimestamps, addUrl, referenceTable } = require('./tableHelpers');
-const tableNames = require('../constants/tableNames');
+import { addTimestamps, addUrl, referenceTable } from './tableHelpers';
+import tableNames from '../constants/tableNames';
 
 function createUserTable(knex) {
   return knex.schema.createTable(tableNames.user, (table) => {
@@ -123,7 +123,7 @@ function createAttachmentTable(knex) {
   });
 }
 
-module.exports = {
+export {
   createUserTable,
   createProjectTable,
   createProjectEngineerTable,

@@ -8,8 +8,8 @@
     "dev": "nodemon --exec babel-node ./src/index.js",
     "lint": "eslint --fix ./src",
     "format": "prettier --write './**/*.{js,json}' --config ./.prettierrc",
-    "migrate": "knex migrate:latest",
-    "rollback": "knex migrate:rollback"
+    "migrate": "knex migrate:latest --esm",
+    "rollback": "knex migrate:rollback --esm"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",

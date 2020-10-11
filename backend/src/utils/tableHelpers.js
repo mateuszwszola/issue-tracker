@@ -27,9 +27,4 @@ function referenceTable(
     .inTable(foreignTableName);
 }
 
-module.exports = {
-  createNameTable,
-  addTimestamps,
-  addUrl,
-  referenceTable,
-};
+export { createNameTable, addTimestamps, addUrl, referenceTable };

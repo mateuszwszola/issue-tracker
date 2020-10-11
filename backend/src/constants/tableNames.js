@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   user: 'User',
   role: 'Role',
   project: 'Project',

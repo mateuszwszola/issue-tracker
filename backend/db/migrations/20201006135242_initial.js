@@ -1,8 +1,8 @@
-const tableNames = require('../../src/constants/tableNames');
-const { createNameTable } = require('../../src/utils/tableHelpers');
-const fn = require('../../src/utils/tableCreation');
+import tableNames from '../../src/constants/tableNames';
+import { createNameTable } from '../../src/utils/tableHelpers';
+import * as fn from '../../src/utils/tableCreation';
 
-exports.up = async (knex) => {
+export async function up(knex) {
   await Promise.all([
     createNameTable(knex, tableNames.role),
     createNameTable(knex, tableNames.project_type),
@@ -14,34 +14,49 @@ exports.up = async (knex) => {
     fn.createEpicTable(knex),
   ]);
 
-  await fn.createSprintTable(knex);
   await fn.createUserTable(knex);
   await fn.createProjectTable(knex);
+  await fn.createTicketTable(knex);
+
+  await fn.createSprintTable(knex);
+
+  await Promise.all([
+    fn.createSprintTicketTable(knex),
+    fn.createEpicTicketTable(knex),
+  ]);
+
   await Promise.all([
     fn.createProjectEngineerTable(knex),
-    fn.createTicketTable(knex),
+    fn.createTicketEngineerTable(knex),
+    fn.createSubTicketTable(knex),
+    fn.createTicketCommentTable(knex),
+    fn.createAttachmentTable(knex),
   ]);
-  await fn.createAttachmentTable(knex);
-  await fn.createTicketEngineerTable(knex);
-  await fn.createSubTicketTable(knex);
-  await fn.createTicketCommentTable(knex);
-  await fn.createEpicTicketTable(knex);
-  await fn.createSprintTicketTable(knex);
-};
+}
 
-exports.down = async (knex) => {
-  await knex.schema.dropTableIfExists(tableNames.project_engineer);
-  await knex.schema.dropTableIfExists(tableNames.ticket_engineer);
-  await knex.schema.dropTableIfExists(tableNames.ticket_comment);
-  await knex.schema.dropTableIfExists(tableNames.sub_ticket);
-  await knex.schema.dropTableIfExists(tableNames.epic_ticket);
-  await knex.schema.dropTableIfExists(tableNames.sprint_ticket);
-  await knex.schema.dropTableIfExists(tableNames.epic);
+export async function down(knex) {
+  await Promise.all(
+    [
+      tableNames.project_engineer,
+      tableNames.ticket_engineer,
+      tableNames.sub_ticket,
+      tableNames.ticket_comment,
+      tableNames.attachment,
+    ].map((tableName) => knex.schema.dropTableIfExists(tableName))
+  );
+
+  await Promise.all(
+    [tableNames.sprint_ticket, tableNames.epic_ticket].map((tableName) =>
+      knex.schema.dropTableIfExists(tableName)
+    )
+  );
+
   await knex.schema.dropTableIfExists(tableNames.sprint);
-  await knex.schema.dropTableIfExists(tableNames.attachment);
+
   await knex.schema.dropTableIfExists(tableNames.ticket);
   await knex.schema.dropTableIfExists(tableNames.project);
   await knex.schema.dropTableIfExists(tableNames.user);
+
   await Promise.all(
     [
       tableNames.role,
@@ -51,6 +66,7 @@ exports.down = async (knex) => {
       tableNames.ticket_status,
       tableNames.ticket_priority,
       tableNames.goal,
+      tableNames.epic,
     ].map((tableName) => knex.schema.dropTableIfExists(tableName))
   );
-};
+}
