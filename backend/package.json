@@ -9,7 +9,8 @@
     "lint": "eslint --fix ./src",
     "format": "prettier --write './**/*.{js,json}' --config ./.prettierrc",
     "migrate": "knex migrate:latest --esm",
-    "rollback": "knex migrate:rollback --esm"
+    "rollback": "knex migrate:rollback --esm",
+    "seed": "knex seed:run --esm"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
