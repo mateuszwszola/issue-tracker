@@ -5,11 +5,11 @@
  * Module dependencies.
  */
 import app from './app';
-import debug from 'debug';
+import debugModule from 'debug';
 import http from 'http';
 import { port as configPort } from './config';
 
-debug('backend:server');
+const debug = debugModule('backend:server');
 
 /**
  * Get port from environment and store in Express.

@@ -1,17 +1,17 @@
-import { Pool } from 'pg';
+import knex from 'knex';
 import config from './config';
 const {
   isProd,
-  db: { user, host, database, password, port },
+  db: { user, password, database, host, port },
 } = config;
 
 const connectionString = isProd
   ? process.env.DATABASE_URL
   : `postgresql://${user}:${password}@${host}:${port}/${database}`;
 
-const pool = new Pool({
-  connectionString,
-  ssl: isProd,
+const pg = knex({
+  client: 'pg',
+  connection: connectionString,
 });
 
-export default pool;
+export default pg;

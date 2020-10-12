@@ -1,52 +1,49 @@
 import db from '../../db';
+import tableNames from '../../constants/tableNames';
 
 const getUsers = async (req, res) => {
-  const results = await db.query('SELECT * FROM users ORDER BY ID ASC');
+  const results = await db.select('*').from(tableNames.user).limit(100);
 
-  res.status(200).json({ users: results.rows });
+  res.status(200).json({ users: results });
 };
 
 const getUserById = async (req, res) => {
   const id = parseInt(req.params.id);
 
-  const results = await db.query('SELECT * FROM users WHERE id = $1', [id]);
+  const results = await db.select('*').from(tableNames.user).where('id', id);
 
-  return res.status(200).json({ user: results.rows[0] });
+  return res.status(200).json({ user: results });
 };
 
 const createUser = async (req, res) => {
-  const { username, email } = req.body;
+  const { name, email } = req.body;
 
-  await db.query('INSERT INTO users (name, email) VALUES ($1, $2)', [
-    username,
-    email,
-  ]);
+  const user = await db(tableNames.user).returning('*').insert({ name, email });
 
-  return res.status(201).json({ message: 'User created' });
+  return res.status(201).json({ user });
 };
 
 const updateUser = async (req, res) => {
   const { name, email } = req.body;
   const id = parseInt(req.params.id);
 
-  const results = await db.query(
-    'UPDATE users SET name = $1, email = $2 WHERE id = $3',
-    [name, email, id]
-  );
+  const user = await db(tableNames.user)
+    .returning('*')
+    .where('id', id)
+    .update({ name, email });
 
-  console.log(results);
-
-  return res.status(200).json({ message: 'User successfully updated' });
+  return res.status(200).json({ user });
 };
 
 const deleteUser = async (req, res) => {
   const id = parseInt(req.params.id);
 
-  const results = await db.query('DELETE FROM users WHERE id = $1', [id]);
+  const user = await db(tableNames.user)
+    .where('id', id)
+    .returning('*')
+    .delete();
 
-  console.log(results);
-
-  return res.status(200).json({ message: 'User successfully deleted' });
+  return res.status(200).json({ user });
 };
 
 export default {
