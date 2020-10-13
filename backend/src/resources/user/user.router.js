@@ -1,7 +1,6 @@
 import { Router } from 'express';
-import controllers from './user.controller';
+import * as controllers from './user.controller';
 const router = Router();
-
 // /api/users
 router.route('/').get(controllers.getUsers).post(controllers.createUser);
 

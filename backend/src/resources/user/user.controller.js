@@ -46,10 +46,4 @@ const deleteUser = async (req, res) => {
   return res.status(200).json({ user });
 };
 
-export default {
-  getUsers,
-  getUserById,
-  createUser,
-  updateUser,
-  deleteUser,
-};
+export { getUsers, getUserById, createUser, updateUser, deleteUser };

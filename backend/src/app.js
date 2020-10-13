@@ -3,6 +3,7 @@ import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import cors from 'cors';
 import { handleNotFound, handleError } from './utils/error';
+import { checkJwt } from './utils/auth';
 
 import apiRouter from './resources';
 
@@ -14,7 +15,10 @@ app.use(json());
 app.use(urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use('/v1/api', apiRouter);
+app.use('/api/protected', checkJwt, (req, res) => {
+  res.json({ message: 'You have accessed the protected route' });
+});
+app.use('/api', apiRouter);
 
 app.use(handleNotFound);
 app.use(handleError);
