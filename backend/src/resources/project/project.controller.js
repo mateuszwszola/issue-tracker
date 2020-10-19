@@ -7,4 +7,12 @@ const getProjects = async (req, res) => {
   res.status(200).json({ projects: results });
 };
 
-export { getProjects };
+const createProject = async (req, res) => {
+  // TODO: secure this route
+  // TODO: validate req.body
+  const newProject = await db(tableNames.project).insert(req.body);
+
+  res.status(200).json({ project: newProject });
+};
+
+export { getProjects, createProject };

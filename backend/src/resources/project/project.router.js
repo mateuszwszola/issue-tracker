@@ -3,10 +3,7 @@ import * as controllers from './project.controller';
 const router = Router();
 
 // /api/v1/projects
-router.route('/').get((req, res, next) => {
-  next();
-}, controllers.getProjects);
-// .post(controllers.createProject);
+router.route('/').get(controllers.getProjects).post(controllers.createProject);
 
 // /api/v1/users/:id
 // router
