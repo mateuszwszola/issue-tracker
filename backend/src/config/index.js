@@ -1,14 +1,12 @@
-import dotenv from 'dotenv';
+import 'dotenv/config';
 import { merge } from 'lodash';
-
-dotenv.config();
 
 const env = process.env.NODE_ENV || 'development';
 
 const baseConfig = {
   env,
   isDev: env === 'development',
-  isTest: env === 'testing',
+  isTest: env === 'test',
   isProd: env === 'production',
   port: process.env.PORT || 3001,
   secrets: {},

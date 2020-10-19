@@ -1,17 +1,9 @@
 import knex from 'knex';
 import config from './config';
-const {
-  isProd,
-  db: { user, password, database, host, port },
-} = config;
+import knexConfig from '../knexfile';
 
-const connectionString = isProd
-  ? process.env.DATABASE_URL
-  : `postgresql://${user}:${password}@${host}:${port}/${database}`;
+const connectionConfig = knexConfig[config.env];
 
-const pg = knex({
-  client: 'pg',
-  connection: connectionString,
-});
+const connection = knex(connectionConfig);
 
-export default pg;
+export default connection;

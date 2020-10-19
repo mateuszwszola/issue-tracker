@@ -1,4 +1,5 @@
 import express, { json, urlencoded } from 'express';
+import 'express-async-errors';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import cors from 'cors';
@@ -15,12 +16,12 @@ app.use(json());
 app.use(urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use('/api/protected', checkJwt, (req, res) => {
+app.use('/api/auth', checkJwt, (req, res) => {
   res.json({ message: 'You have accessed the protected route' });
 });
-app.use('/api', apiRouter);
+app.use('/api/v1', apiRouter);
 
 app.use(handleNotFound);
 app.use(handleError);
 
-export default app;
+export { app };

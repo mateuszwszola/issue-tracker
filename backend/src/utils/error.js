@@ -3,7 +3,7 @@ import { isProd } from '../config';
 class ErrorHandler extends Error {
   constructor(statusCode, message) {
     super();
-    this.statusCode = statusCode;
+    this.status = statusCode;
     this.message = message;
   }
 }
@@ -17,7 +17,7 @@ const handleError = (err, req, res, next) => {
   if (res.headersSent) {
     next(err);
   } else {
-    res.status(err.statusCode || 500);
+    res.status(err.status || 500);
     res.json({
       message: err.message || 'Internal Server Error',
       ...(isProd ? null : { stack: err.stack }),

@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import * as controllers from './user.controller';
 const router = Router();
-// /api/users
+// /api/v1/users
 router.route('/').get(controllers.getUsers).post(controllers.createUser);
 
-// /api/users/:id
+// /api/v1/users/:id
 router
   .route('/:id')
   .get(controllers.getUserById)

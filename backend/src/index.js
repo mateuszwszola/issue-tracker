@@ -4,7 +4,7 @@
 /**
  * Module dependencies.
  */
-import app from './app';
+import { app } from './app';
 import debugModule from 'debug';
 import http from 'http';
 import { port as configPort } from './config';
