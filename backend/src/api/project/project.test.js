@@ -16,5 +16,11 @@ describe('User routes', () => {
     expect(response.body).toHaveProperty('projects');
   });
 
+  it('should create a project', async () => {
+    const response = await supertest(app).post('/api/v1/projects').send();
+
+    expect(response.statusCode).toBe(500);
+  });
+
   afterAll(() => teardownTest(thisDb));
 });

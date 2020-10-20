@@ -18,9 +18,15 @@ function referenceTable(
   rootTable,
   rootTableColumnName,
   foreignTableName,
+  notNullable = true,
   foreignColumnName = 'id'
 ) {
-  rootTable.integer(rootTableColumnName).unsigned().notNullable();
+  const query = rootTable.integer(rootTableColumnName).unsigned();
+
+  if (notNullable) {
+    query.notNullable();
+  }
+
   rootTable
     .foreign(rootTableColumnName)
     .references(foreignColumnName)

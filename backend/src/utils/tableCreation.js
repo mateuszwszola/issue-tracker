@@ -45,7 +45,7 @@ const createProjectTable = (knex) =>
     table.string('name').notNullable().unique();
     table.string('description');
     referenceTable(table, 'owner_id', tableNames.user);
-    referenceTable(table, 'manager_id', tableNames.user);
+    referenceTable(table, 'manager_id', tableNames.user, false);
     referenceTable(table, 'type_id', tableNames.project_type);
     referenceTable(table, 'status_id', tableNames.project_status);
     addTimestamps(table);
@@ -80,14 +80,6 @@ const createTicketEngineerTable = (knex) =>
     table.increments().notNullable();
     referenceTable(table, 'ticket_id', tableNames.ticket);
     referenceTable(table, 'user_id', tableNames.user);
-    addTimestamps(table);
-  });
-
-const createSubTicketTable = (knex) =>
-  knex.schema.createTable(tableNames.sub_ticket, (table) => {
-    table.increments().notNullable();
-    referenceTable(table, 'parent_ticket_id', tableNames.ticket);
-    referenceTable(table, 'sub_ticket_id', tableNames.ticket);
     addTimestamps(table);
   });
 
@@ -146,7 +138,6 @@ export default {
   [tableNames.project_status]: createProjectStatusTable,
   [tableNames.project_engineer]: createProjectEngineerTable,
   [tableNames.ticket]: createTicketTable,
-  [tableNames.sub_ticket]: createSubTicketTable,
   [tableNames.ticket_type]: createTicketTypeTable,
   [tableNames.ticket_status]: createTicketStatusTable,
   [tableNames.ticket_priority]: createTicketPriorityTable,

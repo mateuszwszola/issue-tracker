@@ -12,7 +12,9 @@ module.exports = {
     ecmaVersion: 12,
     sourceType: 'module',
   },
-  rules: {},
+  rules: {
+    camelcase: 'off',
+  },
   plugins: ['prettier', 'jest'],
   settings: {
     jest: {

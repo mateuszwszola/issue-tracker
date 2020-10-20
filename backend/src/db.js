@@ -1,9 +1,10 @@
-import knex from 'knex';
+import Knex from 'knex';
+import { Model } from 'objection';
 import config from './config';
 import knexConfig from '../knexfile';
 
-const connectionConfig = knexConfig[config.env];
+const knex = Knex(knexConfig[config.env]);
 
-const connection = knex(connectionConfig);
+Model.knex(knex);
 
-export default connection;
+export default knex;

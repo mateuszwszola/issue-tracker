@@ -6,7 +6,6 @@ const tableNames = {
   project_status: 'Project_status',
   project_engineer: 'Project_engineer',
   ticket: 'Ticket',
-  sub_ticket: 'Sub_ticket',
   ticket_type: 'Ticket_type',
   ticket_status: 'Ticket_status',
   ticket_priority: 'Ticket_priority',
@@ -24,7 +23,6 @@ export const orderedTableNames = [
   [
     tableNames.project_engineer,
     tableNames.ticket_engineer,
-    tableNames.sub_ticket,
     tableNames.ticket_comment,
     tableNames.attachment,
     tableNames.sprint_ticket,
