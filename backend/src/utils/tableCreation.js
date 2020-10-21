@@ -28,9 +28,10 @@ const createGoalTable = (knex) =>
 
 const createUserTable = (knex) =>
   knex.schema.createTable(tableNames.user, (table) => {
-    table.increments().notNullable();
-    table.string('name').notNullable();
+    table.increments();
+    table.string('auth0_user_id').unique().index();
     table.string('email').notNullable().unique();
+    table.string('name').notNullable();
     table.string('location', 50);
     table.boolean('blocked');
     addUrl(table, 'avatar_url');
@@ -40,7 +41,7 @@ const createUserTable = (knex) =>
 
 const createProjectTable = (knex) =>
   knex.schema.createTable(tableNames.project, (table) => {
-    table.increments().notNullable();
+    table.increments();
     table.string('key', 100).notNullable().unique();
     table.string('name').notNullable().unique();
     table.string('description');
@@ -54,7 +55,7 @@ const createProjectTable = (knex) =>
 
 const createProjectEngineerTable = (knex) =>
   knex.schema.createTable(tableNames.project_engineer, (table) => {
-    table.increments().notNullable();
+    table.increments();
     referenceTable(table, 'project_id', tableNames.project);
     referenceTable(table, 'user_id', tableNames.user);
     addTimestamps(table);
@@ -62,7 +63,7 @@ const createProjectEngineerTable = (knex) =>
 
 const createTicketTable = (knex) =>
   knex.schema.createTable(tableNames.ticket, (table) => {
-    table.increments().notNullable();
+    table.increments();
     table.string('key', 100).notNullable().unique();
     table.string('name').notNullable();
     table.string('description');
@@ -77,7 +78,7 @@ const createTicketTable = (knex) =>
 
 const createTicketEngineerTable = (knex) =>
   knex.schema.createTable(tableNames.ticket_engineer, (table) => {
-    table.increments().notNullable();
+    table.increments();
     referenceTable(table, 'ticket_id', tableNames.ticket);
     referenceTable(table, 'user_id', tableNames.user);
     addTimestamps(table);
@@ -85,7 +86,7 @@ const createTicketEngineerTable = (knex) =>
 
 const createTicketCommentTable = (knex) =>
   knex.schema.createTable(tableNames.ticket_comment, (table) => {
-    table.increments().notNullable();
+    table.increments();
     table.string('comment').notNullable();
     referenceTable(table, 'ticket_id', tableNames.ticket);
     referenceTable(table, 'user_id', tableNames.user);
@@ -94,28 +95,28 @@ const createTicketCommentTable = (knex) =>
 
 const createEpicTicketTable = (knex) =>
   knex.schema.createTable(tableNames.epic_ticket, (table) => {
-    table.increments().notNullable();
+    table.increments();
     referenceTable(table, 'epic_id', tableNames.epic);
     referenceTable(table, 'ticket_id', tableNames.ticket);
   });
 
 const createSprintTicketTable = (knex) =>
   knex.schema.createTable(tableNames.sprint_ticket, (table) => {
-    table.increments().notNullable();
+    table.increments();
     referenceTable(table, 'sprint_id', tableNames.sprint);
     referenceTable(table, 'ticket_id', tableNames.ticket);
   });
 
 const createEpicTable = (knex) =>
   knex.schema.createTable(tableNames.epic, (table) => {
-    table.increments().notNullable();
+    table.increments();
     table.datetime('start_date');
     table.datetime('end_date');
   });
 
 const createSprintTable = (knex) =>
   knex.schema.createTable(tableNames.sprint, (table) => {
-    table.increments().notNullable();
+    table.increments();
     table.string('name').notNullable();
     table.datetime('start_date');
     table.datetime('end_date');
@@ -124,7 +125,7 @@ const createSprintTable = (knex) =>
 
 const createAttachmentTable = (knex) =>
   knex.schema.createTable(tableNames.attachment, (table) => {
-    table.increments().notNullable();
+    table.increments();
     referenceTable(table, 'ticket_id', tableNames.ticket);
     addUrl(table, 'attachment_url');
     addTimestamps(table);
