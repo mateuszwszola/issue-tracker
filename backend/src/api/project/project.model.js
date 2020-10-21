@@ -31,25 +31,25 @@ class Project extends Model {
     const { ProjectStatus } = require('./projectStatus/projectStatus.model');
 
     return {
-      ownerId: createBelongsToOneRelation(
+      owner: createBelongsToOneRelation(
         User,
         tableNames.project,
         tableNames.user,
         'owner_id'
       ),
-      managerId: createBelongsToOneRelation(
+      manager: createBelongsToOneRelation(
         User,
         tableNames.project,
         tableNames.user,
         'manager_id'
       ),
-      typeId: createBelongsToOneRelation(
+      type: createBelongsToOneRelation(
         ProjectType,
         tableNames.project,
         tableNames.project_type,
         'type_id'
       ),
-      statusId: createBelongsToOneRelation(
+      status: createBelongsToOneRelation(
         ProjectStatus,
         tableNames.project,
         tableNames.project_status,

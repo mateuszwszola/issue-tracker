@@ -17,6 +17,21 @@ class ProjectStatus extends Model {
       },
     };
   }
+
+  static get relationMappings() {
+    const { Project } = require('../project.model');
+
+    return {
+      project: {
+        relation: Model.HasManyRelation,
+        modelClass: Project,
+        join: {
+          from: `${tableNames.project_status}.id`,
+          to: `${tableNames.project}.status_id`,
+        },
+      },
+    };
+  }
 }
 
 export { ProjectStatus };

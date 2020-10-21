@@ -17,6 +17,21 @@ class ProjectType extends Model {
       },
     };
   }
+
+  static get relationMappings() {
+    const { Project } = require('../project.model');
+
+    return {
+      project: {
+        relation: Model.HasManyRelation,
+        modelClass: Project,
+        join: {
+          from: `${tableNames.project_type}.id`,
+          to: `${tableNames.project}.type_id`,
+        },
+      },
+    };
+  }
 }
 
 export { ProjectType };

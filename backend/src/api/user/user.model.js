@@ -26,6 +26,7 @@ class User extends Model {
 
   static get relationMappings() {
     const { Role } = require('./role/role.model');
+    const { Project } = require('../project/project.model');
 
     return {
       role: {
@@ -34,6 +35,22 @@ class User extends Model {
         join: {
           from: `${tableNames.user}.role_id`,
           to: `${tableNames.role}.id`,
+        },
+      },
+      ownedProjects: {
+        relation: Model.HasManyRelation,
+        modelClass: Project,
+        join: {
+          from: `${tableNames.user}.id`,
+          to: `${tableNames.project}.owner_id`,
+        },
+      },
+      managedProjects: {
+        relation: Model.HasManyRelation,
+        modelClass: Project,
+        join: {
+          from: `${tableNames.user}.id`,
+          to: `${tableNames.project}.manager_id`,
         },
       },
     };
