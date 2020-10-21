@@ -1,12 +1,12 @@
 import 'dotenv/config';
-import tableNames from '../../../src/constants/tableNames';
-import { ROLES, roles } from '../../../src/constants/roles';
-import { projectTypes, projectStatuses } from '../../../src/constants/project';
+import tableNames from '../../../constants/tableNames';
+import { ROLES, roles } from '../../../constants/roles';
+import { projectTypes, projectStatuses } from '../../../constants/project';
 import {
   ticketTypes,
   ticketStatuses,
   ticketPriorities,
-} from '../../../src/constants/ticket';
+} from '../../../constants/ticket';
 
 export async function seed(knex) {
   await Promise.all(

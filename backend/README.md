@@ -9,7 +9,6 @@ Entities:
 - [x] Project Status (active, archived)
 - [x] Project Engineer
 - [x] Ticket
-- [x] Sub Ticket
 - [x] Ticket Type (bug, task, feature_request, epic)
 - [x] Ticket Status (to do, in progress, under review, done)
 - [x] Ticket Priority

@@ -8,9 +8,9 @@
     "dev": "DEBUG=backend* nodemon --exec babel-node ./src/index.js",
     "lint": "eslint --fix ./src",
     "format": "prettier --write './**/*.{js,json}' --config ./.prettierrc",
-    "migrate": "knex migrate:latest --esm",
-    "rollback": "knex migrate:rollback --esm",
-    "seed": "knex seed:run --esm",
+    "migrate": "knex migrate:latest --knexfile ./src/knexfile.js --esm",
+    "rollback": "knex migrate:rollback --knexfile ./src/knexfile.js --esm",
+    "seed": "knex seed:run --knexfile ./src/knexfile.js --esm",
     "test": "jest --runInBand"
   },
   "dependencies": {

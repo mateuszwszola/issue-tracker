@@ -1,5 +1,5 @@
-import { orderedTableNames } from '../../src/constants/tableNames';
-import createTable from '../../src/utils/tableCreation';
+import { orderedTableNames } from '../../constants/tableNames';
+import createTable from '../../utils/tableCreation';
 
 function runInSequence(arr, cb) {
   return arr.reduce(async (promise, currentValue) => {

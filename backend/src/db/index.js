@@ -1,6 +1,6 @@
 import Knex from 'knex';
 import { Model } from 'objection';
-import config from './config';
+import config from '../config';
 import knexConfig from '../knexfile';
 
 const knex = Knex(knexConfig[config.env]);
