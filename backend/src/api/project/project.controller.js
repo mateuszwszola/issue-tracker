@@ -1,11 +1,14 @@
 import db from '../../db';
 import tableNames from '../../constants/tableNames';
+import { Project } from './project.model';
 
 const getProjects = async (req, res) => {
-  const results = await db
-    .select(['Project.*', 'Project_status.name as status'])
-    .from('Project')
-    .leftJoin('Project_status', 'Project.status_id', 'Project_status.id');
+  // const results = await db
+  //   .select(['Project.*', 'Project_status.name as status'])
+  //   .from('Project')
+  //   .leftJoin('Project_status', 'Project.status_id', 'Project_status.id');
+
+  const results = await Project.query().joinRelated('statusId');
 
   res.status(200).json({ projects: results });
 };

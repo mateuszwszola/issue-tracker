@@ -1,6 +1,6 @@
 function createNameTable(knex, tableName, columnName = 'name') {
   return knex.schema.createTable(tableName, (table) => {
-    table.increments().notNullable();
+    table.increments();
     table.string(columnName).notNullable().unique();
     addTimestamps(table);
   });
@@ -19,7 +19,8 @@ function referenceTable(
   rootTableColumnName,
   foreignTableName,
   notNullable = true,
-  foreignColumnName = 'id'
+  foreignColumnName = 'id',
+  onDelete = 'cascade'
 ) {
   const query = rootTable.integer(rootTableColumnName).unsigned();
 
@@ -31,7 +32,7 @@ function referenceTable(
     .foreign(rootTableColumnName)
     .references(foreignColumnName)
     .inTable(foreignTableName)
-    .onDelete('cascade');
+    .onDelete(onDelete);
 }
 
 export { createNameTable, addTimestamps, addUrl, referenceTable };

@@ -5,9 +5,12 @@ import logger from 'morgan';
 import cors from 'cors';
 import { handleNotFound, handleError } from './utils/error';
 import { checkJwt } from './utils/auth';
-import apiRouter from './api';
+import registerApi from './api';
 
+const router = express.Router();
 const app = express();
+
+registerApi(router);
 
 app.use(cors());
 app.use(logger('dev'));
@@ -19,7 +22,7 @@ app.use('/api/auth', checkJwt, (req, res) => {
   res.json({ message: 'You have accessed the protected route' });
 });
 
-app.use('/api/v1', apiRouter);
+app.use('/api/v1', router);
 
 app.use(handleNotFound);
 app.use(handleError);
