@@ -11,10 +11,10 @@ export default {
       password: process.env.POSTGRES_PASSWORD,
     },
     migrations: {
-      directory: './db/migrations',
+      directory: 'src/db/migrations',
     },
     seeds: {
-      directory: './db/seeds/dev',
+      directory: 'src/db/seeds/dev',
     },
   },
   test: {
@@ -26,10 +26,10 @@ export default {
       port: 5430,
     },
     migrations: {
-      directory: './db/migrations',
+      directory: 'src/db/migrations',
     },
     seeds: {
-      directory: './db/seeds/dev',
+      directory: 'src/db/seeds/dev',
     },
   },
 };

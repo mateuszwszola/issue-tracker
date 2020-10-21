@@ -28,7 +28,7 @@ export async function seed(knex) {
   const adminRoleId = rolesResult.find((entry) => entry.name === ROLES.admin)
     .id;
 
-  await knex(tableNames.user).insert({
+  await knex(tableNames.user).returning('id').insert({
     name: process.env.ADMIN_USER_NAME,
     email: process.env.ADMIN_USER_EMAIL,
     role_id: adminRoleId,
