@@ -1,6 +1,4 @@
-import dotenv from 'dotenv';
-
-dotenv.config({ path: '../.env' });
+import 'dotenv/config';
 
 export default {
   development: {
@@ -11,10 +9,10 @@ export default {
       password: process.env.POSTGRES_PASSWORD,
     },
     migrations: {
-      directory: 'src/db/migrations',
+      directory: './db/migrations',
     },
     seeds: {
-      directory: 'src/db/seeds/dev',
+      directory: './db/seeds/dev',
     },
   },
   test: {
@@ -26,10 +24,10 @@ export default {
       port: 5430,
     },
     migrations: {
-      directory: 'src/db/migrations',
+      directory: './db/migrations',
     },
     seeds: {
-      directory: 'src/db/seeds/dev',
+      directory: './db/seeds/dev',
     },
   },
 };

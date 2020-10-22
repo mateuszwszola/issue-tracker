@@ -3,10 +3,8 @@
 Entities:
 
 - [x] User
-- [x] Role
 - [x] Project
 - [x] Project Type (software)
-- [x] Project Status (active, archived)
 - [x] Project Engineer
 - [x] Ticket
 - [x] Ticket Type (bug, task, feature_request, epic)
@@ -28,23 +26,15 @@ Every record will have:
   - Created At
   - Updated At
 
-Entities like Project and Ticket will also have deleted_at column (archive)
+- Project entity will have archived_at column (in this case we will do soft delete)
 
 ## Authentication Requirements:
 
   - every user has a role in the app
   - and every role has its set of permissions
   - some actions requires permissions to perform them
-  - the app will store user information - email, name, avatar, etc...
-    - to be able to query users and data by specific fields
-    - and display them with resource without the need to call auth0 api
-
-- user and role management can be done with auth0
-  - I can interact with auth0 to manage users
+  - admin will be interacting with Auth0 to manage users and roles through the dashboard
+  - the app will store user information - auth0_user_id, email, name, avatar, but the auth0 will handle authentication and authorization
+    - why store user data also in the local db? To be able to display it on the frontend without the need to also call auth0 api
   - auth0 has additional information about users
-- when user sign in / sign up I will talk to my API and store / update user info and map local database user id with auth0 user id
-  - then, I will include local db userId in access token so I can then easily do lookups on the backend
-  - I can modify the access token to put a user role to it after talking to my api server
-
-  - Auth0 will manage users and roles
-  - Generated access_token can contain local db user id and role
+  - when user sign in / sign up auth0 rule will call this API, and the API will store / update user info along with auth0 user id

@@ -18,7 +18,6 @@ describe('User routes', () => {
       owner_id: 1,
       manager_id: 1,
       type_id: 1,
-      status_id: 1,
     };
 
     const response = await supertest(app)

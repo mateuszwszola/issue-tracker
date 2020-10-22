@@ -11,7 +11,7 @@ const createProject = async (req, res) => {
   // TODO: validate req.body
   const insertedGraph = await Project.transaction(async (trx) => {
     const insertedGraph = Project.query(trx)
-      .allowGraph('[owner, manager, type, status]')
+      .allowGraph('[owner, manager, type]')
       .insertGraph(req.body);
 
     return insertedGraph;

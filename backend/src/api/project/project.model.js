@@ -10,7 +10,7 @@ class Project extends Model {
   static get jsonSchema() {
     return {
       type: 'object',
-      required: ['key', 'name', 'owner_id', 'type_id', 'status_id'],
+      required: ['key', 'name', 'owner_id', 'type_id'],
 
       properties: {
         id: { type: 'integer' },
@@ -20,7 +20,6 @@ class Project extends Model {
         owner_id: { type: 'integer' },
         manager_id: { type: 'integer' },
         type_id: { type: 'integer' },
-        status_id: { type: 'integer' },
       },
     };
   }
@@ -28,7 +27,6 @@ class Project extends Model {
   static get relationMappings() {
     const { User } = require('../user/user.model');
     const { ProjectType } = require('./projectType/projectType.model');
-    const { ProjectStatus } = require('./projectStatus/projectStatus.model');
 
     return {
       owner: createBelongsToOneRelation(
@@ -48,12 +46,6 @@ class Project extends Model {
         tableNames.project,
         tableNames.project_type,
         'type_id'
-      ),
-      status: createBelongsToOneRelation(
-        ProjectStatus,
-        tableNames.project,
-        tableNames.project_status,
-        'status_id'
       ),
     };
   }

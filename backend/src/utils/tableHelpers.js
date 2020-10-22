@@ -19,8 +19,7 @@ function referenceTable(
   rootTableColumnName,
   foreignTableName,
   notNullable = true,
-  foreignColumnName = 'id',
-  onDelete = 'cascade'
+  foreignColumnName = 'id'
 ) {
   const query = rootTable.integer(rootTableColumnName).unsigned();
 
@@ -28,11 +27,10 @@ function referenceTable(
     query.notNullable();
   }
 
-  rootTable
+  return rootTable
     .foreign(rootTableColumnName)
     .references(foreignColumnName)
-    .inTable(foreignTableName)
-    .onDelete(onDelete);
+    .inTable(foreignTableName);
 }
 
 export { createNameTable, addTimestamps, addUrl, referenceTable };

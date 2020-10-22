@@ -9,11 +9,10 @@ class User extends Model {
   static get jsonSchema() {
     return {
       type: 'object',
-      required: ['role_id', 'name', 'email'],
+      required: ['name', 'email'],
 
       properties: {
         id: { type: 'integer' },
-        role_id: { type: 'integer' },
         auth0_user_id: { type: 'string' },
         name: { type: 'string', minLength: 1, maxLength: 255 },
         email: { type: 'string' },
@@ -25,18 +24,9 @@ class User extends Model {
   }
 
   static get relationMappings() {
-    const { Role } = require('./role/role.model');
     const { Project } = require('../project/project.model');
 
     return {
-      role: {
-        relation: Model.BelongsToOneRelation,
-        modelClass: Role,
-        join: {
-          from: `${tableNames.user}.role_id`,
-          to: `${tableNames.role}.id`,
-        },
-      },
       ownedProjects: {
         relation: Model.HasManyRelation,
         modelClass: Project,

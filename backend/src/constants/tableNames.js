@@ -1,9 +1,7 @@
 const tableNames = {
   user: 'User',
-  role: 'Role',
   project: 'Project',
   project_type: 'Project_type',
-  project_status: 'Project_status',
   project_engineer: 'Project_engineer',
   ticket: 'Ticket',
   ticket_type: 'Ticket_type',
@@ -33,9 +31,7 @@ export const orderedTableNames = [
   tableNames.project,
   tableNames.user,
   [
-    tableNames.role,
     tableNames.project_type,
-    tableNames.project_status,
     tableNames.ticket_type,
     tableNames.ticket_status,
     tableNames.ticket_priority,
