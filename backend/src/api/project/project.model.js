@@ -20,6 +20,7 @@ class Project extends Model {
         owner_id: { type: 'integer' },
         manager_id: { type: 'integer' },
         type_id: { type: 'integer' },
+        archived_at: { type: ['date', 'null'] },
       },
     };
   }

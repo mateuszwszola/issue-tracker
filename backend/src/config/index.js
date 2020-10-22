@@ -17,6 +17,8 @@ const baseConfig = {
     host: process.env.POSTGRES_HOST || '127.0.0.1',
     port: process.env.POSTGRES_PORT || 5432,
   },
+  adminUserName: process.env.ADMIN_USER_NAME || 'TEST',
+  adminUserEmail: process.env.ADMIN_USER_EMAIL || 'test@test.com',
 };
 
 let envConfig = {};

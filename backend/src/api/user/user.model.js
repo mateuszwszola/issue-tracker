@@ -15,7 +15,7 @@ class User extends Model {
         id: { type: 'integer' },
         auth0_user_id: { type: 'string' },
         name: { type: 'string', minLength: 1, maxLength: 255 },
-        email: { type: 'string' },
+        email: { type: 'string', minLength: 1, maxLength: 255 },
         location: { type: 'string', minLength: 1, maxLength: 50 },
         avatar_url: { type: 'string' },
         blocked: { type: 'boolean' },

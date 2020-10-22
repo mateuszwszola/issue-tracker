@@ -1,9 +1,13 @@
 import { Router } from 'express';
 import * as controllers from './project.controller';
+import { checkJwt } from '../../utils/auth';
 const router = Router();
 
 // /api/v1/projects
-router.route('/').get(controllers.getProjects).post(controllers.createProject);
+router
+  .route('/')
+  .get(controllers.getProjects)
+  .post(checkJwt(), controllers.createProject);
 
 // /api/v1/users/:id
 // router

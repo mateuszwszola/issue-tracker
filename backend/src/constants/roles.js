@@ -5,6 +5,4 @@ const ROLES = {
   guest: 'Guest',
 };
 
-const roles = Object.values(ROLES).map((name) => ({ name }));
-
-export { ROLES, roles };
+export { ROLES };
