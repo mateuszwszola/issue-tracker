@@ -1,11 +1,14 @@
 import { Project } from './project.model';
 
 const getProjects = async (req, res) => {
+  const { cursor = 0, limit = 100, eager } = req.query;
+
   const results = await Project.query()
     .allowGraph('[type, owner, manager]')
     .where('archived_at', null)
-    .limit(100)
-    .withGraphFetched(req.query.eager)
+    .offset(+cursor)
+    .limit(+limit)
+    .withGraphFetched(eager)
     .modifyGraph('type', (builder) => {
       builder.select('id', 'name');
     })
@@ -14,7 +17,15 @@ const getProjects = async (req, res) => {
     })
     .debug();
 
-  res.status(200).json({ projects: results });
+  return res.status(200).json({ projects: results });
+};
+
+const getProject = async (req, res) => {
+  const { id } = req.params;
+
+  const result = await Project.query().findById(id);
+
+  return res.status(200).json({ project: result });
 };
 
 const createProject = async (req, res) => {
@@ -27,7 +38,27 @@ const createProject = async (req, res) => {
     return insertedGraph;
   });
 
-  res.status(200).json({ project: insertedGraph });
+  return res.status(201).json({ project: insertedGraph });
 };
 
-export { getProjects, createProject };
+const updateProject = async (req, res) => {
+  const { id } = req.body;
+
+  const result = await Project.query()
+    .patch(req.body)
+    .where('id', id)
+    .returning('*');
+
+  return res.status(200).json({ project: result });
+};
+
+const deleteProject = async (req, res, next) => {
+  // TODO: check if user is an Admin
+  const { id } = req.body;
+
+  const result = await Project.query().delete().where('id', id).returning('*');
+
+  return res.status(200).json({ project: result });
+};
+
+export { getProjects, getProject, createProject, updateProject, deleteProject };

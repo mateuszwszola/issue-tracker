@@ -9,11 +9,11 @@ router
   .get(controllers.getProjects)
   .post(checkJwt(), controllers.createProject);
 
-// /api/v1/users/:id
-// router
-//   .route('/:id')
-//   .get(controllers.getProjectById)
-//   .put(controllers.updateProject)
-//   .delete(controllers.deleteProject);
+// /api/v1/projects/:id
+router
+  .route('/:id')
+  .get(controllers.getProject)
+  .put(checkJwt(), controllers.updateProject)
+  .delete(checkJwt(), controllers.deleteProject);
 
 export default router;

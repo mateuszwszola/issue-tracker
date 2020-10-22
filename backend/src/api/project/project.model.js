@@ -7,6 +7,14 @@ class Project extends Model {
     return tableNames.project;
   }
 
+  static async beforeDelete({ asFindQuery, cancelQuery }) {
+    const [numAffectedRows] = await asFindQuery().patch({
+      archived_at: new Date().toISOString(),
+    });
+
+    cancelQuery(numAffectedRows);
+  }
+
   static get jsonSchema() {
     return {
       type: 'object',
