@@ -29,7 +29,7 @@ const createUserTable = (knex) =>
     table.string('name').notNullable();
     table.string('location', 50);
     table.boolean('blocked');
-    addUrl(table, 'avatar_url');
+    addUrl(table, 'picture');
     addTimestamps(table);
   });
 
