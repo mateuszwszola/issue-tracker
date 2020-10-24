@@ -19,8 +19,9 @@ export async function seed(knex) {
     knex(tableNames.ticket_priority).insert(ticketPriorities),
   ]);
 
-  await knex(tableNames.user).returning('id').insert({
+  await knex(tableNames.user).insert({
     name: process.env.ADMIN_USER_NAME,
     email: process.env.ADMIN_USER_EMAIL,
+    is_admin: true,
   });
 }

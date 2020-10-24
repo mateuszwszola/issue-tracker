@@ -1,7 +1,11 @@
 import { Router } from 'express';
 import * as controllers from './project.controller';
 import { checkJwt } from '../../utils/auth';
+import registerProjectEngineerRoutes from './projectEngineer/projectEngineer.routes';
 const router = Router();
+
+// /api/v1/projects/:projectId/engineers
+registerProjectEngineerRoutes(router);
 
 // /api/v1/projects
 router
@@ -9,9 +13,9 @@ router
   .get(controllers.getProjects)
   .post(checkJwt(), controllers.createProject);
 
-// /api/v1/projects/:id
+// /api/v1/projects/:projectId
 router
-  .route('/:id')
+  .route('/:projectId')
   .get(controllers.getProject)
   .patch(checkJwt(), controllers.updateProject)
   .delete(checkJwt(), controllers.deleteProject);

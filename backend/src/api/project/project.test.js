@@ -4,20 +4,12 @@ import { app } from '../../app';
 import db from '../../db';
 import setupTest from '../../setupTests';
 import teardownTest from '../../teardownTests';
-import { Project } from '../project/project.model';
-
-const createProject = (ctx = {}) => ({
-  name: ctx.name || faker.name.findName(),
-  key: ctx.key || faker.random.alphaNumeric(5),
-  description: ctx.description || faker.random.alphaNumeric(60),
-  owner_id: ctx.ownerId || 1,
-  manager_id: ctx.managerId || 1,
-  type_id: ctx.typeId || 1,
-});
+import { Project } from './project.model';
+import { createProjectFactory } from '../../utils/testUtils';
 
 const BASE_PATH = '/api/v1/projects';
 
-describe('test the project routes', () => {
+describe('Test the project routes', () => {
   const thisDb = db;
   const ProjectModel = Project;
 
@@ -26,7 +18,10 @@ describe('test the project routes', () => {
   afterAll(() => teardownTest(thisDb));
 
   beforeEach(async () => {
-    await ProjectModel.query().insert([createProject(), createProject()]);
+    await ProjectModel.query().insert([
+      createProjectFactory(),
+      createProjectFactory(),
+    ]);
   });
 
   afterEach(async () => {
@@ -45,21 +40,20 @@ describe('test the project routes', () => {
 
   describe('POST /api/v1/projects', () => {
     it('should create and respond with a project', async () => {
-      const project = createProject();
+      const project = createProjectFactory();
 
       const response = await supertest(app).post(BASE_PATH).send(project);
 
       expect(response.statusCode).toBe(201);
       expect(response.body).toHaveProperty('project');
-      expect(response.body.project.name).toBe(project.name);
       expect(response.body.project.key).toBe(project.key);
-      expect(response.body.project.description).toBe(project.description);
+      expect(response.body.project.name).toBe(project.name);
     });
   });
 
-  describe('PATCH /api/v1/projects/:id', () => {
+  describe('PATCH /api/v1/projects/:projectId', () => {
     it('should update and respond with updated project', async () => {
-      const project = createProject();
+      const project = createProjectFactory();
       const { id: projectId } = await ProjectModel.query().insert(project);
 
       const newName = faker.name.findName();
@@ -70,15 +64,14 @@ describe('test the project routes', () => {
 
       expect(response.statusCode).toBe(200);
       expect(response.body).toHaveProperty('project');
-      expect(response.body.project.name).toBe(newName);
       expect(response.body.project.key).toBe(project.key);
-      expect(response.body.project.description).toBe(project.description);
+      expect(response.body.project.name).toBe(newName);
     });
   });
 
-  describe('DELETE /api/v1/projects/:id', () => {
+  describe('DELETE /api/v1/projects/:projectId', () => {
     it('should delete and respond with a project', async () => {
-      const project = createProject();
+      const project = createProjectFactory();
       const { id: projectId } = await ProjectModel.query().insert(project);
 
       const response = await supertest(app).delete(`${BASE_PATH}/${projectId}`);

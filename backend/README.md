@@ -4,7 +4,7 @@ Entities:
 
 - [x] User
 - [x] Project
-- [x] Project Type (software)
+- [x] Project Type (software, ...)
 - [x] Project Engineer
 - [x] Ticket
 - [x] Ticket Type (bug, task, feature_request, epic)
@@ -30,11 +30,30 @@ Every record will have:
 
 ## Authentication Requirements:
 
-  - every user has a role in the app
-  - and every role has its set of permissions
-  - some actions requires permissions to perform them
-  - admin will be interacting with Auth0 to manage users and roles through the dashboard
-  - the app will store user information - auth0_user_id, email, name, avatar, but the auth0 will handle authentication and authorization
-    - why store user data also in the local db? To be able to display it on the frontend without the need to also call auth0 api
-  - auth0 has additional information about users
-  - when user sign in / sign up auth0 rule will call this API, and the API will store / update user info along with auth0 user id
+  - the app will store some user information like auth0_user_id, email, name, avatar, but the auth0 will handle authentication
+  - when user sign in / sign up, created Auth0 rule will call this API, and the user info along with auth0 user id will be stored / updated in the local db.
+  
+## Role & Permissions Requirements:
+- admin:
+  everyting but these are the permissions specific to admin:
+    - manage projects
+    - assign project manager
+- project manager:
+  - add project engineers
+  - add ticket engineers
+  - manage tickets, epics, sprints
+  ...engineer permissions
+- engineer
+  - change ticket status
+  - submit new tickets
+  ...user permissions
+- user
+  - just manage their own profile and wait till manager add them to a project to be able to colaborate
+
+API routes authorization will rely on checking if:
+  - user is an admin
+  - user is a manager of a project
+  - user is engineer within a project
+
+That way the role entity is not needed, because a user role depends on project.
+But of course we need to know who is the admin so I can add column named isAdmin

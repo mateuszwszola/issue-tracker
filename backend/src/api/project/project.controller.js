@@ -4,22 +4,31 @@ import { ErrorHandler } from '../../utils/error';
 
 function defaultProjectWithGraphQuery(query, withGraph) {
   return query
-    .allowGraph('[type, owner, manager]')
+    .allowGraph('[type, manager]')
     .withGraphFetched(withGraph)
     .modifyGraph('type', (builder) => {
       builder.select('id', 'name');
     })
-    .modifyGraph('[owner, manager]', (builder) => {
+    .modifyGraph('manager', (builder) => {
       builder.select('id', 'auth0_user_id', 'name', 'email', 'picture');
     });
 }
 
 const getProjects = async (req, res) => {
-  const { cursor = 0, limit = 100, select, status, withGraph } = req.query;
+  const {
+    cursor = 0,
+    limit = 100,
+    select,
+    status,
+    withGraph,
+    orderBy,
+  } = req.query;
 
-  const query = Project.query()
-    .offset(+cursor)
-    .limit(+limit);
+  const query = Project.query().offset(parseInt(cursor)).limit(parseInt(limit));
+
+  if (select) {
+    query.select(select);
+  }
 
   if (status) {
     if (status === 'archived') {
@@ -29,8 +38,8 @@ const getProjects = async (req, res) => {
     }
   }
 
-  if (select) {
-    query.select(select);
+  if (orderBy) {
+    query.orderBy(orderBy);
   }
 
   if (withGraph) {
@@ -41,10 +50,10 @@ const getProjects = async (req, res) => {
 };
 
 const getProject = async (req, res) => {
-  const { id } = req.params;
+  const { projectId } = req.params;
   const { select, withGraph, status } = req.query;
 
-  const query = Project.query().findById(id);
+  const query = Project.query().findById(projectId);
 
   if (select) {
     query.select(select);
@@ -74,10 +83,10 @@ const createProject = async (req, res) => {
 };
 
 const updateProject = async (req, res) => {
-  const { id } = req.params;
+  const { projectId } = req.params;
 
   const result = await Project.query()
-    .findById(id)
+    .findById(projectId)
     .patch(req.body)
     .returning('*');
 
@@ -85,9 +94,12 @@ const updateProject = async (req, res) => {
 };
 
 const deleteProject = async (req, res) => {
-  const { id } = req.params;
+  const { projectId } = req.params;
 
-  const result = await Project.query().findById(id).delete().returning('*');
+  const result = await Project.query()
+    .findById(projectId)
+    .delete()
+    .returning('*');
 
   return res.status(200).json({ project: result });
 };

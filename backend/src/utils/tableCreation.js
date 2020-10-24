@@ -27,8 +27,8 @@ const createUserTable = (knex) =>
     table.string('auth0_user_id').unique().index();
     table.string('email').notNullable().unique();
     table.string('name').notNullable();
-    table.string('location', 50);
-    table.boolean('blocked');
+    table.boolean('blocked').defaultTo(false);
+    table.boolean('is_admin').defaultTo(false);
     addUrl(table, 'picture');
     addTimestamps(table);
   });
@@ -38,16 +38,14 @@ const createProjectTable = (knex) =>
     table.increments();
     table.string('key', 100).notNullable().unique().index();
     table.string('name').notNullable().unique();
-    table.string('description');
-    referenceTable(table, 'owner_id', tableNames.user).onDelete('SET NULL');
-    referenceTable(table, 'manager_id', tableNames.user, false).onDelete(
-      'SET NULL'
-    );
     referenceTable(table, 'type_id', tableNames.project_type).onDelete(
       'SET NULL'
     );
-    addTimestamps(table);
+    referenceTable(table, 'manager_id', tableNames.user, false).onDelete(
+      'SET NULL'
+    );
     table.datetime('archived_at');
+    addTimestamps(table);
   });
 
 const createProjectEngineerTable = (knex) =>
