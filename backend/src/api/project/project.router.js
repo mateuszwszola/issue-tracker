@@ -13,7 +13,7 @@ router
 router
   .route('/:id')
   .get(controllers.getProject)
-  .put(checkJwt(), controllers.updateProject)
+  .patch(checkJwt(), controllers.updateProject)
   .delete(checkJwt(), controllers.deleteProject);
 
 export default router;
