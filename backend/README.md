@@ -55,5 +55,5 @@ API routes authorization will rely on checking if:
   - user is a manager of a project
   - user is engineer within a project
 
-That way the role entity is not needed, because a user role depends on project.
-But of course we need to know who is the admin so I can add column named isAdmin
+That way the role entity is not needed, because a user role depends on a project.
+But of course we need to know who is the admin so I added the column named is_admin in user table.

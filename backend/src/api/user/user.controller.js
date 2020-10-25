@@ -1,47 +1,66 @@
-import db from '../../db';
-import tableNames from '../../constants/tableNames';
+import { User } from './user.model';
+import { isEmpty } from 'lodash';
+import { ErrorHandler } from '../../utils/error';
 
 const getUsers = async (req, res) => {
-  const results = await db.select('*').from(tableNames.user).limit(100);
+  const { cursor = 0, limit = 100, select, orderBy } = req.query;
 
-  res.status(200).json({ users: results });
+  const query = User.query().offset(parseInt(cursor)).limit(parseInt(limit));
+
+  if (select) {
+    query.select(select);
+  }
+
+  if (orderBy) {
+    query.orderBy(orderBy);
+  }
+
+  res.status(200).json({ users: await query });
 };
 
 const getUserById = async (req, res) => {
-  const id = parseInt(req.params.id);
+  const { id } = req.params;
+  const { select } = req.query;
 
-  const results = await db.select('*').from(tableNames.user).where('id', id);
+  const query = User.query().findById(id);
 
-  return res.status(200).json({ user: results });
+  if (select) {
+    query.select(select);
+  }
+
+  const user = await query;
+
+  if (isEmpty(user)) {
+    throw new ErrorHandler(404, 'User not found');
+  }
+
+  return res.status(200).json({ user });
 };
 
 const createUser = async (req, res) => {
   const { name, email } = req.body;
 
-  const user = await db(tableNames.user).returning('*').insert({ name, email });
+  const user = await User.query().returning('*').insert({ name, email });
 
   return res.status(201).json({ user });
 };
 
 const updateUser = async (req, res) => {
   const { name, email } = req.body;
-  const id = parseInt(req.params.id);
+  const { id } = req.query;
 
-  const user = await db(tableNames.user)
+  const user = await User.query()
+    .findById(id)
     .returning('*')
-    .where('id', id)
-    .update({ name, email });
+    .patch({ name, email });
 
   return res.status(200).json({ user });
 };
 
 const deleteUser = async (req, res) => {
-  const id = parseInt(req.params.id);
+  const { id } = req.params;
 
-  const user = await db(tableNames.user)
-    .where('id', id)
-    .returning('*')
-    .delete();
+  const user = await User.query().findById(id).returning('*').delete();
 
   return res.status(200).json({ user });
 };

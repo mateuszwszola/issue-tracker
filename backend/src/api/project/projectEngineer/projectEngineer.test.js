@@ -29,7 +29,7 @@ describe('Test Project Engineer routes', () => {
       const projectId = 1;
       const userId = 1;
 
-      await Project.relatedQuery('engineer').for(projectId).relate(userId);
+      await Project.relatedQuery('engineers').for(projectId).relate(userId);
 
       const response = await supertest(app).get(`${BASE_PATH}/1/engineers`);
 

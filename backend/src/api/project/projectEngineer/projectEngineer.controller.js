@@ -4,7 +4,7 @@ import tableNames from '../../../constants/tableNames';
 const getProjectEngineers = async (req, res) => {
   const { projectId } = req.params;
 
-  const result = await Project.relatedQuery('engineer').for(projectId);
+  const result = await Project.relatedQuery('engineers').for(projectId);
 
   return res.status(200).json({ engineers: result });
 };
@@ -15,7 +15,7 @@ const getProjectEngineers = async (req, res) => {
 const addProjectEngineer = async (req, res) => {
   const { projectId, userId } = req.params;
 
-  const numRelated = await Project.relatedQuery('engineer')
+  const numRelated = await Project.relatedQuery('engineers')
     .for(projectId)
     .relate(userId);
 
@@ -28,7 +28,7 @@ const addProjectEngineer = async (req, res) => {
 const deleteProjectEnginner = async (req, res) => {
   const { projectId, userId } = req.params;
 
-  const numUnrelated = await Project.relatedQuery('engineer')
+  const numUnrelated = await Project.relatedQuery('engineers')
     .for(projectId)
     .unrelate()
     .where(`${tableNames.user}.id`, userId);

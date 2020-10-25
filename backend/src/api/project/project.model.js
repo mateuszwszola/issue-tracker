@@ -36,11 +36,11 @@ class Project extends Model {
     const { ProjectType } = require('./projectType/projectType.model');
 
     return {
-      owner: createBelongsToOneRelation(
-        User,
+      type: createBelongsToOneRelation(
+        ProjectType,
         tableNames.project,
-        tableNames.user,
-        'owner_id'
+        tableNames.project_type,
+        'type_id'
       ),
       manager: createBelongsToOneRelation(
         User,
@@ -48,13 +48,7 @@ class Project extends Model {
         tableNames.user,
         'manager_id'
       ),
-      type: createBelongsToOneRelation(
-        ProjectType,
-        tableNames.project,
-        tableNames.project_type,
-        'type_id'
-      ),
-      engineer: {
+      engineers: {
         relation: Model.ManyToManyRelation,
         modelClass: User,
         join: {

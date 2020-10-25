@@ -6,6 +6,7 @@ import cors from 'cors';
 import { handleNotFound, handleError } from './utils/error';
 import { checkJwt } from './utils/auth';
 import registerApi from './api';
+import './db';
 
 const router = express.Router();
 const app = express();

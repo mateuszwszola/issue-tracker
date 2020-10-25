@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import path from 'path';
 
 export default {
   development: {
@@ -9,10 +10,10 @@ export default {
       password: process.env.POSTGRES_PASSWORD,
     },
     migrations: {
-      directory: './db/migrations',
+      directory: path.join(__dirname, 'db', 'migrations'),
     },
     seeds: {
-      directory: './db/seeds/dev',
+      directory: path.join(__dirname, 'db', 'seeds', 'dev'),
     },
   },
   test: {
@@ -24,10 +25,20 @@ export default {
       port: 5430,
     },
     migrations: {
-      directory: './db/migrations',
+      directory: path.join(__dirname, 'db', 'migrations'),
     },
     seeds: {
-      directory: './db/seeds/dev',
+      directory: path.join(__dirname, 'db', 'seeds', 'test'),
+    },
+  },
+  production: {
+    client: 'pg',
+    connection: process.env.DATABASE_URL,
+    migrations: {
+      directory: path.join(__dirname, 'db', 'migrations'),
+    },
+    seeds: {
+      directory: path.join(__dirname, 'db', 'seeds', 'prod'),
     },
   },
 };

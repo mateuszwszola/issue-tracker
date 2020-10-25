@@ -16,8 +16,8 @@ class User extends Model {
         auth0_user_id: { type: 'string' },
         name: { type: 'string', minLength: 1, maxLength: 255 },
         email: { type: 'string', minLength: 1, maxLength: 255 },
-        location: { type: 'string', minLength: 1, maxLength: 50 },
         picture: { type: 'string' },
+        is_admin: { type: 'boolean' },
         blocked: { type: 'boolean' },
       },
     };
@@ -27,20 +27,24 @@ class User extends Model {
     const { Project } = require('../project/project.model');
 
     return {
-      ownedProjects: {
-        relation: Model.HasManyRelation,
-        modelClass: Project,
-        join: {
-          from: `${tableNames.user}.id`,
-          to: `${tableNames.project}.owner_id`,
-        },
-      },
       managedProjects: {
         relation: Model.HasManyRelation,
         modelClass: Project,
         join: {
           from: `${tableNames.user}.id`,
           to: `${tableNames.project}.manager_id`,
+        },
+      },
+      engineeredProjects: {
+        relation: Model.ManyToManyRelation,
+        modelClass: Project,
+        join: {
+          from: `${tableNames.user}.id`,
+          through: {
+            from: `${tableNames.project_engineer}.user_id`,
+            to: `${tableNames.project_engineer}.project_id`,
+          },
+          to: `${tableNames.project}.id`,
         },
       },
     };
