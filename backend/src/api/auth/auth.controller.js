@@ -16,7 +16,7 @@ const loginUser = async (req, res, next) => {
 
     return res
       .status(200)
-      .json({ api_user_id: newUser.id, is_admin: user.is_admin });
+      .json({ api_user_id: newUser.id, is_admin: newUser.is_admin });
   }
 };
 
