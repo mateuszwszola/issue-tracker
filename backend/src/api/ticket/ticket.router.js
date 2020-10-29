@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { checkJwt } from '../../utils/auth';
+import { checkJwt } from '../../middlewares/auth';
 import * as controllers from './ticket.controller';
 
 const router = Router();

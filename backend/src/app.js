@@ -4,7 +4,7 @@ import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import cors from 'cors';
 import { handleNotFound, handleError } from './utils/error';
-import { checkJwt } from './utils/auth';
+import { checkJwt } from './middlewares/auth';
 import registerApi from './api';
 import './db';
 

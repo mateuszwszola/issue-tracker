@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import * as controllers from './project.controller';
-import { checkJwt } from '../../utils/auth';
+import { checkJwt } from '../../middlewares/auth';
 import registerProjectEngineerRoutes from './projectEngineer/projectEngineer.routes';
 const router = Router();
 

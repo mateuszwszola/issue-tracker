@@ -1,5 +1,5 @@
 import * as controllers from './projectEngineer.controller';
-import { checkJwt } from '../../../utils/auth';
+import { checkJwt } from '../../../middlewares/auth';
 
 export default async (router) => {
   // /api/v1/projects/:projectId/engineers
