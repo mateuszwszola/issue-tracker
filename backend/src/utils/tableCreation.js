@@ -71,6 +71,7 @@ const createTicketTable = (knex) =>
     referenceTable(table, 'priority_id', tableNames.ticket_priority).onDelete(
       'SET NULL'
     );
+    referenceTable(table, 'parent_id', tableNames.ticket).onDelete('CASCADE');
     referenceTable(table, 'project_id', tableNames.project).onDelete('CASCADE');
     referenceTable(table, 'reporter_id', tableNames.user).onDelete('SET NULL');
     addTimestamps(table);

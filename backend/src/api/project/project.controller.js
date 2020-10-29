@@ -2,7 +2,7 @@ import { Project } from './project.model';
 import { isEmpty } from 'lodash';
 import { ErrorHandler } from '../../utils/error';
 
-function defaultProjectWithGraphQuery(query, withGraph) {
+function getDefaultProjectGraphQuery(query, withGraph) {
   return query
     .allowGraph('[type, manager]')
     .withGraphFetched(withGraph)
@@ -33,7 +33,7 @@ const getProjects = async (req, res) => {
   if (status) {
     if (status === 'archived') {
       query.whereNotNull('archived_at');
-    } else if (status === 'active') {
+    } else {
       query.where('archived_at', null);
     }
   }
@@ -43,7 +43,7 @@ const getProjects = async (req, res) => {
   }
 
   if (withGraph) {
-    defaultProjectWithGraphQuery(query, withGraph);
+    getDefaultProjectGraphQuery(query, withGraph);
   }
 
   return res.status(200).json({ projects: await query });
@@ -51,7 +51,7 @@ const getProjects = async (req, res) => {
 
 const getProject = async (req, res) => {
   const { projectId } = req.params;
-  const { select, withGraph, status } = req.query;
+  const { select, withGraph } = req.query;
 
   const query = Project.query().findById(projectId);
 
@@ -59,12 +59,8 @@ const getProject = async (req, res) => {
     query.select(select);
   }
 
-  if (status && status === 'active') {
-    query.where('archived_at', null);
-  }
-
   if (withGraph) {
-    defaultProjectWithGraphQuery(query, withGraph);
+    getDefaultProjectGraphQuery(query, withGraph);
   }
 
   const result = await query;

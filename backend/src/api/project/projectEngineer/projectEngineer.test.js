@@ -4,7 +4,7 @@ import db from '../../../db';
 import setupTest from '../../../setupTests';
 import teardownTest from '../../../teardownTests';
 import { Project } from '../project.model';
-import { createProjectFactory } from '../../../utils/testUtils';
+import { getProjectData } from '../../../utils/testUtils';
 
 const BASE_PATH = '/api/v1/projects';
 
@@ -17,7 +17,7 @@ describe('Test Project Engineer routes', () => {
   afterAll(() => teardownTest(thisDb));
 
   beforeEach(async () => {
-    await ProjectModel.query().insert(createProjectFactory());
+    await ProjectModel.query().insert(getProjectData());
   });
 
   afterEach(async () => {

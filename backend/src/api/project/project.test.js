@@ -5,11 +5,11 @@ import db from '../../db';
 import setupTest from '../../setupTests';
 import teardownTest from '../../teardownTests';
 import { Project } from './project.model';
-import { createProjectFactory } from '../../utils/testUtils';
+import { getProjectData } from '../../utils/testUtils';
 
 const BASE_PATH = '/api/v1/projects';
 
-describe('Test the project routes', () => {
+describe('Test the project endpoints', () => {
   const thisDb = db;
   const ProjectModel = Project;
 
@@ -18,10 +18,7 @@ describe('Test the project routes', () => {
   afterAll(() => teardownTest(thisDb));
 
   beforeEach(async () => {
-    await ProjectModel.query().insert([
-      createProjectFactory(),
-      createProjectFactory(),
-    ]);
+    await ProjectModel.query().insert([getProjectData(), getProjectData()]);
   });
 
   afterEach(async () => {
@@ -40,7 +37,7 @@ describe('Test the project routes', () => {
 
   describe('POST /api/v1/projects', () => {
     it('should create and respond with a project', async () => {
-      const project = createProjectFactory();
+      const project = getProjectData();
 
       const response = await supertest(app).post(BASE_PATH).send(project);
 
@@ -53,7 +50,7 @@ describe('Test the project routes', () => {
 
   describe('PATCH /api/v1/projects/:projectId', () => {
     it('should update and respond with updated project', async () => {
-      const project = createProjectFactory();
+      const project = getProjectData();
       const { id: projectId } = await ProjectModel.query().insert(project);
 
       const newName = faker.name.findName();
@@ -71,7 +68,7 @@ describe('Test the project routes', () => {
 
   describe('DELETE /api/v1/projects/:projectId', () => {
     it('should delete and respond with a project', async () => {
-      const project = createProjectFactory();
+      const project = getProjectData();
       const { id: projectId } = await ProjectModel.query().insert(project);
 
       const response = await supertest(app).delete(`${BASE_PATH}/${projectId}`);

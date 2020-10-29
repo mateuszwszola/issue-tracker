@@ -21,11 +21,11 @@ class Ticket extends Model {
 
       properties: {
         id: { type: 'integer' },
+        project_id: { type: 'integer' },
         key: { type: 'string', minLength: 1, maxLength: 100 },
         name: { type: 'string', minLength: 1, maxLength: 255 },
         description: { type: 'string', minLength: 1, maxLength: 255 },
         parent_id: { type: ['integer', null] },
-        project_id: { type: 'integer' },
         type_id: { type: 'integer' },
         status_id: { type: 'integer' },
         priority_id: { type: 'integer' },
@@ -103,4 +103,4 @@ class Ticket extends Model {
   }
 }
 
-export default Ticket;
+export { Ticket };
