@@ -1,6 +1,6 @@
 import * as fetch from 'node-fetch';
 
-const getUserAccessToken = () => {
+const getUserAccessToken = async () => {
   const body = {
     grant_type: 'password',
     username: process.env.AUTH0_TEST_USER_USERNAME,
@@ -11,11 +11,15 @@ const getUserAccessToken = () => {
     client_secret: process.env.AUTH0_CLIENT_SECRET,
   };
 
-  return fetch(`${process.env.AUTH0_ISSUER}oauth/token`, {
+  const response = await fetch(`${process.env.AUTH0_ISSUER}oauth/token`, {
     method: 'post',
     body: JSON.stringify(body),
     headers: { 'Content-Type': 'application/json' },
-  }).then((res) => res.json());
+  });
+
+  const { access_token } = await response.json();
+
+  return { access_token };
 };
 
 export { getUserAccessToken };

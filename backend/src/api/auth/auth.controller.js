@@ -17,4 +17,4 @@ const loginUser = async (req, res, next) => {
     .json({ api_user_id: user.id, is_admin: user.is_admin });
 };
 
-export default { loginUser };
+export { loginUser };

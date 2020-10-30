@@ -1,7 +1,7 @@
-import 'dotenv/config';
-import path from 'path';
+require('dotenv').config();
+const path = require('path');
 
-export default {
+module.exports = {
   development: {
     client: 'pg',
     connection: {
