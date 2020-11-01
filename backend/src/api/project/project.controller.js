@@ -15,27 +15,15 @@ function getDefaultProjectGraphQuery(query, withGraph) {
 }
 
 const getProjects = async (req, res) => {
-  const {
-    cursor = 0,
-    limit = 100,
-    select,
-    status,
-    withGraph,
-    orderBy,
-  } = req.query;
+  const { cursor = 0, limit = 100, select, withGraph, orderBy } = req.query;
 
-  const query = Project.query().offset(parseInt(cursor)).limit(parseInt(limit));
+  const query = Project.query()
+    .offset(parseInt(cursor))
+    .limit(parseInt(limit))
+    .where('archived_at', null);
 
   if (select) {
     query.select(select);
-  }
-
-  if (status) {
-    if (status === 'archived') {
-      query.whereNotNull('archived_at');
-    } else {
-      query.where('archived_at', null);
-    }
   }
 
   if (orderBy) {

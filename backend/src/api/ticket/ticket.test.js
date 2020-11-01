@@ -44,4 +44,8 @@ describe('Test the ticket endpoints', () => {
       expect(response.body).toHaveProperty('tickets');
     });
   });
+
+  describe('POST /api/v1/tickets', () => {
+    it('');
+  });
 });

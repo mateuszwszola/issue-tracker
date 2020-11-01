@@ -1,6 +1,6 @@
 import * as fetch from 'node-fetch';
 
-const getUserAccessToken = async () => {
+const getTestUserAccessToken = async () => {
   const body = {
     grant_type: 'password',
     username: process.env.AUTH0_TEST_USER_USERNAME,
@@ -22,4 +22,4 @@ const getUserAccessToken = async () => {
   return { access_token };
 };
 
-export { getUserAccessToken };
+export { getTestUserAccessToken };

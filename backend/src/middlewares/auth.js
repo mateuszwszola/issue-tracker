@@ -1,37 +1,28 @@
 import jwt from 'express-jwt';
 import jwksRsa from 'jwks-rsa';
 import { isEmpty } from 'lodash';
+import { Project } from '../api/project/project.model';
 import { User } from '../api/user/user.model';
 import config from '../config';
 import { ErrorHandler } from '../utils/error';
 
 const checkJwt = () => {
-  if (config.isProd) {
-    return jwt({
-      // Dynamically provide a signing key
-      // based on the kid in the header and
-      // the signing keys provided by the JWKS endpoint.
-      secret: jwksRsa.expressJwtSecret({
-        cache: true,
-        rateLimit: true,
-        jwksRequestsPerMinute: 5,
-        jwksUri: `https://dev-6th2ninz.eu.auth0.com/.well-known/jwks.json`,
-      }),
+  return jwt({
+    // Dynamically provide a signing key
+    // based on the kid in the header and
+    // the signing keys provided by the JWKS endpoint.
+    secret: jwksRsa.expressJwtSecret({
+      cache: true,
+      rateLimit: true,
+      jwksRequestsPerMinute: 5,
+      jwksUri: `${config.auth0.issuer}/.well-known/jwks.json`,
+    }),
 
-      // Validate the audience and the issuer.
-      audience: config.auth0Audience,
-      issuer: config.auth0Issuer,
-      algorithms: ['RS256'],
-    });
-  }
-
-  return (req, res, next) => {
-    req.user = {
-      sub: 'auth0|123456789',
-      api_user_id: 1,
-    };
-    next();
-  };
+    // Validate the audience and the issuer.
+    audience: config.auth0.audience,
+    issuer: config.auth0.issuer,
+    algorithms: ['RS256'],
+  });
 };
 
 const isAdmin = () => {
@@ -55,4 +46,22 @@ const isAdmin = () => {
   };
 };
 
-export { checkJwt, isAdmin };
+const checkIfAdminOrProjectManager = () => async (req, res, next) => {
+  const user = await User.query().findOne({ auth0_user_id: req.user.sub });
+  const project = await Project.query().findById(req.params.projectId);
+
+  console.log('req.params.projectId', req.params.projectId);
+  console.log(user, project);
+
+  if (!user || !project) {
+    throw new ErrorHandler(404, 'Not found');
+  }
+
+  if (user.is_admin || project.manager_id === user.id) {
+    return next();
+  } else {
+    throw new ErrorHandler(403, 'Unauthorized');
+  }
+};
+
+export { checkJwt, isAdmin, checkIfAdminOrProjectManager };

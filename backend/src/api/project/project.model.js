@@ -33,6 +33,7 @@ class Project extends Model {
 
   static get relationMappings() {
     const { User } = require('../user/user.model');
+    const { Ticket } = require('../ticket/ticket.model');
     const { ProjectType } = require('./projectType/projectType.model');
 
     return {
@@ -58,6 +59,14 @@ class Project extends Model {
             to: `${tableNames.project_engineer}.user_id`,
           },
           to: `${tableNames.user}.id`,
+        },
+      },
+      tickets: {
+        relation: Model.HasManyRelation,
+        modelClass: Ticket,
+        join: {
+          from: `${tableNames.project}.id`,
+          to: `${tableNames.ticket}.project_id`,
         },
       },
     };

@@ -1,13 +1,32 @@
 import * as controllers from './projectEngineer.controller';
-import { checkJwt } from '../../../middlewares/auth';
+import {
+  checkJwt,
+  checkIfAdminOrProjectManager,
+} from '../../../middlewares/auth';
 
 export default async (router) => {
-  // /api/v1/projects/:projectId/engineers
-  router.route('/:projectId/engineers').get(controllers.getProjectEngineers);
+  /**
+   * @route   /api/v1/projects/:projectId/engineers
+   * @desc    get project engineers
+   * @access  Public
+   */
+  router.get('/:projectId/engineers', controllers.getProjectEngineers);
 
-  // /api/v1/projects/:projectId/engineers/:userId
+  /**
+   * @route   /api/v1/projects/:projectId/engineers/:userId
+   * @desc    Add or remove project enginners
+   * @access  Admin or project manager
+   */
   router
     .route('/:projectId/engineers/:userId')
-    .post(checkJwt(), controllers.addProjectEngineer)
-    .delete(checkJwt(), controllers.deleteProjectEnginner);
+    .post(
+      checkJwt(),
+      checkIfAdminOrProjectManager(),
+      controllers.addProjectEngineer
+    )
+    .delete(
+      checkJwt(),
+      checkIfAdminOrProjectManager(),
+      controllers.deleteProjectEnginner
+    );
 };

@@ -11,7 +11,8 @@
     "migrate": "knex migrate:latest --esm",
     "rollback": "knex migrate:rollback --esm",
     "seed": "knex seed:run --esm",
-    "test": "jest --runInBand"
+    "test": "jest --runInBand",
+    "test:watch": "jest --runInBand --watch"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
@@ -25,6 +26,7 @@
     "faker": "^5.1.0",
     "helmet": "^4.1.1",
     "jwks-rsa": "^1.10.1",
+    "jwt-decode": "^3.0.0",
     "knex": "^0.21.6",
     "lodash": "^4.17.20",
     "morgan": "~1.9.1",
@@ -51,6 +53,8 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
     "jest": "^26.4.2",
+    "jsonwebtoken": "^8.5.1",
+    "nock": "^13.0.4",
     "nodemon": "^2.0.4",
     "prettier": "^2.1.2",
     "supertest": "^5.0.0"

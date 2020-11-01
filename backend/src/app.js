@@ -19,7 +19,7 @@ app.use(json());
 app.use(urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use('/api/auth', checkJwt(), (req, res) => {
+app.get('/api/auth', checkJwt(), (req, res) => {
   console.log(req.user);
   res.json({ message: 'You have accessed the protected route' });
 });

@@ -15,6 +15,10 @@ const baseConfig = {
     password: process.env.POSTGRES_PASSWORD,
     database: process.env.POSTGRES_DB,
   },
+  auth0: {
+    audience: process.env.AUTH0_AUDIENCE,
+    issuer: process.env.AUTH0_ISSUER,
+  },
   adminUserName: process.env.ADMIN_USER_NAME || 'TEST',
   adminUserEmail: process.env.ADMIN_USER_EMAIL || 'test@test.com',
 };
