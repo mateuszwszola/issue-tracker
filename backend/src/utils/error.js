@@ -1,4 +1,5 @@
 import { isProd } from '../config';
+import { ValidationError, NotFoundError } from 'objection';
 
 class ErrorHandler extends Error {
   constructor(statusCode, message) {
@@ -17,9 +18,18 @@ const handleError = (err, req, res, next) => {
   if (res.headersSent) {
     next(err);
   } else {
-    res.status(err.status || 500);
+    let statusCode = err.status || 500;
+
+    if (err instanceof ValidationError) {
+      statusCode = 400;
+    } else if (err instanceof NotFoundError) {
+      statusCode = 404;
+    }
+
+    res.status(statusCode);
     res.json({
       message: err.message || 'Internal Server Error',
+      data: err.data || {},
       ...(isProd ? null : { stack: err.stack }),
     });
   }

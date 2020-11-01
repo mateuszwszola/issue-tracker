@@ -51,7 +51,7 @@ nock(config.auth0.issuer)
   .get('/.well-known/jwks.json')
   .reply(200, nockReply);
 
-const getToken = ({ sub }) => {
+const getToken = ({ sub = 'auth0|123' } = {}) => {
   const payload = {
     sub,
   };

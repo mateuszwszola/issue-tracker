@@ -16,11 +16,14 @@ const getTickets = async (req, res) => {
     withGraph,
     parentId,
     projectId,
-    orderBy,
-    status,
+    orderBy = 'id',
   } = req.query;
 
-  const query = Ticket.query().offset(parseInt(cursor)).limit(parseInt(limit));
+  const query = Ticket.query()
+    .offset(parseInt(cursor))
+    .limit(parseInt(limit))
+    .where('archived_at', null)
+    .orderBy(orderBy);
 
   if (select) {
     query.select(select);
@@ -34,18 +37,6 @@ const getTickets = async (req, res) => {
     query.where('parent_id', parentId);
   } else {
     query.whereNull('parent_id');
-  }
-
-  if (status) {
-    if (status === 'archived') {
-      query.whereNotNull('archived_at');
-    } else {
-      query.where('archived_at', null);
-    }
-  }
-
-  if (orderBy) {
-    query.orderBy(orderBy);
   }
 
   if (withGraph) {

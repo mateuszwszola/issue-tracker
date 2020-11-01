@@ -2,9 +2,20 @@ import { Project } from '../project.model';
 import tableNames from '../../../constants/tableNames';
 
 const getProjectEngineers = async (req, res) => {
+  const { cursor = 0, limit = 100, select, orderBy = 'id' } = req.query;
   const { projectId } = req.params;
 
-  const result = await Project.relatedQuery('engineers').for(projectId);
+  const query = Project.relatedQuery('engineers')
+    .for(projectId)
+    .offset(parseInt(cursor))
+    .limit(parseInt(limit))
+    .orderBy(orderBy);
+
+  if (select) {
+    query.select(select);
+  }
+
+  const result = await query;
 
   return res.status(200).json({ engineers: result });
 };

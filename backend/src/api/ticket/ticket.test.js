@@ -32,8 +32,8 @@ describe('Test the ticket endpoints', () => {
 
   afterEach(async () => {
     await TicketModel.query().delete();
-    await ProjectModel.query().findById(project.id).delete();
-    await UserModel.query().findById(user.id).delete();
+    await ProjectModel.query().delete();
+    await UserModel.query().delete();
   });
 
   describe('GET /api/v1/tickets', () => {
@@ -46,6 +46,6 @@ describe('Test the ticket endpoints', () => {
   });
 
   describe('POST /api/v1/tickets', () => {
-    it('');
+    it('', async () => {});
   });
 });

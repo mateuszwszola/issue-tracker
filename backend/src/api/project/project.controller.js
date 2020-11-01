@@ -15,19 +15,22 @@ function getDefaultProjectGraphQuery(query, withGraph) {
 }
 
 const getProjects = async (req, res) => {
-  const { cursor = 0, limit = 100, select, withGraph, orderBy } = req.query;
+  const {
+    cursor = 0,
+    limit = 100,
+    select,
+    withGraph,
+    orderBy = 'id',
+  } = req.query;
 
   const query = Project.query()
     .offset(parseInt(cursor))
     .limit(parseInt(limit))
-    .where('archived_at', null);
+    .where('archived_at', null)
+    .orderBy(orderBy);
 
   if (select) {
     query.select(select);
-  }
-
-  if (orderBy) {
-    query.orderBy(orderBy);
   }
 
   if (withGraph) {

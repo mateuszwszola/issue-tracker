@@ -12,7 +12,6 @@ class Ticket extends Model {
       required: [
         'key',
         'name',
-        'project_id',
         'type_id',
         'status_id',
         'priority_id',
@@ -21,11 +20,11 @@ class Ticket extends Model {
 
       properties: {
         id: { type: 'integer' },
-        project_id: { type: 'integer' },
+        project_id: { type: ['integer', 'null'] },
         key: { type: 'string', minLength: 1, maxLength: 100 },
         name: { type: 'string', minLength: 1, maxLength: 255 },
         description: { type: 'string', minLength: 1, maxLength: 255 },
-        parent_id: { type: ['integer', null] },
+        parent_id: { type: ['integer', 'null'] },
         type_id: { type: 'integer' },
         status_id: { type: 'integer' },
         priority_id: { type: 'integer' },
