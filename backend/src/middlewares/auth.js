@@ -30,7 +30,7 @@ const isAdmin = () => {
     if (!req.user || (req.user && !req.user.sub)) {
       return next(new ErrorHandler(401, 'Unauthorized'));
     } else {
-      const user = await User.query().findOne({ auth0_user_id: req.user.sub });
+      const user = await User.query().findOne({ sub: req.user.sub });
       if (!user || isEmpty(user) || !user.is_admin) {
         return next(
           new ErrorHandler(
@@ -41,17 +41,15 @@ const isAdmin = () => {
       }
 
       req.user.api_user_id = user.id;
+
       next();
     }
   };
 };
 
 const checkIfAdminOrProjectManager = () => async (req, res, next) => {
-  const user = await User.query().findOne({ auth0_user_id: req.user.sub });
+  const user = await User.query().findOne({ sub: req.user.sub });
   const project = await Project.query().findById(req.params.projectId);
-
-  console.log('req.params.projectId', req.params.projectId);
-  console.log(user, project);
 
   if (!user || !project) {
     throw new ErrorHandler(404, 'Not found');

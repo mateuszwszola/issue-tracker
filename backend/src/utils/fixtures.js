@@ -1,3 +1,5 @@
+// https://carterbancroft.com/mocking-json-web-tokens-and-auth0/
+
 import nock from 'nock';
 import jwt from 'jsonwebtoken';
 import config from '../config';
@@ -49,14 +51,9 @@ nock(config.auth0.issuer)
   .get('/.well-known/jwks.json')
   .reply(200, nockReply);
 
-const getToken = () => {
-  const user = {
-    email: 'someone@gmail.com',
-  };
-
+const getToken = ({ sub }) => {
   const payload = {
-    nickname: user.email.split('@').shift(),
-    name: user.email,
+    sub,
   };
 
   const options = {

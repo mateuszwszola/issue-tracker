@@ -55,7 +55,7 @@ describe('Test project engineers endpoints', () => {
       const access_token = process.env.access_token;
       const { sub } = jwt_decode(access_token);
 
-      await User.query().insert(getUserData({ auth0_user_id: sub }));
+      await User.query().insert(getUserData({ sub }));
 
       const response = await supertest(app)
         .post(`${BASE_PATH}/${project.id}/engineers/${user.id}`)

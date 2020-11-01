@@ -1,7 +1,7 @@
 import * as faker from 'faker';
 
 const getUserData = (ctx = {}) => ({
-  auth0_user_id: ctx.authUserId || null,
+  sub: ctx.sub || null,
   name: ctx.name || faker.name.findName(),
   email: ctx.email || faker.internet.email(),
   picture: ctx.picture || faker.image.avatar(),
@@ -14,6 +14,7 @@ const getProjectData = (ctx = {}) => ({
   name: ctx.name || faker.name.findName(),
   type_id: ctx.typeId || 1,
   manager_id: ctx.managerId || null,
+  archived_at: ctx.archivedAt || null,
 });
 
 const getTicketData = (ctx = {}) => ({

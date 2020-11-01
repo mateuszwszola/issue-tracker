@@ -5,59 +5,123 @@ import db from '../../db';
 import setupTest from '../../setupTests';
 import teardownTest from '../../teardownTests';
 import { Project } from './project.model';
-import { getProjectData } from '../../utils/testUtils';
+import { User } from '../user/user.model';
+import { getProjectData, getUserData } from '../../utils/testUtils';
+import { getToken } from '../../utils/fixtures';
 
 const BASE_PATH = '/api/v1/projects';
 
 describe('Test the project endpoints', () => {
   const thisDb = db;
   const ProjectModel = Project;
+  const UserModel = User;
 
   beforeAll(() => setupTest(thisDb));
 
   afterAll(() => teardownTest(thisDb));
 
-  beforeEach(async () => {
-    await ProjectModel.query().insert([getProjectData(), getProjectData()]);
-  });
-
   afterEach(async () => {
     await ProjectModel.query().delete();
+    await UserModel.query().delete();
   });
 
   describe('GET /api/v1/projects', () => {
+    beforeEach(async () => {
+      await ProjectModel.query().insert(getProjectData());
+    });
+
     it('should respond with an array of projects', async () => {
       const response = await supertest(app).get(BASE_PATH);
 
       expect(response.statusCode).toBe(200);
       expect(response.body).toHaveProperty('projects');
-      expect(response.body.projects.length).toBe(2);
+      expect(response.body.projects.length).toBe(1);
     });
   });
 
   describe('POST /api/v1/projects', () => {
-    it('should create and respond with a project', async () => {
+    it('should fail without auth token', async () => {
       const project = getProjectData();
 
       const response = await supertest(app).post(BASE_PATH).send(project);
+
+      expect(response.statusCode).toBe(401);
+    });
+
+    it('should fail if user is not authorized', async () => {
+      await UserModel.query().insert(getUserData({ sub: 'auth0|123' }));
+      const token = getToken({ sub: 'auth0|123' });
+      const project = getProjectData();
+
+      const response = await supertest(app)
+        .post(BASE_PATH)
+        .send(project)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.statusCode).toBe(403);
+    });
+
+    it('should create and respond with a project', async () => {
+      await UserModel.query().insert(
+        getUserData({ sub: 'auth0|123', isAdmin: true })
+      );
+      const token = getToken({ sub: 'auth0|123' });
+      const project = getProjectData();
+
+      const response = await supertest(app)
+        .post(BASE_PATH)
+        .send(project)
+        .set('Authorization', `Bearer ${token}`);
 
       expect(response.statusCode).toBe(201);
       expect(response.body).toHaveProperty('project');
       expect(response.body.project.key).toBe(project.key);
       expect(response.body.project.name).toBe(project.name);
+      expect(response.body.project.type_id).toBe(1);
     });
   });
 
   describe('PATCH /api/v1/projects/:projectId', () => {
-    it('should update and respond with updated project', async () => {
-      const project = getProjectData();
-      const { id: projectId } = await ProjectModel.query().insert(project);
+    it('should fail without auth token', async () => {
+      const project = await Project.query().insert(getProjectData());
 
       const newName = faker.name.findName();
 
       const response = await supertest(app)
-        .patch(`${BASE_PATH}/${projectId}`)
+        .patch(`${BASE_PATH}/${project.id}`)
         .send({ name: newName });
+
+      expect(response.statusCode).toBe(401);
+    });
+
+    it('should fail if user is not authorized', async () => {
+      await UserModel.query().insert(getUserData({ sub: 'auth0|123' }));
+      const project = await Project.query().insert(getProjectData());
+      const token = getToken({ sub: 'auth0|123' });
+
+      const newName = faker.name.findName();
+
+      const response = await supertest(app)
+        .patch(`${BASE_PATH}/${project.id}`)
+        .send({ name: newName })
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.statusCode).toBe(403);
+    });
+
+    it('should update and respond with updated project', async () => {
+      await UserModel.query().insert(
+        getUserData({ sub: 'auth0|123', isAdmin: true })
+      );
+      const project = await Project.query().insert(getProjectData());
+      const token = getToken({ sub: 'auth0|123' });
+
+      const newName = faker.name.findName();
+
+      const response = await supertest(app)
+        .patch(`${BASE_PATH}/${project.id}`)
+        .send({ name: newName })
+        .set('Authorization', `Bearer ${token}`);
 
       expect(response.statusCode).toBe(200);
       expect(response.body).toHaveProperty('project');
@@ -67,11 +131,38 @@ describe('Test the project endpoints', () => {
   });
 
   describe('DELETE /api/v1/projects/:projectId', () => {
-    it('should delete and respond with a project', async () => {
-      const project = getProjectData();
-      const { id: projectId } = await ProjectModel.query().insert(project);
+    it('should fail without auth token', async () => {
+      const project = await Project.query().insert(getProjectData());
 
-      const response = await supertest(app).delete(`${BASE_PATH}/${projectId}`);
+      const response = await supertest(app).delete(
+        `${BASE_PATH}/${project.id}`
+      );
+
+      expect(response.statusCode).toBe(401);
+    });
+
+    it('should fail if user is not authorized', async () => {
+      await UserModel.query().insert(getUserData({ sub: 'auth0|123' }));
+      const token = getToken({ sub: 'auth0|123' });
+      const project = await Project.query().insert(getProjectData());
+
+      const response = await supertest(app)
+        .patch(`${BASE_PATH}/${project.id}`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.statusCode).toBe(403);
+    });
+
+    it('should delete and respond with a project', async () => {
+      await UserModel.query().insert(
+        getUserData({ sub: 'auth0|123', isAdmin: true })
+      );
+      const token = getToken({ sub: 'auth0|123' });
+      const project = await Project.query().insert(getProjectData());
+
+      const response = await supertest(app)
+        .delete(`${BASE_PATH}/${project.id}`)
+        .set('Authorization', `Bearer ${token}`);
 
       expect(response.statusCode).toBe(200);
       expect(response.body).toHaveProperty('project');

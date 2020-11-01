@@ -10,7 +10,7 @@ function getDefaultProjectGraphQuery(query, withGraph) {
       builder.select('id', 'name');
     })
     .modifyGraph('manager', (builder) => {
-      builder.select('id', 'auth0_user_id', 'name', 'email', 'picture');
+      builder.select('id', 'sub', 'name', 'email', 'picture');
     });
 }
 

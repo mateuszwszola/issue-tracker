@@ -2,14 +2,14 @@ import { isEmpty } from 'lodash';
 import { User } from '../user/user.model';
 
 const loginUser = async (req, res, next) => {
-  const { auth0_user_id, name, email, picture } = req.body;
+  const { sub, name, email, picture } = req.body;
 
-  let user = await User.query().findOne({ auth0_user_id });
+  let user = await User.query().findOne({ sub });
 
   if (!user || isEmpty(user)) {
     user = await User.query()
       .returning('*')
-      .insert({ auth0_user_id, name, email, picture });
+      .insert({ sub, name, email, picture });
   }
 
   return res

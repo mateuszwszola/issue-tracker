@@ -11,6 +11,9 @@ registerProjectEngineerRoutes(router);
 // /api/v1/projects/:projectId/tickets
 registerProjectTicketRoutes(router);
 
+// /api/v1/projects/:projectId/manager
+// TODO
+
 // /api/v1/projects
 router
   .route('/')

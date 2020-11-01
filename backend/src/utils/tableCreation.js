@@ -24,7 +24,7 @@ const createGoalTable = (knex) =>
 const createUserTable = (knex) =>
   knex.schema.createTable(tableNames.user, (table) => {
     table.increments();
-    table.string('auth0_user_id').unique().index();
+    table.string('sub').unique().index();
     table.string('email').notNullable().unique();
     table.string('name').notNullable();
     table.boolean('blocked').defaultTo(false);

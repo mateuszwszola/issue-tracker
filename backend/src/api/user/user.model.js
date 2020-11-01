@@ -13,7 +13,7 @@ class User extends Model {
 
       properties: {
         id: { type: 'integer' },
-        auth0_user_id: { type: 'string' },
+        sub: { type: 'string' },
         name: { type: 'string', minLength: 1, maxLength: 255 },
         email: { type: 'string', minLength: 1, maxLength: 255 },
         picture: { type: 'string' },

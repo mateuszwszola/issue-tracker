@@ -25,7 +25,7 @@ class Project extends Model {
         key: { type: 'string', minLength: 1, maxLength: 100 },
         name: { type: 'string', minLength: 1, maxLength: 255 },
         type_id: { type: 'integer' },
-        manager_id: { type: 'integer' },
+        manager_id: { type: ['integer', 'null'] },
         archived_at: { type: ['string', 'null'] },
       },
     };
