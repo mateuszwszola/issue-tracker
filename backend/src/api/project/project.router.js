@@ -5,13 +5,22 @@ import registerProjectEngineerRoutes from './projectEngineer/projectEngineer.rou
 import registerProjectTicketRoutes from './projectTicket/projectTicket.routes';
 const router = Router();
 
-// /api/v1/projects/:projectId/engineers
+/**
+ * @route /api/v1/projects/:projectId/engineers
+ * @desc  Get, add and remove enginners from a project
+ */
 registerProjectEngineerRoutes(router);
 
-// /api/v1/projects/:projectId/tickets
+/**
+ * @route /api/v1/projects/:projectId/tickets
+ * @desc  Get and add project tickets
+ */
 registerProjectTicketRoutes(router);
 
-// /api/v1/projects/:projectId/manager
+/**
+ * @route /api/v1/projects/:projectId/manager
+ * @decs  Manage project manager
+ */
 // TODO
 
 // /api/v1/projects

@@ -6,6 +6,8 @@ class User extends Model {
     return tableNames.user;
   }
 
+  // TODO: Add default select
+
   static get jsonSchema() {
     return {
       type: 'object',
@@ -13,7 +15,7 @@ class User extends Model {
 
       properties: {
         id: { type: 'integer' },
-        sub: { type: 'string' },
+        sub: { type: ['string', 'null'] },
         name: { type: 'string', minLength: 1, maxLength: 255 },
         email: { type: 'string', minLength: 1, maxLength: 255 },
         picture: { type: 'string' },

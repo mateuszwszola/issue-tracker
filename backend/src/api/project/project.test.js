@@ -39,6 +39,20 @@ describe('Test the project endpoints', () => {
     });
   });
 
+  describe('GET /api/v1/projects/:projectId', () => {
+    it('should respond with a project', async () => {
+      const project = await Project.query().insert(getProjectData());
+
+      const response = await supertest(app).get(`${BASE_PATH}/${project.id}`);
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toHaveProperty('project');
+      expect(response.body.project.key).toBe(project.key);
+      expect(response.body.project.name).toBe(project.name);
+      expect(response.body.project.type_id).toBe(1);
+    });
+  });
+
   describe('POST /api/v1/projects', () => {
     it('should fail without auth token', async () => {
       const project = getProjectData();

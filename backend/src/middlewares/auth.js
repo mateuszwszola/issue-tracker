@@ -51,11 +51,7 @@ const checkIfAdminOrProjectManager = () => async (req, res, next) => {
   const user = await User.query().findOne({ sub: req.user.sub });
   const project = await Project.query().findById(req.params.projectId);
 
-  if (!user || !project) {
-    throw new ErrorHandler(404, 'Not found');
-  }
-
-  if (user.is_admin || project.manager_id === user.id) {
+  if ((user && user.is_admin) || (project && project.manager_id === user.id)) {
     return next();
   } else {
     throw new ErrorHandler(403, 'Unauthorized');

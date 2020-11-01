@@ -6,16 +6,16 @@ import {
 
 export default async (router) => {
   /**
-   * @route   /api/v1/projects/:projectId/engineers
+   * @route   GET /api/v1/projects/:projectId/engineers
    * @desc    get project engineers
    * @access  Public
    */
   router.get('/:projectId/engineers', controllers.getProjectEngineers);
 
   /**
-   * @route   /api/v1/projects/:projectId/engineers/:userId
+   * @route   POST / DELETE /api/v1/projects/:projectId/engineers/:userId
    * @desc    Add or remove project enginners
-   * @access  Admin or project manager
+   * @access  Admin and project manager
    */
   router
     .route('/:projectId/engineers/:userId')
