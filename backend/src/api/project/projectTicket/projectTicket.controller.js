@@ -1,17 +1,8 @@
 import { isEmpty } from 'lodash';
+import { pickExistingProperties } from '../../../utils/helpers';
 import { getDefaultTicketGraphQuery } from '../../ticket/ticket.controller';
 import { Ticket } from '../../ticket/ticket.model';
 import { Project } from '../project.model';
-
-function pickExistingProperties(values, srcObject) {
-  const newObj = {};
-  values.forEach((value) => {
-    if (srcObject[value]) {
-      newObj[value] = srcObject[value];
-    }
-  });
-  return newObj;
-}
 
 const getProjectTickets = async (req, res) => {
   const {

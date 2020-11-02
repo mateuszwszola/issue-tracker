@@ -211,5 +211,80 @@ describe('Test the ticket endpoints', () => {
     });
   });
 
-  // describe('');
+  describe('DELETE /api/v1/tickets/:ticketId', () => {
+    it('should fail without a token', async () => {
+      const user = await UserModel.query().insert(getUserData());
+      const project = await ProjectModel.query().insert(getProjectData());
+      const ticket = await TicketModel.query().insert(
+        getTicketData({
+          reporterId: user.id,
+          projectId: project.id,
+        })
+      );
+
+      const response = await supertest(app).delete(`${BASE_PATH}/${ticket.id}`);
+
+      expect(response.statusCode).toBe(401);
+    });
+
+    it('should fail if user is not authorized', async () => {
+      const user = await UserModel.query().insert(
+        getUserData({ sub: 'auth0|123' })
+      );
+      const project = await ProjectModel.query().insert(getProjectData());
+      const ticket = await TicketModel.query().insert(
+        getTicketData({
+          reporterId: user.id,
+          projectId: project.id,
+        })
+      );
+
+      const token = getToken({ sub: user.sub });
+
+      const response = await supertest(app)
+        .delete(`${BASE_PATH}/${ticket.id}`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.statusCode).toBe(403);
+    });
+
+    it('should respond with 404 - ticket not found', async () => {
+      const user = await UserModel.query().insert(
+        getUserData({ sub: 'auth0|123', isAdmin: true })
+      );
+
+      const token = getToken({ sub: user.sub });
+
+      const response = await supertest(app)
+        .delete(`${BASE_PATH}/100`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.statusCode).toBe(404);
+    });
+
+    it('should remove and respond with a removed ticket', async () => {
+      const user = await UserModel.query().insert(
+        getUserData({ sub: 'auth0|123', isAdmin: true })
+      );
+      const project = await ProjectModel.query().insert(getProjectData());
+      const ticket = await TicketModel.query().insert(
+        getTicketData({
+          reporterId: user.id,
+          projectId: project.id,
+        })
+      );
+
+      const token = getToken({ sub: user.sub });
+
+      const response = await supertest(app)
+        .delete(`${BASE_PATH}/${ticket.id}`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toHaveProperty('ticket');
+      expect(response.body.ticket.id).toBe(ticket.id);
+      expect(response.body.ticket.name).toBe(ticket.name);
+      expect(response.body.archived_at).not.toBe(null);
+    });
+  });
 });
