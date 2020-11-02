@@ -1,13 +1,12 @@
 import jwt from 'express-jwt';
 import jwksRsa from 'jwks-rsa';
-import { isEmpty } from 'lodash';
 import { Project } from '../api/project/project.model';
 import { User } from '../api/user/user.model';
 import config from '../config';
 import { ErrorHandler } from '../utils/error';
 
-const checkJwt = () => {
-  return jwt({
+const checkJwt = () =>
+  jwt({
     // Dynamically provide a signing key
     // based on the kid in the header and
     // the signing keys provided by the JWKS endpoint.
@@ -23,11 +22,13 @@ const checkJwt = () => {
     issuer: config.auth0.issuer,
     algorithms: ['RS256'],
   });
-};
 
 const isAdmin = () => async (req, res, next) => {
-  const user = await User.query().findOne({ sub: req.user.sub });
-  if (!user || isEmpty(user) || !user.is_admin) {
+  const { sub } = req.user;
+
+  const user = await User.query().findOne({ sub });
+
+  if (!(user && user.is_admin)) {
     return next(
       new ErrorHandler(
         403,
@@ -41,7 +42,7 @@ const isAdmin = () => async (req, res, next) => {
   next();
 };
 
-const isUserProjectManager = () => async (req, res, next) => {
+const isProjectManager = () => async (req, res, next) => {
   const { sub } = req.user;
   const { projectId } = req.params;
 
@@ -55,7 +56,7 @@ const isUserProjectManager = () => async (req, res, next) => {
   }
 };
 
-const isUserProjectEngineer = () => async (req, res, next) => {
+const isProjectEngineer = () => async (req, res, next) => {
   const { projectId } = req.params;
   const { sub } = req.user;
 
@@ -81,4 +82,4 @@ const isUserProjectEngineer = () => async (req, res, next) => {
   next();
 };
 
-export { checkJwt, isAdmin, isUserProjectManager, isUserProjectEngineer };
+export { checkJwt, isAdmin, isProjectManager, isProjectEngineer };

@@ -17,12 +17,6 @@ registerProjectEngineerRoutes(router);
  */
 registerProjectTicketRoutes(router);
 
-/**
- * @route /api/v1/projects/:projectId/manager
- * @decs  Manage project manager
- */
-// TODO
-
 // /api/v1/projects
 router
   .route('/')

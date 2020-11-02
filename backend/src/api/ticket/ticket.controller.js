@@ -2,7 +2,7 @@ import { isEmpty } from 'lodash';
 import { ErrorHandler } from '../../utils/error';
 import { Ticket } from './ticket.model';
 
-function getDefaultTicketGraphQuery(query, withGraph) {
+export function getDefaultTicketGraphQuery(query, withGraph) {
   return query
     .allowGraph('[project, type, status, priority, reporter, parentTicket]')
     .withGraphFetched(withGraph);

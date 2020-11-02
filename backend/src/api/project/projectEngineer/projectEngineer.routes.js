@@ -1,5 +1,5 @@
 import * as controllers from './projectEngineer.controller';
-import { checkJwt, isUserProjectManager } from '../../../middlewares/auth';
+import { checkJwt, isProjectManager } from '../../../middlewares/auth';
 
 export default async (router) => {
   /**
@@ -16,10 +16,6 @@ export default async (router) => {
    */
   router
     .route('/:projectId/engineers/:userId')
-    .post(checkJwt(), isUserProjectManager(), controllers.addProjectEngineer)
-    .delete(
-      checkJwt(),
-      isUserProjectManager(),
-      controllers.deleteProjectEnginner
-    );
+    .post(checkJwt(), isProjectManager(), controllers.addProjectEngineer)
+    .delete(checkJwt(), isProjectManager(), controllers.deleteProjectEnginner);
 };

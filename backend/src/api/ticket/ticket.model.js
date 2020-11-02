@@ -6,17 +6,18 @@ class Ticket extends Model {
     return tableNames.ticket;
   }
 
+  static async beforeDelete({ asFindQuery, cancelQuery }) {
+    const [numAffectedRows] = await asFindQuery().patch({
+      archived_at: new Date().toISOString(),
+    });
+
+    cancelQuery(numAffectedRows);
+  }
+
   static get jsonSchema() {
     return {
       type: 'object',
-      required: [
-        'key',
-        'name',
-        'type_id',
-        'status_id',
-        'priority_id',
-        'reporter_id',
-      ],
+      required: ['key', 'name', 'type_id', 'status_id', 'priority_id'],
 
       properties: {
         id: { type: 'integer' },
@@ -28,7 +29,7 @@ class Ticket extends Model {
         type_id: { type: 'integer' },
         status_id: { type: 'integer' },
         priority_id: { type: 'integer' },
-        reporter_id: { type: 'integer' },
+        reporter_id: { type: ['integer', 'null'] },
         archived_at: { type: ['string', 'null'] },
       },
     };
