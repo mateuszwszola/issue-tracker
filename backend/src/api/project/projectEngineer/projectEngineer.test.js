@@ -3,10 +3,10 @@ import { app } from '../../../app';
 import db from '../../../db';
 import setupTest from '../../../setupTests';
 import teardownTest from '../../../teardownTests';
-import { getProjectData, getUserData } from '../../../utils/testUtils';
 import { Project } from '../project.model';
 import { User } from '../../user/user.model';
-import { getToken } from '../../../utils/fixtures';
+import { getProjectData, getUserData } from '../../../fixtures/data';
+import { getToken } from '../../../fixtures/jwt';
 
 const BASE_PATH = '/api/v1/projects';
 

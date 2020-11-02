@@ -6,8 +6,8 @@ import setupTest from '../../setupTests';
 import teardownTest from '../../teardownTests';
 import { Project } from './project.model';
 import { User } from '../user/user.model';
-import { getProjectData, getUserData } from '../../utils/testUtils';
-import { getToken } from '../../utils/fixtures';
+import { getProjectData, getUserData } from '../../fixtures/data';
+import { getToken } from '../../fixtures/jwt';
 
 const BASE_PATH = '/api/v1/projects';
 

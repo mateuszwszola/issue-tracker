@@ -1,18 +1,18 @@
 import supertest from 'supertest';
+import { pick } from 'lodash';
 import { app } from '../../../app';
 import db from '../../../db';
 import setupTest from '../../../setupTests';
 import teardownTest from '../../../teardownTests';
+import { Project } from '../project.model';
+import { User } from '../../user/user.model';
+import { Ticket } from '../../ticket/ticket.model';
+import { getToken } from '../../../fixtures/jwt';
 import {
   getProjectData,
   getTicketData,
   getUserData,
-} from '../../../utils/testUtils';
-import { Project } from '../project.model';
-import { User } from '../../user/user.model';
-import { Ticket } from '../../ticket/ticket.model';
-import { getToken } from '../../../utils/fixtures';
-import { pick } from 'lodash';
+} from '../../../fixtures/data';
 
 const BASE_PATH = '/api/v1/projects';
 

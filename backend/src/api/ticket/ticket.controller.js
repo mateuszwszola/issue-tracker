@@ -83,6 +83,10 @@ const updateTicket = async (req, res) => {
     .patch(req.body)
     .returning('*');
 
+  if (isEmpty(result)) {
+    throw new ErrorHandler('404', 'Ticket not found');
+  }
+
   return res.status(200).json({ ticket: result });
 };
 
@@ -93,6 +97,10 @@ const deleteTicket = async (req, res) => {
     .findById(ticketId)
     .delete()
     .returning('*');
+
+  if (isEmpty(result)) {
+    throw new ErrorHandler('404', 'Ticket not found');
+  }
 
   return res.status(200).json({ ticket: result });
 };

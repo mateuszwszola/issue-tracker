@@ -1,6 +1,6 @@
 import supertest from 'supertest';
 import { app } from './app';
-import { getToken } from './utils/fixtures';
+import { getToken } from './fixtures/jwt';
 
 describe('Test the app endpoint', () => {
   describe('GET /api/auth', () => {

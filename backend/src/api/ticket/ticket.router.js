@@ -4,16 +4,17 @@ import * as controllers from './ticket.controller';
 
 const router = Router();
 
-router.use(checkJwt(), isAdmin());
-
 // /api/v1/tickets
-router.route('/').get(controllers.getTickets).post(controllers.createTicket);
+router
+  .route('/')
+  .get(controllers.getTickets)
+  .post(checkJwt(), isAdmin(), controllers.createTicket);
 
 // /api/v1/tickets/:ticketId
 router
   .route('/:ticketId')
   .get(controllers.getTicket)
-  .patch(controllers.updateTicket)
-  .delete(controllers.deleteTicket);
+  .patch(checkJwt(), isAdmin(), controllers.updateTicket)
+  .delete(checkJwt(), isAdmin(), controllers.deleteTicket);
 
 export default router;
