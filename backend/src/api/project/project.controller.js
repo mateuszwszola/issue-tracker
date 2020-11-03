@@ -8,11 +8,10 @@ import {
 } from '../../utils/project';
 
 const getProjects = async (req, res) => {
-  let { cursor, limit, select, withGraph, orderBy = 'id' } = req.query;
+  const { cursor, limit, select, withGraph } = req.query;
+  let { orderBy } = req.query;
 
-  cursor = cursor ? Number(cursor) : 0;
-  limit = cursor ? Number(limit) : 100;
-  orderBy = orderBy ?? orderBy.toLowerCase();
+  orderBy = orderBy ? orderBy.toLowerCase() : 'id';
 
   if (!validProjectOrders.has(orderBy)) {
     throw new ErrorHandler(400, 'Invalid orderBy param');

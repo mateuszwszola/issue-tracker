@@ -1,14 +1,18 @@
 import { Project } from '../project.model';
 import tableNames from '../../../constants/tableNames';
+import { ErrorHandler } from '../../../utils/error';
 
 const getProjectEngineers = async (req, res) => {
-  const { cursor = 0, limit = 100, select, orderBy = 'id' } = req.query;
   const { projectId } = req.params;
+  const { cursor, limit, select } = req.query;
+  let { orderBy } = req.query;
+
+  orderBy = orderBy ? orderBy.toLowerCase() : 'id';
 
   const query = Project.relatedQuery('engineers')
     .for(projectId)
-    .offset(parseInt(cursor))
-    .limit(parseInt(limit))
+    .offset(cursor)
+    .limit(limit)
     .orderBy(orderBy);
 
   if (select) {
@@ -16,6 +20,10 @@ const getProjectEngineers = async (req, res) => {
   }
 
   const result = await query;
+
+  if (!result) {
+    throw new ErrorHandler(404, 'Project not found');
+  }
 
   return res.status(200).json({ engineers: result });
 };

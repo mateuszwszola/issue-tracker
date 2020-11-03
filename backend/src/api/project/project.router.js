@@ -3,6 +3,7 @@ import * as controllers from './project.controller';
 import { checkJwt, isAdmin } from '../../middlewares/auth';
 import registerProjectEngineerRoutes from './projectEngineer/projectEngineer.routes';
 import registerProjectTicketRoutes from './projectTicket/projectTicket.routes';
+import { parsePaginationQueryParams } from '../../middlewares/queryParams';
 const router = Router();
 
 /**
@@ -20,7 +21,7 @@ registerProjectTicketRoutes(router);
 // /api/v1/projects
 router
   .route('/')
-  .get(controllers.getProjects)
+  .get(parsePaginationQueryParams(), controllers.getProjects)
   .post(checkJwt(), isAdmin(), controllers.createProject);
 
 // /api/v1/projects/:projectId

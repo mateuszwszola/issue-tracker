@@ -1,5 +1,6 @@
 import * as controllers from './projectEngineer.controller';
 import { checkJwt, isProjectManager } from '../../../middlewares/auth';
+import { parsePaginationQueryParams } from '../../../middlewares/queryParams';
 
 export default async (router) => {
   /**
@@ -7,7 +8,11 @@ export default async (router) => {
    * @desc    get project engineers
    * @access  Public
    */
-  router.get('/:projectId/engineers', controllers.getProjectEngineers);
+  router.get(
+    '/:projectId/engineers',
+    parsePaginationQueryParams(),
+    controllers.getProjectEngineers
+  );
 
   /**
    * @route   POST / DELETE /api/v1/projects/:projectId/engineers/:userId
