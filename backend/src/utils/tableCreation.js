@@ -36,8 +36,8 @@ const createUserTable = (knex) =>
 const createProjectTable = (knex) =>
   knex.schema.createTable(tableNames.project, (table) => {
     table.increments();
-    table.string('key', 100).notNullable().unique().index();
-    table.string('name').notNullable().unique();
+    table.string('key', 100).unique().index();
+    table.string('name').notNullable();
     referenceTable(table, 'type_id', tableNames.project_type).onDelete(
       'SET NULL'
     );

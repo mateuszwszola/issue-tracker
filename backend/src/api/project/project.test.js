@@ -47,9 +47,9 @@ describe('Test the project endpoints', () => {
 
       expect(response.statusCode).toBe(200);
       expect(response.body).toHaveProperty('project');
-      expect(response.body.project.key).toBe(project.key);
+      expect(response.body.project).toHaveProperty('key');
       expect(response.body.project.name).toBe(project.name);
-      expect(response.body.project.type_id).toBe(1);
+      expect(response.body.project.type_id).toBe(project.type_id);
     });
   });
 
@@ -89,7 +89,7 @@ describe('Test the project endpoints', () => {
 
       expect(response.statusCode).toBe(201);
       expect(response.body).toHaveProperty('project');
-      expect(response.body.project.key).toBe(project.key);
+      expect(response.body.project).toHaveProperty('key');
       expect(response.body.project.name).toBe(project.name);
       expect(response.body.project.type_id).toBe(1);
     });
@@ -99,7 +99,7 @@ describe('Test the project endpoints', () => {
     it('should fail without auth token', async () => {
       const project = await Project.query().insert(getProjectData());
 
-      const newName = faker.name.findName();
+      const newName = faker.commerce.productName();
 
       const response = await supertest(app)
         .patch(`${BASE_PATH}/${project.id}`)
@@ -113,7 +113,7 @@ describe('Test the project endpoints', () => {
       const project = await Project.query().insert(getProjectData());
       const token = getToken({ sub: 'auth0|123' });
 
-      const newName = faker.name.findName();
+      const newName = faker.commerce.productName();
 
       const response = await supertest(app)
         .patch(`${BASE_PATH}/${project.id}`)
@@ -130,7 +130,7 @@ describe('Test the project endpoints', () => {
       const project = await Project.query().insert(getProjectData());
       const token = getToken({ sub: 'auth0|123' });
 
-      const newName = faker.name.findName();
+      const newName = faker.commerce.productName();
 
       const response = await supertest(app)
         .patch(`${BASE_PATH}/${project.id}`)
@@ -139,7 +139,7 @@ describe('Test the project endpoints', () => {
 
       expect(response.statusCode).toBe(200);
       expect(response.body).toHaveProperty('project');
-      expect(response.body.project.key).toBe(project.key);
+      expect(response.body.project).toHaveProperty('key');
       expect(response.body.project.name).toBe(newName);
     });
   });

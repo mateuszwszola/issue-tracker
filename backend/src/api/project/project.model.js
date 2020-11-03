@@ -1,10 +1,15 @@
 import { Model } from 'objection';
 import tableNames from '../../constants/tableNames';
 import { createBelongsToOneRelation } from '../../utils/objection';
+import { createProjectKey } from '../../utils/project';
 
 class Project extends Model {
   static get tableName() {
     return tableNames.project;
+  }
+
+  $afterInsert() {
+    this.key = createProjectKey(this.name, this.id);
   }
 
   static async beforeDelete({ asFindQuery, cancelQuery }) {
@@ -18,12 +23,12 @@ class Project extends Model {
   static get jsonSchema() {
     return {
       type: 'object',
-      required: ['key', 'name', 'type_id'],
+      required: ['name', 'type_id'],
 
       properties: {
         id: { type: 'integer' },
-        key: { type: 'string', minLength: 1, maxLength: 100 },
-        name: { type: 'string', minLength: 1, maxLength: 255 },
+        key: { type: 'string', minLength: 3, maxLength: 255 },
+        name: { type: 'string', minLength: 5, maxLength: 255 },
         type_id: { type: 'integer' },
         manager_id: { type: ['integer', 'null'] },
         archived_at: { type: ['string', 'null'] },

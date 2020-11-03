@@ -1,31 +1,26 @@
 import { Project } from './project.model';
 import { isEmpty } from 'lodash';
 import { ErrorHandler } from '../../utils/error';
-
-function getDefaultProjectGraphQuery(query, withGraph) {
-  return query
-    .allowGraph('[type, manager]')
-    .withGraphFetched(withGraph)
-    .modifyGraph('type', (builder) => {
-      builder.select('id', 'name');
-    })
-    .modifyGraph('manager', (builder) => {
-      builder.select('id', 'sub', 'name', 'email', 'picture');
-    });
-}
+import { pickExistingProperties } from '../../utils/helpers';
+import {
+  getDefaultProjectGraphQuery,
+  validProjectOrders,
+} from '../../utils/project';
 
 const getProjects = async (req, res) => {
-  const {
-    cursor = 0,
-    limit = 100,
-    select,
-    withGraph,
-    orderBy = 'id',
-  } = req.query;
+  let { cursor, limit, select, withGraph, orderBy = 'id' } = req.query;
+
+  cursor = cursor ? Number(cursor) : 0;
+  limit = cursor ? Number(limit) : 100;
+  orderBy = orderBy ?? orderBy.toLowerCase();
+
+  if (!validProjectOrders.has(orderBy)) {
+    throw new ErrorHandler(400, 'Invalid orderBy param');
+  }
 
   const query = Project.query()
-    .offset(parseInt(cursor))
-    .limit(parseInt(limit))
+    .offset(cursor)
+    .limit(limit)
     .where('archived_at', null)
     .orderBy(orderBy);
 
@@ -64,7 +59,11 @@ const getProject = async (req, res) => {
 };
 
 const createProject = async (req, res) => {
-  const result = await Project.query().insert(req.body).returning('*');
+  const { name, type_id, manager_id } = req.body;
+
+  const result = await Project.query()
+    .insert({ name, type_id, manager_id })
+    .returning('*');
 
   return res.status(201).json({ project: result });
 };
@@ -72,9 +71,14 @@ const createProject = async (req, res) => {
 const updateProject = async (req, res) => {
   const { projectId } = req.params;
 
+  const newProjectData = pickExistingProperties(
+    ['name', 'type_id', 'manager_id'],
+    req.body
+  );
+
   const result = await Project.query()
     .findById(projectId)
-    .patch(req.body)
+    .patch(newProjectData)
     .returning('*');
 
   return res.status(200).json({ project: result });

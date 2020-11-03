@@ -10,8 +10,7 @@ const getUserData = (ctx = {}) => ({
 });
 
 const getProjectData = (ctx = {}) => ({
-  key: ctx.key || faker.random.alphaNumeric(5),
-  name: ctx.name || faker.name.findName(),
+  name: ctx.name || faker.commerce.productName(),
   type_id: ctx.typeId || 1,
   manager_id: ctx.managerId || null,
   archived_at: ctx.archivedAt || null,
