@@ -1,19 +1,18 @@
 import { Router } from 'express';
 import * as controllers from './user.controller';
-import { checkJwt } from '../../middlewares/auth';
+import { checkJwt, isAdmin } from '../../middlewares/auth';
 const router = Router();
 
+router.use(checkJwt(), isAdmin());
+
 // /api/v1/users
-router
-  .route('/')
-  .get(checkJwt(), controllers.getUsers)
-  .post(checkJwt(), controllers.createUser);
+router.route('/').get(controllers.getUsers).post(controllers.createUser);
 
 // /api/v1/users/:id
 router
   .route('/:id')
-  .get(checkJwt(), controllers.getUserById)
-  .put(checkJwt(), controllers.updateUser)
-  .delete(checkJwt(), controllers.deleteUser);
+  .get(controllers.getUserById)
+  .put(controllers.updateUser)
+  .delete(controllers.deleteUser);
 
 export default router;

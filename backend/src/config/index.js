@@ -19,8 +19,6 @@ const baseConfig = {
     audience: process.env.AUTH0_AUDIENCE,
     issuer: process.env.AUTH0_ISSUER,
   },
-  adminUserName: process.env.ADMIN_USER_NAME || 'TEST',
-  adminUserEmail: process.env.ADMIN_USER_EMAIL || 'test@test.com',
 };
 
 let envConfig = {};

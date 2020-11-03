@@ -1,5 +1,10 @@
+import { isEmpty } from 'lodash';
+import {
+  ForeignKeyViolationError,
+  NotFoundError,
+  ValidationError,
+} from 'objection';
 import { isProd } from '../config';
-import { ValidationError, NotFoundError } from 'objection';
 
 class ErrorHandler extends Error {
   constructor(statusCode, message) {
@@ -16,20 +21,25 @@ const handleNotFound = (req, res, next) => {
 
 const handleError = (err, req, res, next) => {
   if (res.headersSent) {
-    next(err);
+    return next(err);
   } else {
-    let statusCode = err.status || 500;
+    const customError = {};
 
     if (err instanceof ValidationError) {
-      statusCode = 400;
+      customError.type = 'ValidationError';
+      customError.errors = err.data;
+    } else if (err instanceof ForeignKeyViolationError) {
+      customError.type = 'ForeignKeyViolationError';
     } else if (err instanceof NotFoundError) {
-      statusCode = 404;
+      customError.type = 'NotFound';
     }
+
+    const statusCode = err.statusCode || err.status || 500;
 
     res.status(statusCode);
     res.json({
       message: err.message || 'Internal Server Error',
-      data: err.data || {},
+      ...(isEmpty(customError) ? null : customError),
       ...(isProd ? null : { stack: err.stack }),
     });
   }

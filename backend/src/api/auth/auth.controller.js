@@ -2,7 +2,8 @@ import { isEmpty } from 'lodash';
 import { User } from '../user/user.model';
 
 const loginUser = async (req, res, next) => {
-  const { sub, name, email, picture } = req.body;
+  const { sub } = req.user;
+  const { name, email, picture } = req.body;
 
   let user = await User.query().findOne({ sub });
 

@@ -5,17 +5,17 @@
  * Module dependencies.
  */
 import { app } from './app';
-import debugModule from 'debug';
+import debug from 'debug';
 import http from 'http';
-import { port as configPort } from './config';
+import config from './config';
 
-const debug = debugModule('backend:server');
+const logger = debug('backend:server');
 
 /**
  * Get port from environment and store in Express.
  */
 
-const port = normalizePort(configPort || '3001');
+const port = normalizePort(config.port || '3001');
 app.set('port', port);
 
 /**
@@ -85,5 +85,5 @@ function onError(error) {
 function onListening() {
   const addr = server.address();
   const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
-  debug('Listening on ' + bind);
+  logger('Listening on ' + bind);
 }
