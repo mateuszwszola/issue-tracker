@@ -2,6 +2,14 @@ import { Project } from '../project.model';
 import tableNames from '../../../constants/tableNames';
 import { ErrorHandler } from '../../../utils/error';
 
+const validUserOrders = new Set([
+  'id',
+  'name',
+  'email',
+  'created_at',
+  'updated_at',
+]);
+
 const getProjectEngineers = async (req, res) => {
   const { projectId } = req.params;
   const { cursor, limit, select } = req.query;
@@ -9,7 +17,12 @@ const getProjectEngineers = async (req, res) => {
 
   orderBy = orderBy ? orderBy.toLowerCase() : 'id';
 
+  if (!validUserOrders.has(orderBy)) {
+    throw new ErrorHandler(400, 'Invalid orderBy param');
+  }
+
   const query = Project.relatedQuery('engineers')
+    .modify('defaultSelects')
     .for(projectId)
     .offset(cursor)
     .limit(limit)

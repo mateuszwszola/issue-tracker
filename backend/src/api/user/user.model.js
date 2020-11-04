@@ -6,7 +6,20 @@ class User extends Model {
     return tableNames.user;
   }
 
-  // TODO: Add default select
+  static get modifiers() {
+    return {
+      defaultSelects(query) {
+        const { ref } = User;
+        query.select(
+          ref('id'),
+          ref('sub'),
+          ref('name'),
+          ref('email'),
+          ref('picture')
+        );
+      },
+    };
+  }
 
   static get jsonSchema() {
     return {
