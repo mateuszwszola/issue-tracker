@@ -1,5 +1,6 @@
 import jwt from 'express-jwt';
 import jwksRsa from 'jwks-rsa';
+import { isEmpty } from 'lodash';
 import { Project } from '../api/project/project.model';
 import { User } from '../api/user/user.model';
 import config from '../config';
@@ -72,7 +73,7 @@ const isProjectEngineer = () => async (req, res, next) => {
     .first()
     .where('sub', sub);
 
-  if (!result) {
+  if (!result || isEmpty(result)) {
     throw new ErrorHandler(
       403,
       'You are not authorized to access this resource'

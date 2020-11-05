@@ -1,18 +1,23 @@
 import { User } from './user.model';
 import { isEmpty } from 'lodash';
 import { ErrorHandler } from '../../utils/error';
+import { validUserOrders } from '../../utils/user';
+import { pickExistingProperties } from '../../utils/helpers';
 
 const getUsers = async (req, res) => {
-  const { cursor = 0, limit = 100, select, orderBy } = req.query;
+  const { cursor, limit, select } = req.query;
+  let { orderBy } = req.query;
 
-  const query = User.query().offset(parseInt(cursor)).limit(parseInt(limit));
+  orderBy = orderBy ? String(orderBy).toLowerCase() : 'id';
+
+  if (!validUserOrders.has(orderBy)) {
+    throw new ErrorHandler(400, 'Invalid orderBy param');
+  }
+
+  const query = User.query().offset(cursor).limit(limit).orderBy(orderBy);
 
   if (select) {
     query.select(select);
-  }
-
-  if (orderBy) {
-    query.orderBy(orderBy);
   }
 
   res.status(200).json({ users: await query });
@@ -46,15 +51,22 @@ const createUser = async (req, res) => {
 };
 
 const updateUser = async (req, res) => {
-  const { name, email } = req.body;
-  const { id } = req.query;
+  const { userId } = req.params;
 
-  const user = await User.query()
-    .findById(id)
-    .returning('*')
-    .patch({ name, email });
+  const newUserData = pickExistingProperties(
+    ['name', 'email', 'sub', 'picture'],
+    {
+      ...req.body,
+    }
+  );
 
-  return res.status(200).json({ user });
+  let query = User.query().findById(userId);
+
+  if (!isEmpty(newUserData)) {
+    query = query.patch(newUserData).returning('*');
+  }
+
+  return res.status(200).json({ user: await query });
 };
 
 const deleteUser = async (req, res) => {

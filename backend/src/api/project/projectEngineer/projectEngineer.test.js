@@ -37,8 +37,6 @@ describe('Test project engineers endpoints', () => {
         `${BASE_PATH}/${project.id}/engineers`
       );
 
-      console.log(response.body);
-
       expect(response.statusCode).toBe(200);
       expect(response.body).toHaveProperty('engineers');
       expect(response.body.engineers.length).toBe(1);

@@ -5,8 +5,12 @@ import {
 } from '../../../middlewares/auth';
 import { parsePaginationQueryParams } from '../../../middlewares/queryParams';
 import * as controllers from './ticket.controller';
+import registerTicketEngineerRoutes from './ticketEngineer/ticketEngineer.routes';
 
 export default (router) => {
+  // /api/v1/projects/:projectId/tickets/:ticketId/engineers
+  registerTicketEngineerRoutes(router);
+
   // /api/v1/projects/:projectId/tickets
   router
     .route('/:projectId/tickets')

@@ -113,6 +113,31 @@ class Ticket extends Model {
           to: `${tableNames.ticket_priority}.id`,
         },
       },
+      engineers: {
+        relation: Model.ManyToManyRelation,
+        modelClass: User,
+        join: {
+          from: `${tableNames.ticket}.id`,
+          through: {
+            from: `${tableNames.ticket_engineer}.ticket_id`,
+            to: `${tableNames.ticket_engineer}.user_id`,
+          },
+          to: `${tableNames.user}.id`,
+        },
+      },
+      comments: {
+        relation: Model.ManyToManyRelation,
+        modelClass: User,
+        join: {
+          from: `${tableNames.ticket}.id`,
+          through: {
+            from: `${tableNames.ticket_comment}.ticket_id`,
+            to: `${tableNames.ticket_comment}.user_id`,
+            extra: ['comment'],
+          },
+          to: `${tableNames.user}.id`,
+        },
+      },
     };
   }
 }
