@@ -25,7 +25,7 @@ describe('Test project engineers endpoints', () => {
   });
 
   describe('GET /api/v1/projects/:projectId/engineers', () => {
-    it.only('should respond with an array of users', async () => {
+    it('should respond with an array of users', async () => {
       const user = await UserModel.query().insert(getUserData());
       const project = await ProjectModel.query().insert(getProjectData());
 

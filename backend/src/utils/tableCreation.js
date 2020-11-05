@@ -59,7 +59,7 @@ const createProjectEngineerTable = (knex) =>
 const createTicketTable = (knex) =>
   knex.schema.createTable(tableNames.ticket, (table) => {
     table.increments();
-    table.string('key', 100).notNullable().unique().index();
+    table.string('key', 100).unique().index();
     table.string('name').notNullable();
     table.string('description');
     referenceTable(table, 'type_id', tableNames.ticket_type).onDelete(

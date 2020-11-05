@@ -6,6 +6,20 @@ class Ticket extends Model {
     return tableNames.ticket;
   }
 
+  async $afterInsert(context) {
+    const { key: projectKey } = await Ticket.relatedQuery(
+      'project',
+      context.transaction
+    )
+      .for(this.id)
+      .first()
+      .select('key');
+
+    if (projectKey) {
+      await this.$query().patch({ key: projectKey + '-' + this.id });
+    }
+  }
+
   static async beforeDelete({ asFindQuery, cancelQuery }) {
     const [numAffectedRows] = await asFindQuery().patch({
       archived_at: new Date().toISOString(),
@@ -17,12 +31,12 @@ class Ticket extends Model {
   static get jsonSchema() {
     return {
       type: 'object',
-      required: ['key', 'name', 'type_id', 'status_id', 'priority_id'],
+      required: ['name', 'type_id', 'status_id', 'priority_id'],
 
       properties: {
         id: { type: 'integer' },
         project_id: { type: ['integer', 'null'] },
-        key: { type: 'string', minLength: 1, maxLength: 100 },
+        key: { type: 'string', minLength: 3, maxLength: 100 },
         name: { type: 'string', minLength: 1, maxLength: 255 },
         description: { type: 'string', minLength: 1, maxLength: 255 },
         parent_id: { type: ['integer', 'null'] },

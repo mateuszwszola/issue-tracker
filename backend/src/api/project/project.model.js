@@ -8,8 +8,8 @@ class Project extends Model {
     return tableNames.project;
   }
 
-  $afterInsert() {
-    this.key = createProjectKey(this.name, this.id);
+  async $afterInsert() {
+    await this.$query().patch({ key: createProjectKey(this.name, this.id) });
   }
 
   static async beforeDelete({ asFindQuery, cancelQuery }) {

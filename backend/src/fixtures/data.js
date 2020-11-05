@@ -17,15 +17,11 @@ const getProjectData = (ctx = {}) => ({
 });
 
 const getTicketData = (ctx = {}) => ({
-  project_id: ctx.projectId || null,
-  key: ctx.key || faker.random.alphaNumeric(5),
   name: ctx.name || faker.name.findName(),
   description: ctx.description || faker.random.alpha(100),
-  parent_id: ctx.parentId || null,
   type_id: ctx.typeId || 1,
   status_id: ctx.statusId || 1,
   priority_id: ctx.priorityId || 1,
-  reporter_id: ctx.reporterId || 1,
   archived_at: ctx.archivedAt || null,
 });
 

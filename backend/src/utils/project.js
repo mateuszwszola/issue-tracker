@@ -8,7 +8,7 @@ function createProjectKey(projectName, projectId) {
   if (acronym.length < 2) {
     acronym = projectName.substr(0, 2);
   }
-  key = acronym.toUpperCase() + '-' + projectId;
+  key = acronym.toUpperCase() + projectId;
   return key;
 }
 

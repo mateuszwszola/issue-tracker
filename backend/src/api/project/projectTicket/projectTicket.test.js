@@ -18,8 +18,8 @@ const BASE_PATH = '/api/v1/projects';
 
 describe('Test projectTicket endpoints', () => {
   const thisDb = db;
-  const ProjectModel = Project;
   const UserModel = User;
+  const ProjectModel = Project;
   const TicketModel = Ticket;
 
   beforeAll(() => setupTest(thisDb));
@@ -93,9 +93,9 @@ describe('Test projectTicket endpoints', () => {
         .for(project.id)
         .relate(user.id);
 
-      const ticketData = getTicketData({ reporterId: user.id });
+      const ticketData = getTicketData();
 
-      const token = getToken({ sub: 'auth0|123' });
+      const token = getToken({ sub: user.sub });
 
       const response = await supertest(app)
         .post(`${BASE_PATH}/${project.id}/tickets`)
@@ -103,6 +103,9 @@ describe('Test projectTicket endpoints', () => {
         .set('Authorization', `Bearer ${token}`);
 
       expect(response.statusCode).toBe(200);
+      expect(response.body).toHaveProperty('ticket');
+      expect(response.body.ticket).toHaveProperty('key');
+      // expect(response.body.ticket).not.toBe()
     });
   });
 
