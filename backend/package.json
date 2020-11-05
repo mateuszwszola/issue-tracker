@@ -3,8 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "prestart": "babel ./src --out-dir build",
-    "start": "NODE_ENV=production node ./build/index.js",
+    "clean": "rm -rf build && mkdir build",
+    "build": "babel ./src --out-dir build",
+    "prestart": "npm run clean && npm run build",
+    "start": "node ./build/index.js",
     "dev": "DEBUG=backend* nodemon --exec babel-node ./src/index.js",
     "lint": "eslint --fix ./src",
     "format": "prettier --write './**/*.{js,json}' --config ./.prettierrc",
