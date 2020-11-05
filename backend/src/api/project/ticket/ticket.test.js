@@ -4,9 +4,9 @@ import { app } from '../../../app';
 import db from '../../../db';
 import setupTest from '../../../setupTests';
 import teardownTest from '../../../teardownTests';
-import { Project } from '../project.model';
 import { User } from '../../user/user.model';
-import { Ticket } from '../../ticket/ticket.model';
+import { Ticket } from './ticket.model';
+import { Project } from '../project.model';
 import { getToken } from '../../../fixtures/jwt';
 import {
   getProjectData,
@@ -16,7 +16,7 @@ import {
 
 const BASE_PATH = '/api/v1/projects';
 
-describe('Test projectTicket endpoints', () => {
+describe('Test the project ticket endpoints', () => {
   const thisDb = db;
   const UserModel = User;
   const ProjectModel = Project;
@@ -27,13 +27,13 @@ describe('Test projectTicket endpoints', () => {
   afterAll(() => teardownTest(thisDb));
 
   afterEach(async () => {
-    await ProjectModel.query().delete();
     await TicketModel.query().delete();
+    await ProjectModel.query().delete();
     await UserModel.query().delete();
   });
 
   describe('GET /api/v1/projects/:projectId/tickets', () => {
-    it('should respond with an array of tickets', async () => {
+    it('should respond with an array of project tickets', async () => {
       const reporter = await UserModel.query().insert(getUserData());
       const project = await ProjectModel.query().insert(getProjectData());
 
@@ -49,6 +49,37 @@ describe('Test projectTicket endpoints', () => {
       expect(response.body).toHaveProperty('tickets');
       expect(response.body.tickets.length).toBe(1);
       expect(response.body.tickets[0].id).toBe(ticket.id);
+    });
+  });
+
+  describe('GET /api/v1/projects/:projectId/tickets/:ticketId', () => {
+    it('should respond with 404 - ticket not found', async () => {
+      const response = await supertest(app).get(`${BASE_PATH}/100/tickets/100`);
+
+      expect(response.statusCode).toBe(404);
+    });
+
+    it('should respond with a ticket', async () => {
+      const reporter = await UserModel.query().insert(getUserData());
+      const project = await ProjectModel.query().insert(getProjectData());
+      const ticket = await ProjectModel.relatedQuery('tickets')
+        .for(project.id)
+        .insert(
+          getTicketData({
+            reporterId: reporter.id,
+          })
+        );
+
+      const response = await supertest(app).get(
+        `${BASE_PATH}/${project.id}/tickets/${ticket.id}`
+      );
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toHaveProperty('ticket');
+      expect(response.body.ticket.id).toBe(ticket.id);
+      expect(response.body.ticket.project_id).toBe(project.id);
+      expect(response.body.ticket.key).toBeTruthy();
+      expect(response.body.ticket.name).toBe(ticket.name);
     });
   });
 
@@ -74,7 +105,7 @@ describe('Test projectTicket endpoints', () => {
 
       const ticketData = getTicketData({ reporterId: user.id });
 
-      const token = getToken({ sub: 'auth0|123' });
+      const token = getToken({ sub: user.sub });
 
       const response = await supertest(app)
         .post(`${BASE_PATH}/${project.id}/tickets`)
@@ -104,8 +135,13 @@ describe('Test projectTicket endpoints', () => {
 
       expect(response.statusCode).toBe(200);
       expect(response.body).toHaveProperty('ticket');
-      expect(response.body.ticket).toHaveProperty('key');
-      // expect(response.body.ticket).not.toBe()
+      expect(response.body.ticket.project_id).toBe(project.id);
+      expect(response.body.ticket.key).toBeTruthy();
+      expect(response.body.ticket.name).toBe(ticketData.name);
+      expect(response.body.ticket.description).toBe(ticketData.description);
+      expect(response.body.ticket.type_id).toBe(ticketData.type_id);
+      expect(response.body.ticket.status_id).toBe(ticketData.status_id);
+      expect(response.body.ticket.priority_id).toBe(ticketData.priority_id);
     });
   });
 
@@ -174,11 +210,96 @@ describe('Test projectTicket endpoints', () => {
 
       expect(response.statusCode).toBe(200);
       expect(response.body).toHaveProperty('ticket');
+      expect(response.body.ticket.project_id).toBe(project.id);
+      expect(response.body.ticket.reporter_id).toBe(reporter.id);
+      expect(response.body.ticket.key).toBeTruthy();
       expect(response.body.ticket.name).toBe(newTicketData.name);
       expect(response.body.ticket.description).toBe(newTicketData.description);
       expect(response.body.ticket.type_id).toBe(newTicketData.type_id);
       expect(response.body.ticket.status_id).toBe(newTicketData.status_id);
       expect(response.body.ticket.priority_id).toBe(newTicketData.priority_id);
+    });
+  });
+
+  describe('DELETE /api/v1/projects/:projectId/tickets/:ticketId', () => {
+    it('should fail without a token', async () => {
+      const user = await UserModel.query().insert(getUserData());
+      const project = await ProjectModel.query().insert(getProjectData());
+      const ticket = await ProjectModel.relatedQuery('tickets')
+        .for(project.id)
+        .insert(
+          getTicketData({
+            reporterId: user.id,
+          })
+        );
+
+      const response = await supertest(app).delete(
+        `${BASE_PATH}/${project.id}/tickets/${ticket.id}`
+      );
+
+      expect(response.statusCode).toBe(401);
+    });
+
+    it('should fail if user is not authorized', async () => {
+      const user = await UserModel.query().insert(
+        getUserData({ sub: 'auth0|123' })
+      );
+      const project = await ProjectModel.query().insert(getProjectData());
+      const ticket = await ProjectModel.relatedQuery('tickets')
+        .for(project.id)
+        .insert(
+          getTicketData({
+            reporterId: user.id,
+          })
+        );
+
+      const token = getToken({ sub: user.sub });
+
+      const response = await supertest(app)
+        .delete(`${BASE_PATH}/${project.id}/tickets/${ticket.id}`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.statusCode).toBe(403);
+    });
+
+    it('should respond with 404 - ticket not found', async () => {
+      const user = await UserModel.query().insert(
+        getUserData({ sub: 'auth0|123', isAdmin: true })
+      );
+
+      const token = getToken({ sub: user.sub });
+
+      const response = await supertest(app)
+        .delete(`${BASE_PATH}/100/tickets/100`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.statusCode).toBe(404);
+    });
+
+    it('should remove and respond with a removed ticket', async () => {
+      const user = await UserModel.query().insert(
+        getUserData({ sub: 'auth0|123', isAdmin: true })
+      );
+      const project = await ProjectModel.query().insert(getProjectData());
+      const ticket = await ProjectModel.relatedQuery('tickets')
+        .for(project.id)
+        .insert(
+          getTicketData({
+            reporterId: user.id,
+          })
+        );
+
+      const token = getToken({ sub: user.sub });
+
+      const response = await supertest(app)
+        .delete(`${BASE_PATH}/${project.id}/tickets/${ticket.id}`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toHaveProperty('ticket');
+      expect(response.body.ticket.id).toBe(ticket.id);
+      expect(response.body.ticket.name).toBe(ticket.name);
+      expect(response.body.archived_at).not.toBe(null);
     });
   });
 });

@@ -1,13 +1,18 @@
 import { isEmpty } from 'lodash';
-import { ErrorHandler } from '../../../utils/error';
 import { pickExistingProperties } from '../../../utils/helpers';
 import { validTicketOrders } from '../../../utils/ticket';
-import { getDefaultTicketGraphQuery } from '../../ticket/ticket.controller';
-import { Ticket } from '../../ticket/ticket.model';
+import { ErrorHandler } from '../../../utils/error';
 import { User } from '../../user/user.model';
 import { Project } from '../project.model';
+import { Ticket } from './ticket.model';
 
-const getProjectTickets = async (req, res) => {
+export function getDefaultTicketGraphQuery(query, withGraph) {
+  return query
+    .allowGraph('[project, type, status, priority, reporter, parentTicket]')
+    .withGraphFetched(withGraph);
+}
+
+const getTickets = async (req, res) => {
   const { projectId } = req.params;
   const { cursor, limit, select, withGraph } = req.query;
   let { orderBy } = req.query;
@@ -36,7 +41,32 @@ const getProjectTickets = async (req, res) => {
   return res.status(200).json({ tickets: await query });
 };
 
-const addProjectTicket = async (req, res) => {
+const getTicket = async (req, res) => {
+  const { projectId, ticketId } = req.params;
+  const { select, withGraph } = req.query;
+
+  const query = Project.relatedQuery('tickets')
+    .for(projectId)
+    .findById(ticketId);
+
+  if (select) {
+    query.select(select);
+  }
+
+  if (withGraph) {
+    getDefaultTicketGraphQuery(query, withGraph);
+  }
+
+  const result = await query;
+
+  if (isEmpty(result)) {
+    throw new ErrorHandler(404, 'Ticket not found');
+  }
+
+  return res.status(200).json({ ticket: result });
+};
+
+const addTicket = async (req, res) => {
   const { projectId } = req.params;
   const { name, description, type_id, status_id, priority_id } = req.body;
 
@@ -59,7 +89,7 @@ const addProjectTicket = async (req, res) => {
   return res.status(200).json({ ticket });
 };
 
-const updateProjectTicket = async (req, res) => {
+const updateTicket = async (req, res) => {
   const { ticketId } = req.params;
 
   const properties = [
@@ -81,4 +111,19 @@ const updateProjectTicket = async (req, res) => {
   return res.status(200).json({ ticket: await query });
 };
 
-export { getProjectTickets, addProjectTicket, updateProjectTicket };
+const deleteTicket = async (req, res) => {
+  const { ticketId } = req.params;
+
+  const result = await Ticket.query()
+    .findById(ticketId)
+    .delete()
+    .returning('*');
+
+  if (isEmpty(result)) {
+    throw new ErrorHandler('404', 'Ticket not found');
+  }
+
+  return res.status(200).json({ ticket: result });
+};
+
+export { getTickets, getTicket, addTicket, updateTicket, deleteTicket };

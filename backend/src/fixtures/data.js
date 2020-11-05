@@ -17,6 +17,7 @@ const getProjectData = (ctx = {}) => ({
 });
 
 const getTicketData = (ctx = {}) => ({
+  reporter_id: ctx.reporterId || null,
   name: ctx.name || faker.name.findName(),
   description: ctx.description || faker.random.alpha(100),
   type_id: ctx.typeId || 1,

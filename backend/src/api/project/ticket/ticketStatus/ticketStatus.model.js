@@ -1,9 +1,9 @@
 import { Model } from 'objection';
-import tableNames from '../../../constants/tableNames';
+import tableNames from '../../../../constants/tableNames';
 
-class TicketType extends Model {
+class TicketStatus extends Model {
   static get tableName() {
-    return tableNames.ticket_type;
+    return tableNames.ticket_status;
   }
 
   static get jsonSchema() {
@@ -26,12 +26,12 @@ class TicketType extends Model {
         relation: Model.HasManyRelation,
         modelClass: Ticket,
         join: {
-          from: `${tableNames.ticket_type}.id`,
-          to: `${tableNames.ticket}.type_id`,
+          from: `${tableNames.ticket_status}.id`,
+          to: `${tableNames.ticket}.status_id`,
         },
       },
     };
   }
 }
 
-export { TicketType };
+export { TicketStatus };

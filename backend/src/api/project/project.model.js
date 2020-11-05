@@ -38,7 +38,7 @@ class Project extends Model {
 
   static get relationMappings() {
     const { User } = require('../user/user.model');
-    const { Ticket } = require('../ticket/ticket.model');
+    const { Ticket } = require('./ticket/ticket.model');
     const { ProjectType } = require('./projectType/projectType.model');
 
     return {
