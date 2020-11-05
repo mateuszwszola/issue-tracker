@@ -1,10 +1,11 @@
+import tableNames from '../../../../constants/tableNames';
 import { ErrorHandler } from '../../../../utils/error';
 import { validTicketOrders } from '../../../../utils/ticket';
 import { Ticket } from '../ticket.model';
 
 const getTicketEngineers = async (req, res) => {
   const { ticketId } = req.params;
-  const { cursor, limit, select } = req.query;
+  const { cursor, limit } = req.query;
   let { orderBy } = req.query;
 
   orderBy = orderBy ? String(orderBy).toLowerCase() : 'id';
@@ -19,10 +20,6 @@ const getTicketEngineers = async (req, res) => {
     .offset(cursor)
     .limit(limit)
     .orderBy(orderBy);
-
-  if (select) {
-    query.select(select);
-  }
 
   return res.status(200).json({ engineers: await query });
 };
@@ -42,7 +39,8 @@ const removeTicketEngineer = async (req, res) => {
 
   const numRelated = await Ticket.relatedQuery('engineers')
     .for(ticketId)
-    .unrelate(userId);
+    .unrelate()
+    .where(`${tableNames.user}.id`, userId);
 
   return res.status(200).json({ message: numRelated });
 };
