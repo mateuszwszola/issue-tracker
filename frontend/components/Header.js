@@ -1,5 +1,4 @@
 import NextLink from 'next/link';
-import { useAuth0 } from '@auth0/auth0-react';
 import {
   Box,
   Flex,
@@ -7,15 +6,17 @@ import {
   Icon,
   IconButton,
   useColorMode,
-  Button
+  Button,
+  Link
 } from '@chakra-ui/core';
 import { GoRocket } from 'react-icons/go';
 import { FiMoon, FiSun } from 'react-icons/fi';
 import { projectName } from '../pages/index';
+import { useFetchUser } from 'utils/user';
 
 export const Header = () => {
   const { colorMode, toggleColorMode } = useColorMode();
-  const { loginWithRedirect, isAuthenticated, logout } = useAuth0();
+  const { loading, user } = useFetchUser();
 
   return (
     <Box as="header" w="full">
@@ -37,10 +38,14 @@ export const Header = () => {
           </NextLink>
         </Box>
         <Flex align="center">
-          {isAuthenticated ? (
-            <Button onClick={() => logout({ returnTo: window.location.origin })}>Logout</Button>
+          {!loading && user ? (
+            <Button as={Link} href="/api/logout">
+              Log Out
+            </Button>
           ) : (
-            <Button onClick={() => loginWithRedirect()}>Sign In</Button>
+            <Button as={Link} href="/api/login">
+              Log In
+            </Button>
           )}
 
           <IconButton

@@ -24,7 +24,7 @@ export const Hero = (props) => {
         flexBasis={{ base: '100%', lg: '50%' }}
         maxW={{ base: 'lg', lg: 'full' }}
         mx={{ base: 'auto', lg: 0 }}
-        ml={{ lg: '1rem' }}
+        ml={{ base: 'auto', lg: '1rem' }}
       >
         <Image maxW="full" src="/project_team.svg" />
       </Box>
