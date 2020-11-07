@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import NextLink from 'next/link';
 import {
   Box,
@@ -12,11 +13,9 @@ import {
 import { GoRocket } from 'react-icons/go';
 import { FiMoon, FiSun } from 'react-icons/fi';
 import { projectName } from '../pages/index';
-import { useFetchUser } from 'utils/user';
 
-export const Header = () => {
+export const Header = ({ user, loading }) => {
   const { colorMode, toggleColorMode } = useColorMode();
-  const { loading, user } = useFetchUser();
 
   return (
     <Box as="header" w="full">
@@ -58,4 +57,9 @@ export const Header = () => {
       </Flex>
     </Box>
   );
+};
+
+Header.propTypes = {
+  user: PropTypes.object,
+  loading: PropTypes.bool.isRequired
 };

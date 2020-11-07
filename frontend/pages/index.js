@@ -1,27 +1,16 @@
-import Head from 'next/head';
-import { Container } from '@/components/Container';
-import { Main } from '@/components/Main';
+import { Layout } from '@/components/Layout';
 import { Hero } from '@/components/Hero';
-import { Header } from '@/components/Header';
-import { Footer } from '@/components/Footer';
+import { useFetchUser } from 'utils/user';
 
 export const projectName = 'IssueTracker';
 
 function Home() {
+  const { user, loading } = useFetchUser();
+
   return (
-    <>
-      <Head>
-        <title>Issue Tracker</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <Container withOverlay>
-        <Header />
-        <Main>
-          <Hero />
-        </Main>
-        <Footer />
-      </Container>
-    </>
+    <Layout withOverlay user={user} loading={loading}>
+      <Hero />
+    </Layout>
   );
 }
 
