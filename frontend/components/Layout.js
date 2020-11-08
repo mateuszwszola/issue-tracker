@@ -5,7 +5,7 @@ import { Main } from '@/components/Main';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 
-export const Layout = ({ title, withOverlay, user, loading = false, children }) => {
+export const Layout = ({ title, withOverlay, children }) => {
   return (
     <>
       <Head>
@@ -14,7 +14,7 @@ export const Layout = ({ title, withOverlay, user, loading = false, children }) 
       </Head>
 
       <Container withOverlay={withOverlay}>
-        <Header user={user} loading={loading} />
+        <Header />
         <Main>{children}</Main>
         <Footer />
       </Container>
@@ -24,14 +24,11 @@ export const Layout = ({ title, withOverlay, user, loading = false, children }) 
 
 Layout.defaultProps = {
   title: '',
-  withOverlay: false,
-  loading: false
+  withOverlay: false
 };
 
 Layout.propTypes = {
   title: PropTypes.string.isRequired,
   withOverlay: PropTypes.bool,
-  user: PropTypes.object,
-  loading: PropTypes.bool.isRequired,
   children: PropTypes.element
 };

@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import NextLink from 'next/link';
 import {
   Box,
@@ -7,15 +6,16 @@ import {
   Icon,
   IconButton,
   useColorMode,
-  Button,
-  Link
+  Button
 } from '@chakra-ui/core';
 import { GoRocket } from 'react-icons/go';
 import { FiMoon, FiSun } from 'react-icons/fi';
 import { projectName } from '../pages/index';
+import { useAuth0 } from '@auth0/auth0-react';
 
-export const Header = ({ user, loading }) => {
+export const Header = () => {
   const { colorMode, toggleColorMode } = useColorMode();
+  const { loginWithRedirect, logout, isAuthenticated, isLoading } = useAuth0();
 
   return (
     <Box as="header" w="full">
@@ -37,14 +37,16 @@ export const Header = ({ user, loading }) => {
           </NextLink>
         </Box>
         <Flex align="center">
-          {!loading && user ? (
-            <Button as={Link} href="/api/logout">
-              Log Out
+          <NextLink href="/projects" passHref>
+            <Button as="a" mr={4}>
+              Projects
             </Button>
+          </NextLink>
+
+          {!isLoading && isAuthenticated ? (
+            <Button onClick={() => logout({ returnTo: window.location.origin })}>Sign Out</Button>
           ) : (
-            <Button as={Link} href="/api/login">
-              Log In
-            </Button>
+            <Button onClick={() => loginWithRedirect()}>Sign In</Button>
           )}
 
           <IconButton
@@ -57,9 +59,4 @@ export const Header = ({ user, loading }) => {
       </Flex>
     </Box>
   );
-};
-
-Header.propTypes = {
-  user: PropTypes.object,
-  loading: PropTypes.bool.isRequired
 };

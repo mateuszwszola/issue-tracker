@@ -1,12 +1,9 @@
 import { Projects } from '@/components/Projects';
 import { Layout } from '@/components/Layout';
-import { useFetchUser } from 'utils/user';
 
 function ProjectsPage() {
-  const { user, loading } = useFetchUser();
-
   return (
-    <Layout user={user} loading={loading} title="Projects">
+    <Layout title="Projects">
       <Projects />
     </Layout>
   );

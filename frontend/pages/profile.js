@@ -1,14 +1,14 @@
 import { Flex, Heading, Text, Img } from '@chakra-ui/core';
-import { useFetchUser } from '../utils/user';
 import { Layout } from '@/components/Layout';
+import { useAuth0 } from '@auth0/auth0-react';
 
 function Profile() {
-  const { user, loading } = useFetchUser();
+  const { user, isLoading } = useAuth0();
 
   return (
-    <Layout user={user} loading={loading} title="Profile">
+    <Layout title="Profile">
       <Flex flex={1} justify="center" align="center">
-        {user ? (
+        {!isLoading && user ? (
           <>
             <Img src={user?.picture} alt={`${user?.name}`} />
             <Heading>{user?.name}</Heading>
