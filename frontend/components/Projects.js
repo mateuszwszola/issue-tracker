@@ -1,5 +1,14 @@
 import PropTypes from 'prop-types';
-import { Heading, Box, Flex, Button, Text, Avatar, AvatarGroup, useColorMode } from '@chakra-ui/core';
+import {
+  Heading,
+  Box,
+  Flex,
+  Button,
+  Text,
+  Avatar,
+  AvatarGroup,
+  useColorMode
+} from '@chakra-ui/core';
 import { Table, THead, TBody, TFoot, Tr, Th, Td, Caption } from '@/components/Table';
 import { InputSearch } from '@/components/InputSearch';
 import { ButtonSort } from '@/components/projects/ButtonSort';
@@ -63,7 +72,9 @@ export const Projects = ({ data }) => {
               data.map((project) => (
                 <Tr key={project.id} _hover={{ background: hoverColor[colorMode] }}>
                   <Td>
-                    <TableLink href={`/projects/${encodeURIComponent(project.name)}`}>{project.name}</TableLink>
+                    <TableLink href={`/projects/${encodeURIComponent(project.name)}`}>
+                      {project.name}
+                    </TableLink>
                   </Td>
                   <Td p={2}>
                     <Text>{project.key}</Text>

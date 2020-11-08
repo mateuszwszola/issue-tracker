@@ -37,6 +37,7 @@ Every record will have:
 ## Role & Permissions Requirements:
 - admin:
   everyting but these are the permissions specific to admin:
+    - user and role management
     - manage projects
     - assign project manager
 - project manager:

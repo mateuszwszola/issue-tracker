@@ -1,5 +1,4 @@
 import NextLink from 'next/link';
-import { useAuth0 } from '@auth0/auth0-react';
 import {
   Box,
   Flex,
@@ -12,10 +11,11 @@ import {
 import { GoRocket } from 'react-icons/go';
 import { FiMoon, FiSun } from 'react-icons/fi';
 import { projectName } from '../pages/index';
+import { useAuth0 } from '@auth0/auth0-react';
 
 export const Header = () => {
   const { colorMode, toggleColorMode } = useColorMode();
-  const { loginWithRedirect, isAuthenticated, logout } = useAuth0();
+  const { loginWithRedirect, logout, isAuthenticated, isLoading } = useAuth0();
 
   return (
     <Box as="header" w="full">
@@ -37,8 +37,14 @@ export const Header = () => {
           </NextLink>
         </Box>
         <Flex align="center">
-          {isAuthenticated ? (
-            <Button onClick={() => logout({ returnTo: window.location.origin })}>Logout</Button>
+          <NextLink href="/projects" passHref>
+            <Button as="a" mr={4}>
+              Projects
+            </Button>
+          </NextLink>
+
+          {!isLoading && isAuthenticated ? (
+            <Button onClick={() => logout({ returnTo: window.location.origin })}>Sign Out</Button>
           ) : (
             <Button onClick={() => loginWithRedirect()}>Sign In</Button>
           )}
