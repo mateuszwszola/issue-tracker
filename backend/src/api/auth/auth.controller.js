@@ -29,7 +29,7 @@ const loginUser = async (req, res, next) => {
 
     const { email, picture } = profile;
     const name = profile.name === email ? profile.nickname : profile.name;
-    const isAdmin = profile[config.auth0.audience + 'is_admin'] === true;
+    const isAdmin = email === config.adminUserEmail;
 
     const newUserData = { sub, name, email, picture, is_admin: isAdmin };
 
