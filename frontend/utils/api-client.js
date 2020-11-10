@@ -1,0 +1,35 @@
+export const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+async function client(url, { body, token, ...customConfig } = {}) {
+  const headers = {};
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  const config = {
+    method: body ? 'POST' : 'GET',
+    ...customConfig,
+    headers: {
+      ...headers,
+      ...customConfig.headers
+    }
+  };
+
+  if (body) {
+    config.headers['Content-Type'] = 'application/json';
+    config.body = JSON.stringify(body);
+  }
+
+  return window.fetch(url, config).then(async (res) => {
+    const data = await res.json();
+
+    if (res.ok) {
+      return data;
+    } else {
+      return Promise.reject(data);
+    }
+  });
+}
+
+export default client;

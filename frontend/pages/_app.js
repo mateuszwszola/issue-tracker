@@ -2,6 +2,7 @@ import Router from 'next/router';
 import { ChakraProvider } from '@chakra-ui/core';
 import { Auth0Provider } from '@auth0/auth0-react';
 import theme from '../styles/theme';
+import { UserProvider } from 'contexts/user-context';
 
 const onRedirectCallback = (appState) => {
   Router.replace(appState?.returnTo || '/');
@@ -17,9 +18,11 @@ function MyApp({ Component, pageProps }) {
       redirectUri={typeof window !== 'undefined' && window.location.origin}
       onRedirectCallback={onRedirectCallback}
     >
-      <ChakraProvider resetCSS theme={theme}>
-        <Component {...pageProps} />
-      </ChakraProvider>
+      <UserProvider>
+        <ChakraProvider resetCSS theme={theme}>
+          <Component {...pageProps} />
+        </ChakraProvider>
+      </UserProvider>
     </Auth0Provider>
   );
 }
