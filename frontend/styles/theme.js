@@ -6,6 +6,12 @@ const colors = {
   accent: '#2274A5'
 };
 
-const customTheme = extendTheme({ colors });
+const config = {
+  colors,
+  useSystemColorMode: true,
+  initialColorMode: 'system'
+};
+
+const customTheme = extendTheme({ config });
 
 export default extendTheme(customTheme);

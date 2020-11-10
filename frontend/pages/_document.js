@@ -2,9 +2,8 @@ import Document, { Html, Head, Main, NextScript } from 'next/document';
 import { ColorModeScript } from '@chakra-ui/core';
 
 class CustomDocument extends Document {
-  static async getInitialProps(ctx) {
-    const initialProps = await Document.getInitialProps(ctx);
-    return { ...initialProps };
+  static getInitialProps(ctx) {
+    return Document.getInitialProps(ctx);
   }
 
   render() {
@@ -12,7 +11,7 @@ class CustomDocument extends Document {
       <Html>
         <Head />
         <body>
-          <ColorModeScript />
+          <ColorModeScript initialColorMode="system" />
           <Main />
           <NextScript />
         </body>

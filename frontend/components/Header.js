@@ -6,7 +6,14 @@ import {
   Icon,
   IconButton,
   useColorMode,
-  Button
+  Button,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  MenuDivider,
+  MenuGroup,
+  Avatar
 } from '@chakra-ui/core';
 import { GoRocket } from 'react-icons/go';
 import { FiMoon, FiSun } from 'react-icons/fi';
@@ -43,8 +50,24 @@ export const Header = () => {
             </Button>
           </NextLink>
 
-          {!isLoading && isAuthenticated ? (
-            <Button onClick={() => logout({ returnTo: window.location.origin })}>Sign Out</Button>
+          {isAuthenticated ? (
+            <>
+              <Menu>
+                <Avatar as={MenuButton} size="md" variant="ghost" />
+                <MenuList>
+                  <MenuGroup title="Profile">
+                    <MenuItem>
+                      <NextLink href="/profile" passHref>
+                        <a>Profile</a>
+                      </NextLink>
+                    </MenuItem>
+                    <MenuItem onClick={() => logout({ returnTo: window.location.origin })}>
+                      Sign Out
+                    </MenuItem>
+                  </MenuGroup>
+                </MenuList>
+              </Menu>
+            </>
           ) : (
             <Button onClick={() => loginWithRedirect()}>Sign In</Button>
           )}

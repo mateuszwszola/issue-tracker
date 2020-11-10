@@ -7,8 +7,8 @@ export const Hero = (props) => {
   const { loginWithRedirect } = useAuth0();
 
   const headingText = 'Manage your project work';
-  const heroText = `Welcome to ${projectName}. The software for managing
-  project work. Track tasks, bugs, and plan what needs to be done next. It will help you and your team in creating great products
+  const heroText = `Welcome to the ${projectName}. The software for managing
+  project work. Keep track of the tasks, bugs, feature requests, and plan what needs to be done next. It will help you and your team with creating great products
   easier.`;
 
   return (
