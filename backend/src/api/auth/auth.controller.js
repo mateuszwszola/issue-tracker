@@ -27,9 +27,15 @@ const loginUser = async (req, res, next) => {
 
     const profile = await response.json();
 
-    const { email, picture } = profile;
-    const name = profile.name === email ? profile.nickname : profile.name;
-    const isAdmin = email === config.adminUserEmail;
+    const { email, picture, nickname } = profile;
+
+    const name = profile.name === email ? nickname : profile.name;
+    // Read user roles which comes from the access_token
+    const assignedRoles = req.user[`${config.auth0.audience}/roles`];
+    // If there is no assignedRoles in the access_token, check for admin based on the email
+    const isAdmin = Array.isArray(assignedRoles)
+      ? assignedRoles.includes('Admin')
+      : email === config.adminUserEmail;
 
     const newUserData = { sub, name, email, picture, is_admin: isAdmin };
 
