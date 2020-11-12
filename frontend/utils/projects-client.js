@@ -9,4 +9,13 @@ function getProjects(url = 'projects', query = withGraphQueryString) {
   return client(`${url}?${query}`);
 }
 
-export { getProjects };
+const getProjectIdFromKey = (key) => {
+  const [projectId] = key.split('-').slice(-1);
+  return projectId;
+};
+
+function getProjectTickets(projectKey) {
+  return client(`projects/${encodeURIComponent(getProjectIdFromKey(projectKey))}/tickets`);
+}
+
+export { getProjects, getProjectTickets };
