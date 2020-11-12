@@ -72,12 +72,14 @@ export const Projects = ({ data }) => {
               ? data.map((project) => (
                   <Tr key={project?.id} _hover={{ background: hoverColor[colorMode] }}>
                     <Td>
-                      <TableLink href={`/projects/${encodeURIComponent(project?.name)}`}>
+                      <TableLink href={`/project/${encodeURIComponent(project?.key)}`}>
                         {project?.name}
                       </TableLink>
                     </Td>
                     <Td p={2}>
-                      <Text>{project?.key}</Text>
+                      <TableLink href={`/project/${encodeURIComponent(project?.key)}`}>
+                        {project?.key}
+                      </TableLink>
                     </Td>
                     <Td>
                       <TableLink href={`/users/${encodeURIComponent(project?.manager)}`}>
@@ -126,7 +128,7 @@ Projects.defaultProps = {
       key: 'PRO-1',
       name: 'Create React App',
       lead: 'Johnjohny Doe',
-      users: [
+      engineers: [
         {
           id: 1,
           name: 'User name',
@@ -149,7 +151,7 @@ Projects.defaultProps = {
       key: 'PRO-2',
       name: 'Project #2',
       lead: 'Janna Doe',
-      users: [
+      engineers: [
         {
           id: 1,
           name: 'User name',
