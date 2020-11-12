@@ -14,12 +14,15 @@ function createProjectKey(projectName, projectId) {
 
 function getDefaultProjectGraphQuery(query, withGraph) {
   return query
-    .allowGraph('[type, manager]')
+    .allowGraph('[type, manager, engineers]')
     .withGraphFetched(withGraph)
     .modifyGraph('type', (builder) => {
       builder.select('id', 'name');
     })
     .modifyGraph('manager', (builder) => {
+      builder.select('id', 'sub', 'name', 'email', 'picture');
+    })
+    .modifyGraph('engineers', (builder) => {
       builder.select('id', 'sub', 'name', 'email', 'picture');
     });
 }

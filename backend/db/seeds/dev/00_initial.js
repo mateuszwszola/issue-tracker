@@ -6,6 +6,7 @@ import {
   ticketStatuses,
   ticketPriorities,
 } from '../../../src/constants/ticket';
+import { getProjectData } from '../../../src/fixtures/data';
 
 export async function seed(knex) {
   await Promise.all(
@@ -18,4 +19,13 @@ export async function seed(knex) {
     knex(tableNames.ticket_status).insert(ticketStatuses),
     knex(tableNames.ticket_priority).insert(ticketPriorities),
   ]);
+
+  const projects = Array(10)
+    .fill(null)
+    .map((_, i) => ({
+      ...getProjectData(),
+      key: `abc-${i}`,
+    }));
+
+  await knex(tableNames.project).insert(projects);
 }
