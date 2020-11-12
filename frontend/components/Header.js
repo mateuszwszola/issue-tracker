@@ -11,7 +11,6 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
-  MenuDivider,
   MenuGroup,
   Avatar
 } from '@chakra-ui/core';
@@ -22,7 +21,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 
 export const Header = () => {
   const { colorMode, toggleColorMode } = useColorMode();
-  const { loginWithRedirect, logout, isAuthenticated, isLoading } = useAuth0();
+  const { loginWithRedirect, logout, isAuthenticated } = useAuth0();
 
   return (
     <Box as="header" w="full">

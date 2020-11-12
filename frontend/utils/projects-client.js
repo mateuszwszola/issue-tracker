@@ -1,7 +1,7 @@
-import client, { API_URL } from './api-client';
+import client from './api-client';
 
-function getProjects(query = '') {
-  return client(`${API_URL}/projects?${encodeURIComponent(query)}`);
+function getProjects(url = 'projects') {
+  return client(url);
 }
 
 export { getProjects };

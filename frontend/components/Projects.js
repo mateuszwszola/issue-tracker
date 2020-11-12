@@ -62,39 +62,40 @@ export const Projects = ({ data }) => {
               </Th>
               <Th px={2} py={1} textAlign="left">
                 <Text as="span" fontSize="sm" fontWeight="semibold">
-                  People
+                  Engineers
                 </Text>
               </Th>
             </Tr>
           </THead>
           <TBody fontSize={['sm', 'md']}>
-            {data &&
-              data.map((project) => (
-                <Tr key={project.id} _hover={{ background: hoverColor[colorMode] }}>
-                  <Td>
-                    <TableLink href={`/projects/${encodeURIComponent(project.name)}`}>
-                      {project.name}
-                    </TableLink>
-                  </Td>
-                  <Td p={2}>
-                    <Text>{project.key}</Text>
-                  </Td>
-                  <Td>
-                    <TableLink href={`/users/${encodeURIComponent(project.lead)}`}>
-                      <Avatar bg="red.500" size="sm" mr={2} />
-                      <Text as="span">{project.lead}</Text>
-                    </TableLink>
-                  </Td>
+            {Array.isArray(data) && data?.length > 0
+              ? data.map((project) => (
+                  <Tr key={project?.id} _hover={{ background: hoverColor[colorMode] }}>
+                    <Td>
+                      <TableLink href={`/projects/${encodeURIComponent(project?.name)}`}>
+                        {project?.name}
+                      </TableLink>
+                    </Td>
+                    <Td p={2}>
+                      <Text>{project?.key}</Text>
+                    </Td>
+                    <Td>
+                      <TableLink href={`/users/${encodeURIComponent(project?.manager)}`}>
+                        <Avatar bg="red.500" size="sm" mr={2} />
+                        <Text as="span">{project?.manager}</Text>
+                      </TableLink>
+                    </Td>
 
-                  <Td p={2}>
-                    <AvatarGroup size="sm" max={2}>
-                      {project.users.map((user) => (
-                        <Avatar key={user.id} />
-                      ))}
-                    </AvatarGroup>
-                  </Td>
-                </Tr>
-              ))}
+                    <Td p={2}>
+                      <AvatarGroup size="sm" max={2}>
+                        {project?.engineers?.map((user) => (
+                          <Avatar key={user?.id} />
+                        ))}
+                      </AvatarGroup>
+                    </Td>
+                  </Tr>
+                ))
+              : ''}
           </TBody>
           <TFoot borderTop="2px" borderColor={borderColor[colorMode]}>
             <Tr>

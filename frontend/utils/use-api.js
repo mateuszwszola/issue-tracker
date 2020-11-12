@@ -42,7 +42,15 @@ function useApi(url, isTokenRequired, options = {}) {
         }));
       }
     })();
-  }, [refreshIndex, isLoading, isAuthenticated]);
+  }, [
+    refreshIndex,
+    isLoading,
+    isAuthenticated,
+    getAccessTokenSilently,
+    url,
+    isTokenRequired,
+    options
+  ]);
 
   return {
     ...state,

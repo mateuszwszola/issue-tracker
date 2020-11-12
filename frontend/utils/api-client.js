@@ -21,7 +21,7 @@ async function client(url, { body, token, ...customConfig } = {}) {
     config.body = JSON.stringify(body);
   }
 
-  return window.fetch(url, config).then(async (res) => {
+  return window.fetch(`${API_URL}/${url}`, config).then(async (res) => {
     const data = await res.json();
 
     if (res.ok) {
