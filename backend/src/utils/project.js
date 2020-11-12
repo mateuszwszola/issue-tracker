@@ -21,9 +21,6 @@ function getDefaultProjectGraphQuery(query, withGraph) {
     })
     .modifyGraph('manager', (builder) => {
       builder.select('id', 'sub', 'name', 'email', 'picture');
-    })
-    .modifyGraph('engineers', (builder) => {
-      builder.select('id', 'sub', 'name', 'email', 'picture');
     });
 }
 
