@@ -1,5 +1,5 @@
 import { Model } from 'objection';
-import tableNames from '../../../constants/tableNames';
+import tableNames from '../../constants/tableNames';
 
 class Ticket extends Model {
   static get tableName() {

@@ -1,6 +1,5 @@
 import jwt from 'express-jwt';
 import jwksRsa from 'jwks-rsa';
-import { isEmpty } from 'lodash';
 import { Project } from '../api/project/project.model';
 import { User } from '../api/user/user.model';
 import config from '../config';
@@ -24,63 +23,111 @@ const checkJwt = () =>
     algorithms: ['RS256'],
   });
 
-const isAdmin = () => async (req, res, next) => {
+const preloadApiUser = () => async (req, res, next) => {
   const { sub } = req.user;
 
   const user = await User.query().findOne({ sub });
 
-  if (!(user && user.is_admin)) {
+  req.api_user = user;
+
+  next();
+};
+
+const preloadProject = () => async (req, res, next) => {
+  const projectId =
+    req.params.projectId || req.query.projectId || req.body.projectId;
+
+  if (!projectId) {
+    return next(new ErrorHandler(400, 'Project id is required'));
+  }
+
+  const project = await Project.query().findById(projectId);
+
+  if (!project) {
     return next(
-      new ErrorHandler(
-        403,
-        'You do not have access rights to access the resource'
-      )
+      new ErrorHandler(404, `Project with ${projectId} id not found`)
     );
   }
 
-  req.user.api_user_id = user.id;
+  req.project = project;
 
   next();
 };
 
-const isProjectManager = () => async (req, res, next) => {
-  const { sub } = req.user;
-  const { projectId } = req.params;
+const isAdmin = () => {
+  return [
+    preloadApiUser(),
+    async (req, res, next) => {
+      if (!(req.api_user && req.api_user.is_admin)) {
+        return next(
+          new ErrorHandler(
+            403,
+            'You do not have access rights to access the resource'
+          )
+        );
+      }
 
-  const user = await User.query().findOne({ sub });
-  const project = await Project.query().findById(projectId);
-
-  if ((user && user.is_admin) || (project && project.manager_id === user.id)) {
-    return next();
-  } else {
-    throw new ErrorHandler(403, 'Unauthorized');
-  }
+      next();
+    },
+  ];
 };
 
-const isProjectEngineer = () => async (req, res, next) => {
-  const { projectId } = req.params;
-  const { sub } = req.user;
+const isProjectManager = () => {
+  return [
+    preloadApiUser(),
+    preloadProject(),
+    (req, res, next) => {
+      const isAdmin = req.api_user && req.api_user.is_admin;
+      const isProjectManager =
+        req.api_user.id &&
+        req.project.manager_id &&
+        req.api_user.id === req.project.manager_id;
 
-  const user = await User.query().findOne({ sub });
-  const project = await Project.query().findById(projectId);
+      if (!(isAdmin || isProjectManager)) {
+        return next(new ErrorHandler(403, 'Unauthorized'));
+      }
 
-  if (user.is_admin || user.id === project.manager_id) {
-    return next();
-  }
-
-  const result = await Project.relatedQuery('engineers')
-    .for(projectId)
-    .first()
-    .where('sub', sub);
-
-  if (!result || isEmpty(result)) {
-    throw new ErrorHandler(
-      403,
-      'You are not authorized to access this resource'
-    );
-  }
-
-  next();
+      next();
+    },
+  ];
 };
 
-export { checkJwt, isAdmin, isProjectManager, isProjectEngineer };
+const isProjectEngineer = () => {
+  return [
+    preloadApiUser(),
+    preloadProject(),
+    async (req, res, next) => {
+      const isAdmin = req.api_user && req.api_user.is_admin;
+      const isProjectManager =
+        req.api_user.id &&
+        req.project.manager_id &&
+        req.api_user.id === req.project.manager_id;
+
+      if (isAdmin || isProjectManager) {
+        return next();
+      }
+
+      const engineer = await Project.relatedQuery('engineers')
+        .for(req.project.id)
+        .findById(req.api_user.id);
+
+      if (!engineer) {
+        throw new ErrorHandler(
+          403,
+          'You are not authorized to access this resource'
+        );
+      }
+
+      next();
+    },
+  ];
+};
+
+export {
+  checkJwt,
+  preloadApiUser,
+  preloadProject,
+  isAdmin,
+  isProjectManager,
+  isProjectEngineer,
+};

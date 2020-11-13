@@ -2,7 +2,6 @@ import { Router } from 'express';
 import * as controllers from './project.controller';
 import { checkJwt, isAdmin } from '../../middlewares/auth';
 import registerProjectEngineerRoutes from './projectEngineer/projectEngineer.routes';
-import registerProjectTicketRoutes from './ticket/ticket.routes';
 import { parsePaginationQueryParams } from '../../middlewares/queryParams';
 const router = Router();
 
@@ -11,12 +10,6 @@ const router = Router();
  * @desc  Get, add and remove enginners from a project
  */
 registerProjectEngineerRoutes(router);
-
-/**
- * @route /api/v1/projects/:projectId/tickets
- * @desc  Manage project tickets
- */
-registerProjectTicketRoutes(router);
 
 // /api/v1/projects
 router

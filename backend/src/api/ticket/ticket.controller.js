@@ -1,9 +1,7 @@
 import { isEmpty } from 'lodash';
-import { pickExistingProperties } from '../../../utils/helpers';
-import { validTicketOrders } from '../../../utils/ticket';
-import { ErrorHandler } from '../../../utils/error';
-import { User } from '../../user/user.model';
-import { Project } from '../project.model';
+import { pickExistingProperties } from '../../utils/helpers';
+import { validTicketOrders } from '../../utils/ticket';
+import { ErrorHandler } from '../../utils/error';
 import { Ticket } from './ticket.model';
 
 export function getDefaultTicketGraphQuery(query, withGraph) {
@@ -13,8 +11,7 @@ export function getDefaultTicketGraphQuery(query, withGraph) {
 }
 
 const getTickets = async (req, res) => {
-  const { projectId } = req.params;
-  const { cursor, limit, select, withGraph } = req.query;
+  const { projectId, select, withGraph, cursor, limit } = req.query;
   let { orderBy } = req.query;
 
   orderBy = orderBy ? orderBy.toLowerCase() : 'id';
@@ -23,11 +20,11 @@ const getTickets = async (req, res) => {
     throw new ErrorHandler(400, 'Invalid orderBy param');
   }
 
-  const query = Project.relatedQuery('tickets')
-    .for(projectId)
+  const query = Ticket.query()
+    .where('project_id', projectId)
+    .where('archived_at', null)
     .offset(cursor)
     .limit(limit)
-    .where('archived_at', null)
     .orderBy(orderBy);
 
   if (select) {
@@ -42,12 +39,10 @@ const getTickets = async (req, res) => {
 };
 
 const getTicket = async (req, res) => {
-  const { projectId, ticketId } = req.params;
+  const { ticketId } = req.params;
   const { select, withGraph } = req.query;
 
-  const query = Project.relatedQuery('tickets')
-    .for(projectId)
-    .findById(ticketId);
+  const query = Ticket.query().findById(ticketId);
 
   if (select) {
     query.select(select);
@@ -60,26 +55,24 @@ const getTicket = async (req, res) => {
   const result = await query;
 
   if (isEmpty(result)) {
-    throw new ErrorHandler(404, 'Ticket not found');
+    throw new ErrorHandler(404, `Ticket with ${ticketId} id not found`);
   }
 
   return res.status(200).json({ ticket: result });
 };
 
 const addTicket = async (req, res) => {
-  const { projectId } = req.params;
+  const { projectId } = req.query;
   const { name, description, type_id, status_id, priority_id } = req.body;
 
-  const reporter = await User.query()
-    .findOne({ sub: req.user.sub })
-    .select('id');
+  const reporterId = req.api_user.id;
 
-  const ticket = await Project.relatedQuery('tickets')
-    .for(projectId)
+  const ticket = await Ticket.query()
     .insert({
+      project_id: projectId,
+      reporter_id: reporterId,
       name,
       description,
-      reporter_id: reporter.id,
       type_id,
       status_id,
       priority_id,
@@ -90,38 +83,32 @@ const addTicket = async (req, res) => {
 };
 
 const updateTicket = async (req, res) => {
-  const { ticketId } = req.params;
-
   const properties = [
     'name',
     'description',
     'type_id',
     'status_id',
     'priority_id',
+    'parent_id',
   ];
 
   const newTicketData = pickExistingProperties(properties, req.body);
 
-  let query = Ticket.query().findById(ticketId);
+  let updatedTicket;
 
   if (!isEmpty(newTicketData)) {
-    query = query.patch(newTicketData).returning('*');
+    updatedTicket = await req.ticket.$query.patch(newTicketData).returning('*');
   }
 
-  return res.status(200).json({ ticket: await query });
+  return res.status(200).json({ ticket: updatedTicket || req.ticket });
 };
 
 const deleteTicket = async (req, res) => {
-  const { ticketId } = req.params;
-
-  const result = await Ticket.query()
-    .findById(ticketId)
-    .delete()
-    .returning('*');
-
-  if (isEmpty(result)) {
-    throw new ErrorHandler('404', 'Ticket not found');
+  if (req.ticket.reporter_id !== req.api_user.id) {
+    throw new ErrorHandler(403, 'You are not the owner of the ticket');
   }
+
+  const result = await req.ticket.$query.delete().returning('*');
 
   return res.status(200).json({ ticket: result });
 };

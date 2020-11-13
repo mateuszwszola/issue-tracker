@@ -1,17 +1,17 @@
 import supertest from 'supertest';
-import { app } from '../../../../app';
-import db from '../../../../db';
-import setupTest from '../../../../setupTests';
-import teardownTest from '../../../../teardownTests';
-import { Project } from '../../project.model';
-import { User } from '../../../user/user.model';
+import { app } from '../../../app';
+import db from '../../../db';
+import setupTest from '../../../setupTests';
+import teardownTest from '../../../teardownTests';
+import { Project } from '../project.model';
+import { User } from '../../user/user.model';
 import { Ticket } from '../ticket.model';
 import {
   getProjectData,
   getUserData,
   getTicketData,
-} from '../../../../fixtures/data';
-import { getToken } from '../../../../fixtures/jwt';
+} from '../../../fixtures/data';
+import { getToken } from '../../../fixtures/jwt';
 
 const BASE_PATH = '/api/v1/projects';
 
