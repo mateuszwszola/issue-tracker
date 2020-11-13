@@ -107,9 +107,9 @@ describe('Test ticket endpoints', () => {
     });
   });
 
-  describe('GET /api/v1/projects/:projectId/tickets/:ticketId', () => {
+  describe('GET /api/v1/tickets/:ticketId?projectId=', () => {
     it('should respond with 404 - ticket not found', async () => {
-      const response = await supertest(app).get(`${BASE_PATH}/100/tickets/100`);
+      const response = await supertest(app).get(`${BASE_PATH}/100`);
 
       expect(response.statusCode).toBe(404);
     });
@@ -125,9 +125,7 @@ describe('Test ticket endpoints', () => {
           })
         );
 
-      const response = await supertest(app).get(
-        `${BASE_PATH}/${project.id}/tickets/${ticket.id}`
-      );
+      const response = await supertest(app).get(`${BASE_PATH}/${ticket.id}`);
 
       expect(response.statusCode).toBe(200);
       expect(response.body).toHaveProperty('ticket');
@@ -136,9 +134,37 @@ describe('Test ticket endpoints', () => {
       expect(response.body.ticket.key).toBeTruthy();
       expect(response.body.ticket.name).toBe(ticket.name);
     });
+
+    it('should respond with a ticket withGraphFetched', async () => {
+      const reporter = await UserModel.query().insert(getUserData());
+      const project = await ProjectModel.query().insert(getProjectData());
+      const ticket = await ProjectModel.relatedQuery('tickets')
+        .for(project.id)
+        .insert(
+          getTicketData({
+            reporterId: reporter.id,
+          })
+        );
+
+      const response = await supertest(app).get(
+        `${BASE_PATH}/${ticket.id}?withGraph=[project,type(defaultSelects),status(defaultSelects),priority(defaultSelects),reporter]`
+      );
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toHaveProperty('ticket');
+      expect(response.body.ticket.id).toBe(ticket.id);
+      expect(response.body.ticket.project_id).toBe(project.id);
+      expect(response.body.ticket.key).toBeTruthy();
+      expect(response.body.ticket.name).toBe(ticket.name);
+      expect(response.body.ticket.project.name).toBe(project.name);
+      expect(response.body.ticket.reporter.name).toBe(reporter.name);
+      expect(response.body.ticket.type).toHaveProperty('name');
+      expect(response.body.ticket.status).toHaveProperty('name');
+      expect(response.body.ticket.priority).toHaveProperty('name');
+    });
   });
 
-  describe('POST /api/v1/projects/:projectId/tickets', () => {
+  describe('POST /api/v1/tickets?projectId=', () => {
     it('should fail without token', async () => {
       const reporter = await UserModel.query().insert(getUserData());
       const project = await ProjectModel.query().insert(getProjectData());
@@ -146,10 +172,38 @@ describe('Test ticket endpoints', () => {
       const ticketData = getTicketData({ reporterId: reporter.id });
 
       const response = await supertest(app)
-        .post(`${BASE_PATH}/${project.id}/tickets`)
+        .post(`${BASE_PATH}?projectId=${project.id}`)
         .send(ticketData);
 
       expect(response.statusCode).toBe(401);
+    });
+
+    it('should fail if projectId query param is not provided', async () => {
+      const user = await UserModel.query().insert(
+        getUserData({ sub: 'auth0|123' })
+      );
+
+      const token = getToken({ sub: user.sub });
+
+      const response = await supertest(app)
+        .post(`${BASE_PATH}`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.statusCode).toBe(400);
+    });
+
+    it('should fail if project does not exists', async () => {
+      const user = await UserModel.query().insert(
+        getUserData({ sub: 'auth0|123' })
+      );
+
+      const token = getToken({ sub: user.sub });
+
+      const response = await supertest(app)
+        .post(`${BASE_PATH}?projectId=123`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.statusCode).toBe(404);
     });
 
     it('should fail if auth user is not a project engineer', async () => {
@@ -163,7 +217,7 @@ describe('Test ticket endpoints', () => {
       const token = getToken({ sub: user.sub });
 
       const response = await supertest(app)
-        .post(`${BASE_PATH}/${project.id}/tickets`)
+        .post(`${BASE_PATH}?projectId=${project.id}`)
         .send(ticketData)
         .set('Authorization', `Bearer ${token}`);
 
@@ -179,12 +233,12 @@ describe('Test ticket endpoints', () => {
         .for(project.id)
         .relate(user.id);
 
-      const ticketData = getTicketData();
+      const ticketData = getTicketData({ reporterId: user.id });
 
       const token = getToken({ sub: user.sub });
 
       const response = await supertest(app)
-        .post(`${BASE_PATH}/${project.id}/tickets`)
+        .post(`${BASE_PATH}?projectId=${project.id}`)
         .send(ticketData)
         .set('Authorization', `Bearer ${token}`);
 

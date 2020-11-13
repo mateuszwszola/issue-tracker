@@ -75,7 +75,7 @@ const addTicket = async (req, res) => {
 
   const ticket = await Ticket.query()
     .insert({
-      project_id: projectId,
+      project_id: parseInt(projectId),
       reporter_id: reporterId,
       name,
       description,

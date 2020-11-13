@@ -35,7 +35,7 @@ router
 
 /**
  * @route /api/v1/tickets/:ticketId?projectId=
- * @desc Update and delete tickets
+ * @desc Get, Update and Delete ticket
  */
 router
   .route('/:ticketId')
