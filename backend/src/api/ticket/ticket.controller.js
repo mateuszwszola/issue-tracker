@@ -1,8 +1,8 @@
 import { isEmpty } from 'lodash';
 import { pickExistingProperties } from '../../utils/helpers';
-import { validTicketOrders } from '../../utils/ticket';
 import { ErrorHandler } from '../../utils/error';
 import { Ticket } from './ticket.model';
+import { validTicketOrders } from '../../constants/ticket';
 
 export function getDefaultTicketGraphQuery(query, withGraph) {
   return query

@@ -32,6 +32,17 @@ const ticketPriorities = Object.values(TICKET_PRIORITIES).map((name) => ({
   name,
 }));
 
+const validTicketOrders = new Set([
+  'id',
+  'project_id',
+  'key',
+  'name',
+  'type_id',
+  'status_id',
+  'priority_id',
+  'reporter_id',
+]);
+
 export {
   TICKET_TYPES,
   TICKET_STATUSES,
@@ -39,4 +50,5 @@ export {
   ticketTypes,
   ticketStatuses,
   ticketPriorities,
+  validTicketOrders,
 };

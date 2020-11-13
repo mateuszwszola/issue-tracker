@@ -1,7 +1,7 @@
 import { Project } from '../project.model';
 import tableNames from '../../../constants/tableNames';
 import { ErrorHandler } from '../../../utils/error';
-import { validUserOrders } from '../../../utils/user';
+import { validUserOrders } from '../../../constants/user';
 
 const getProjectEngineers = async (req, res) => {
   const { projectId } = req.params;

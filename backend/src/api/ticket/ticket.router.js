@@ -6,25 +6,10 @@ import {
   preloadProject,
 } from '../../middlewares/auth';
 import { parsePaginationQueryParams } from '../../middlewares/queryParams';
-import { ErrorHandler } from '../../utils/error';
 import * as controllers from './ticket.controller';
-import { Ticket } from './ticket.model';
 import registerTicketEngineerRoutes from './ticketEngineer/ticketEngineer.routes';
+import { preloadTicket } from '../../middlewares/ticket';
 const router = Router();
-
-const preloadTicket = () => async (req, res, next) => {
-  const { ticketId } = req.params;
-
-  const ticket = await Ticket.query().findById(ticketId);
-
-  if (!ticket) {
-    throw new ErrorHandler(404, `Ticket with ${ticketId} id not found`);
-  }
-
-  req.ticket = ticket;
-
-  next();
-};
 
 /**
  * @route /api/v1/tickets/:ticketId/engineers?projectId=

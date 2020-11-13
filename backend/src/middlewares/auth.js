@@ -1,9 +1,10 @@
 import jwt from 'express-jwt';
 import jwksRsa from 'jwks-rsa';
 import { Project } from '../api/project/project.model';
-import { User } from '../api/user/user.model';
 import config from '../config';
 import { ErrorHandler } from '../utils/error';
+import { preloadApiUser } from '../middlewares/user';
+import { preloadProject } from '../middlewares/project';
 
 const checkJwt = () =>
   jwt({
@@ -22,37 +23,6 @@ const checkJwt = () =>
     issuer: config.auth0.issuer,
     algorithms: ['RS256'],
   });
-
-const preloadApiUser = () => async (req, res, next) => {
-  const { sub } = req.user;
-
-  const user = await User.query().findOne({ sub });
-
-  req.api_user = user;
-
-  next();
-};
-
-const preloadProject = () => async (req, res, next) => {
-  const projectId =
-    req.params.projectId || req.query.projectId || req.body.projectId;
-
-  if (!projectId) {
-    return next(new ErrorHandler(400, 'Project id is required'));
-  }
-
-  const project = await Project.query().findById(projectId);
-
-  if (!project) {
-    return next(
-      new ErrorHandler(404, `Project with ${projectId} id not found`)
-    );
-  }
-
-  req.project = project;
-
-  next();
-};
 
 const isAdmin = () => {
   return [

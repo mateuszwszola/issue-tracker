@@ -1,7 +1,7 @@
 import { User } from './user.model';
 import { isEmpty } from 'lodash';
 import { ErrorHandler } from '../../utils/error';
-import { validUserOrders } from '../../utils/user';
+import { validUserOrders } from '../../constants/user';
 import { pickExistingProperties } from '../../utils/helpers';
 
 const getUsers = async (req, res) => {
