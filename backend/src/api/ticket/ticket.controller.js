@@ -2,7 +2,7 @@ import { isEmpty } from 'lodash';
 import { pickExistingProperties } from '../../utils/helpers';
 import { ErrorHandler } from '../../utils/error';
 import { Ticket } from './ticket.model';
-import { validTicketOrders } from '../../constants/ticket';
+import { Project } from '../project/project.model';
 
 export function getDefaultTicketGraphQuery(query, withGraph) {
   return query
@@ -11,24 +11,30 @@ export function getDefaultTicketGraphQuery(query, withGraph) {
 }
 
 const getTickets = async (req, res) => {
-  const { projectId, select, withGraph, cursor, limit } = req.query;
-  let { orderBy } = req.query;
+  const { projectId, select, withGraph, cursor, limit, orderBy } = req.query;
 
-  orderBy = orderBy ? orderBy.toLowerCase() : 'id';
-
-  if (!validTicketOrders.has(orderBy)) {
-    throw new ErrorHandler(400, 'Invalid orderBy param');
+  if (projectId) {
+    const project = await Project.query().findById(projectId);
+    if (!project) {
+      throw new ErrorHandler(404, `Project with ${projectId} not found`);
+    }
   }
 
   const query = Ticket.query()
-    .where('project_id', projectId)
     .where('archived_at', null)
     .offset(cursor)
-    .limit(limit)
-    .orderBy(orderBy);
+    .limit(limit);
+
+  if (projectId) {
+    query.where('project_id', projectId);
+  }
 
   if (select) {
     query.select(select);
+  }
+
+  if (orderBy) {
+    query.orderBy(orderBy);
   }
 
   if (withGraph) {

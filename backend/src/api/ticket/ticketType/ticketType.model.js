@@ -6,6 +6,15 @@ class TicketType extends Model {
     return tableNames.ticket_type;
   }
 
+  static get modifiers() {
+    return {
+      defaultSelects(query) {
+        const { ref } = TicketType;
+        query.select(ref('id'), ref('name'));
+      },
+    };
+  }
+
   static get jsonSchema() {
     return {
       type: 'object',

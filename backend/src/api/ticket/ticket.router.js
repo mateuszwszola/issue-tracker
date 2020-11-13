@@ -3,12 +3,15 @@ import {
   checkJwt,
   isProjectEngineer,
   isProjectManager,
-  preloadProject,
 } from '../../middlewares/auth';
-import { parsePaginationQueryParams } from '../../middlewares/queryParams';
+import {
+  parsePaginationQueryParams,
+  validateOrderByParam,
+} from '../../middlewares/queryParams';
 import * as controllers from './ticket.controller';
 import registerTicketEngineerRoutes from './ticketEngineer/ticketEngineer.routes';
 import { preloadTicket } from '../../middlewares/ticket';
+import { validTicketOrders } from '../../constants/ticket';
 const router = Router();
 
 /**
@@ -23,7 +26,11 @@ registerTicketEngineerRoutes(router);
  */
 router
   .route('/')
-  .get(parsePaginationQueryParams(), preloadProject(), controllers.getTickets)
+  .get(
+    parsePaginationQueryParams(),
+    validateOrderByParam(validTicketOrders),
+    controllers.getTickets
+  )
   .post(checkJwt(), isProjectEngineer(), controllers.addTicket);
 
 /**

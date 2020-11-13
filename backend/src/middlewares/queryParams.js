@@ -22,13 +22,13 @@ const validateOrderByParam = (validOrders, defaultOrder = 'id') => (
 ) => {
   let { orderBy } = req.query;
 
-  orderBy = orderBy ? String(orderBy).toLowerCase() : defaultOrder;
+  orderBy = orderBy && String(orderBy).toLowerCase();
 
-  if (!validOrders.has(orderBy)) {
+  if (orderBy && !validOrders.has(orderBy)) {
     next(new ErrorHandler(400, 'Invalid orderBy param'));
+  } else {
+    req.query.orderBy = orderBy;
   }
-
-  req.query.orderBy = orderBy;
 
   next();
 };

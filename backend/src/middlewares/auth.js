@@ -93,11 +93,4 @@ const isProjectEngineer = () => {
   ];
 };
 
-export {
-  checkJwt,
-  preloadApiUser,
-  preloadProject,
-  isAdmin,
-  isProjectManager,
-  isProjectEngineer,
-};
+export { checkJwt, isAdmin, isProjectManager, isProjectEngineer };

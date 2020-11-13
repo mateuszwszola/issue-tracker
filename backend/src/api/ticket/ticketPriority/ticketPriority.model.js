@@ -6,6 +6,15 @@ class TicketPriority extends Model {
     return tableNames.ticket_priority;
   }
 
+  static get modifiers() {
+    return {
+      defaultSelects(query) {
+        const { ref } = TicketPriority;
+        query.select(ref('id'), ref('name'));
+      },
+    };
+  }
+
   static get jsonSchema() {
     return {
       type: 'object',

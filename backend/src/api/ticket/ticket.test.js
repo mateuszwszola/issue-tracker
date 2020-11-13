@@ -1,22 +1,22 @@
 import supertest from 'supertest';
 import { pick } from 'lodash';
-import { app } from '../../../app';
-import db from '../../../db';
-import setupTest from '../../../setupTests';
-import teardownTest from '../../../teardownTests';
-import { User } from '../../user/user.model';
+import { app } from '../../app';
+import db from '../../db';
+import setupTest from '../../setupTests';
+import teardownTest from '../../teardownTests';
+import { User } from '../user/user.model';
 import { Ticket } from './ticket.model';
-import { Project } from '../project.model';
-import { getToken } from '../../../fixtures/jwt';
+import { Project } from '../project/project.model';
+import { getToken } from '../../fixtures/jwt';
 import {
   getProjectData,
   getTicketData,
   getUserData,
-} from '../../../fixtures/data';
+} from '../../fixtures/data';
 
-const BASE_PATH = '/api/v1/projects';
+const BASE_PATH = '/api/v1/tickets';
 
-describe('Test the project ticket endpoints', () => {
+describe('Test ticket endpoints', () => {
   const thisDb = db;
   const UserModel = User;
   const ProjectModel = Project;
@@ -32,7 +32,37 @@ describe('Test the project ticket endpoints', () => {
     await UserModel.query().delete();
   });
 
-  describe('GET /api/v1/projects/:projectId/tickets', () => {
+  describe('GET /api/v1/tickets?projectId=', () => {
+    it('should respond with error for invalid query param', async () => {
+      const response = await supertest(app).get(`${BASE_PATH}?orderBy=invalid`);
+
+      expect(response.statusCode).toBe(400);
+    });
+
+    it('should respond with an error if project not found', async () => {
+      const response = await supertest(app).get(`${BASE_PATH}?projectId=123`);
+
+      expect(response.statusCode).toBe(404);
+    });
+
+    it('should respond with an array of tickets', async () => {
+      const reporter = await UserModel.query().insert(getUserData());
+      const project = await ProjectModel.query().insert(getProjectData());
+
+      const ticket = await ProjectModel.relatedQuery('tickets')
+        .for(project.id)
+        .insert(getTicketData({ reporterId: reporter.id }));
+
+      const response = await supertest(app).get(`${BASE_PATH}`);
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toHaveProperty('tickets');
+      expect(response.body.tickets.length).toBe(1);
+      expect(response.body.tickets[0].id).toBe(ticket.id);
+      expect(response.body.tickets[0].project_id).toBe(project.id);
+      expect(response.body.tickets[0].reporter_id).toBe(reporter.id);
+    });
+
     it('should respond with an array of project tickets', async () => {
       const reporter = await UserModel.query().insert(getUserData());
       const project = await ProjectModel.query().insert(getProjectData());
@@ -42,13 +72,38 @@ describe('Test the project ticket endpoints', () => {
         .insert(getTicketData({ reporterId: reporter.id }));
 
       const response = await supertest(app).get(
-        `${BASE_PATH}/${project.id}/tickets`
+        `${BASE_PATH}?projectId=${project.id}`
       );
 
       expect(response.statusCode).toBe(200);
       expect(response.body).toHaveProperty('tickets');
       expect(response.body.tickets.length).toBe(1);
       expect(response.body.tickets[0].id).toBe(ticket.id);
+      expect(response.body.tickets[0].project_id).toBe(project.id);
+      expect(response.body.tickets[0].reporter_id).toBe(reporter.id);
+    });
+
+    it('should respond with an array of project tickets withGraphFetched', async () => {
+      const reporter = await UserModel.query().insert(getUserData());
+      const project = await ProjectModel.query().insert(getProjectData());
+
+      const ticket = await ProjectModel.relatedQuery('tickets')
+        .for(project.id)
+        .insert(getTicketData({ reporterId: reporter.id }));
+
+      const response = await supertest(app).get(
+        `${BASE_PATH}?projectId=${project.id}&withGraph=[project,type(defaultSelects),status(defaultSelects),priority(defaultSelects),reporter,parentTicket]`
+      );
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toHaveProperty('tickets');
+      expect(response.body.tickets.length).toBe(1);
+      expect(response.body.tickets[0].id).toBe(ticket.id);
+      expect(response.body.tickets[0].project.name).toBe(project.name);
+      expect(response.body.tickets[0].type).toHaveProperty('name');
+      expect(response.body.tickets[0].status).toHaveProperty('name');
+      expect(response.body.tickets[0].priority).toHaveProperty('name');
+      expect(response.body.tickets[0].reporter).toHaveProperty('name');
     });
   });
 

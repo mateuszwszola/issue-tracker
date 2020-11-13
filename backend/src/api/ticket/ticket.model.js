@@ -50,8 +50,8 @@ class Ticket extends Model {
   }
 
   static get relationMappings() {
-    const { User } = require('../../user/user.model');
-    const { Project } = require('../project.model');
+    const { User } = require('../user/user.model');
+    const { Project } = require('../project/project.model');
     const { TicketType } = require('./ticketType/ticketType.model');
     const { TicketStatus } = require('./ticketStatus/ticketStatus.model');
     const { TicketPriority } = require('./ticketPriority/ticketPriority.model');
