@@ -1,9 +1,5 @@
 import { Router } from 'express';
-import {
-  checkJwt,
-  isProjectEngineer,
-  isProjectManager,
-} from '../../middlewares/auth';
+import { checkJwt, isProjectEngineer } from '../../middlewares/auth';
 import {
   parsePaginationQueryParams,
   validateOrderByParam,
@@ -12,6 +8,8 @@ import * as controllers from './ticket.controller';
 import registerTicketEngineerRoutes from './ticketEngineer/ticketEngineer.routes';
 import { preloadTicket } from '../../middlewares/ticket';
 import { validTicketOrders } from '../../constants/ticket';
+import { preloadProject } from '../../middlewares/project';
+import { createTicketSchema, updateTicketSchema } from '../../utils/ticket';
 const router = Router();
 
 /**
@@ -29,9 +27,15 @@ router
   .get(
     parsePaginationQueryParams(),
     validateOrderByParam(validTicketOrders),
+    preloadProject(false),
     controllers.getTickets
   )
-  .post(checkJwt(), isProjectEngineer(), controllers.addTicket);
+  .post(
+    checkJwt(),
+    isProjectEngineer(),
+    createTicketSchema,
+    controllers.addTicket
+  );
 
 /**
  * @route /api/v1/tickets/:ticketId?projectId=
@@ -44,11 +48,12 @@ router
     checkJwt(),
     isProjectEngineer(),
     preloadTicket(),
+    updateTicketSchema,
     controllers.updateTicket
   )
   .delete(
     checkJwt(),
-    isProjectManager(),
+    isProjectEngineer(),
     preloadTicket(),
     controllers.deleteTicket
   );

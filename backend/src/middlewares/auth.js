@@ -3,8 +3,9 @@ import jwksRsa from 'jwks-rsa';
 import { Project } from '../api/project/project.model';
 import config from '../config';
 import { ErrorHandler } from '../utils/error';
-import { preloadApiUser } from '../middlewares/user';
-import { preloadProject } from '../middlewares/project';
+import { preloadApiUser } from './user';
+import { preloadProject } from './project';
+import { ROLES } from '../constants/roles';
 
 const checkJwt = () =>
   jwt({
@@ -36,6 +37,11 @@ const isAdmin = () => {
           )
         );
       }
+      req.api_user.roles = req.api_user.roles || [];
+
+      if (!req.api_user.roles.includes(ROLES.admin)) {
+        req.api_user.roles = [...req.api_user.roles, ROLES.admin];
+      }
 
       next();
     },
@@ -52,6 +58,19 @@ const isProjectManager = () => {
         req.api_user.id &&
         req.project.manager_id &&
         req.api_user.id === req.project.manager_id;
+
+      req.api_user.roles = req.api_user.roles || [];
+
+      if (isAdmin && !req.api_user.roles.includes(ROLES.admin)) {
+        req.api_user.roles = [...req.api_user.roles, ROLES.admin];
+      }
+
+      if (
+        isProjectManager &&
+        !req.api_user.roles.includes(ROLES.project_manager)
+      ) {
+        req.api_user.roles = [...req.api_user.roles, ROLES.project_manager];
+      }
 
       if (!(isAdmin || isProjectManager)) {
         return next(new ErrorHandler(403, 'Unauthorized'));
@@ -73,6 +92,19 @@ const isProjectEngineer = () => {
         req.project.manager_id &&
         req.api_user.id === req.project.manager_id;
 
+      req.api_user.roles = req.api_user.roles || [];
+
+      if (isAdmin && !req.api_user.roles.includes(ROLES.admin)) {
+        req.api_user.roles = [...req.api_user.roles, ROLES.admin];
+      }
+
+      if (
+        isProjectManager &&
+        !req.api_user.roles.includes(ROLES.project_manager)
+      ) {
+        req.api_user.roles = [...req.api_user.roles, ROLES.project_manager];
+      }
+
       if (isAdmin || isProjectManager) {
         return next();
       }
@@ -86,6 +118,10 @@ const isProjectEngineer = () => {
           403,
           'You are not authorized to access this resource'
         );
+      }
+
+      if (!req.api_user.roles.includes(ROLES.project_engineer)) {
+        req.api_user.roles = [...req.api_user.roles, ROLES.project_engineer];
       }
 
       next();

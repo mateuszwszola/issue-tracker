@@ -224,6 +224,25 @@ describe('Test ticket endpoints', () => {
       expect(response.statusCode).toBe(403);
     });
 
+    it('should fail if required properties not provided', async () => {
+      const user = await UserModel.query().insert(
+        getUserData({ sub: 'auth0|123' })
+      );
+      const project = await ProjectModel.query().insert(getProjectData());
+      await ProjectModel.relatedQuery('engineers')
+        .for(project.id)
+        .relate(user.id);
+
+      const token = getToken({ sub: user.sub });
+
+      const response = await supertest(app)
+        .post(`${BASE_PATH}?projectId=${project.id}`)
+        .send({})
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.statusCode).toBe(422);
+    });
+
     it('should add and respond with a ticket', async () => {
       const user = await UserModel.query().insert(
         getUserData({ sub: 'auth0|123' })
@@ -254,7 +273,7 @@ describe('Test ticket endpoints', () => {
     });
   });
 
-  describe('PATCH /api/v1/projects/:projectId/tickets/:ticketId', () => {
+  describe('PATCH /api/v1/tickets/:ticketId?projectId=', () => {
     it('should fail without token', async () => {
       const reporter = await UserModel.query().insert(getUserData());
       const project = await ProjectModel.query().insert(getProjectData());
@@ -263,7 +282,7 @@ describe('Test ticket endpoints', () => {
         .insert(getTicketData({ reporterId: reporter.id }));
 
       const response = await supertest(app)
-        .patch(`${BASE_PATH}/${project.id}/tickets/${ticket.id}`)
+        .patch(`${BASE_PATH}/${ticket.id}?projectId=${project.id}`)
         .send({ name: 'New name' });
 
       expect(response.statusCode).toBe(401);
@@ -282,7 +301,7 @@ describe('Test ticket endpoints', () => {
       const token = getToken({ sub: user.sub });
 
       const response = await supertest(app)
-        .patch(`${BASE_PATH}/${project.id}/tickets/${ticket.id}`)
+        .patch(`${BASE_PATH}/${ticket.id}?projectId=${project.id}`)
         .send({ name: 'New name' })
         .set('Authorization', `Bearer ${token}`);
 
@@ -313,7 +332,7 @@ describe('Test ticket endpoints', () => {
       const token = getToken({ sub: user.sub });
 
       const response = await supertest(app)
-        .patch(`${BASE_PATH}/${project.id}/tickets/${ticket.id}`)
+        .patch(`${BASE_PATH}/${ticket.id}?projectId=${project.id}`)
         .send(newTicketData)
         .set('Authorization', `Bearer ${token}`);
 
@@ -330,7 +349,7 @@ describe('Test ticket endpoints', () => {
     });
   });
 
-  describe('DELETE /api/v1/projects/:projectId/tickets/:ticketId', () => {
+  describe('DELETE /api/v1/tickets/:ticketId?projectId=', () => {
     it('should fail without a token', async () => {
       const user = await UserModel.query().insert(getUserData());
       const project = await ProjectModel.query().insert(getProjectData());
@@ -343,7 +362,7 @@ describe('Test ticket endpoints', () => {
         );
 
       const response = await supertest(app).delete(
-        `${BASE_PATH}/${project.id}/tickets/${ticket.id}`
+        `${BASE_PATH}/${ticket.id}?projectId=${project.id}`
       );
 
       expect(response.statusCode).toBe(401);
@@ -365,7 +384,7 @@ describe('Test ticket endpoints', () => {
       const token = getToken({ sub: user.sub });
 
       const response = await supertest(app)
-        .delete(`${BASE_PATH}/${project.id}/tickets/${ticket.id}`)
+        .delete(`${BASE_PATH}/${ticket.id}?projectId=${project.id}`)
         .set('Authorization', `Bearer ${token}`);
 
       expect(response.statusCode).toBe(403);
@@ -375,14 +394,40 @@ describe('Test ticket endpoints', () => {
       const user = await UserModel.query().insert(
         getUserData({ sub: 'auth0|123', isAdmin: true })
       );
+      const project = await ProjectModel.query().insert(getProjectData());
 
       const token = getToken({ sub: user.sub });
 
       const response = await supertest(app)
-        .delete(`${BASE_PATH}/100/tickets/100`)
+        .delete(`${BASE_PATH}/100?projectId=${project.id}`)
         .set('Authorization', `Bearer ${token}`);
 
+      console.log(response.body);
+
       expect(response.statusCode).toBe(404);
+    });
+
+    it('should fail if trying to delete ticket but passing different projectId', async () => {
+      const user = await UserModel.query().insert(
+        getUserData({ sub: 'auth0|123', isAdmin: true })
+      );
+      const project = await ProjectModel.query().insert(getProjectData());
+      const project2 = await ProjectModel.query().insert(getProjectData());
+      const ticket = await ProjectModel.relatedQuery('tickets')
+        .for(project2.id)
+        .insert(
+          getTicketData({
+            reporterId: user.id,
+          })
+        );
+
+      const token = getToken({ sub: user.sub });
+
+      const response = await supertest(app)
+        .delete(`${BASE_PATH}/${ticket.id}?projectId=${project.id}`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.statusCode).toBe(400);
     });
 
     it('should remove and respond with a removed ticket', async () => {
@@ -401,8 +446,10 @@ describe('Test ticket endpoints', () => {
       const token = getToken({ sub: user.sub });
 
       const response = await supertest(app)
-        .delete(`${BASE_PATH}/${project.id}/tickets/${ticket.id}`)
+        .delete(`${BASE_PATH}/${ticket.id}?projectId=${project.id}`)
         .set('Authorization', `Bearer ${token}`);
+
+      console.log(response.body);
 
       expect(response.statusCode).toBe(200);
       expect(response.body).toHaveProperty('ticket');

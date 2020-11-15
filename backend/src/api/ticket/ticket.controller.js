@@ -1,8 +1,6 @@
 import { isEmpty } from 'lodash';
-import { pickExistingProperties } from '../../utils/helpers';
 import { ErrorHandler } from '../../utils/error';
 import { Ticket } from './ticket.model';
-import { Project } from '../project/project.model';
 
 export function getDefaultTicketGraphQuery(query, withGraph) {
   return query
@@ -13,14 +11,11 @@ export function getDefaultTicketGraphQuery(query, withGraph) {
 const getTickets = async (req, res) => {
   const { projectId, select, withGraph, cursor, limit, orderBy } = req.query;
 
-  if (projectId) {
-    const project = await Project.query().findById(projectId);
-    if (!project) {
-      throw new ErrorHandler(404, `Project with ${projectId} not found`);
-    }
+  if (projectId && !req.project) {
+    throw new ErrorHandler(404, `Project with ${projectId} not found`);
   }
 
-  const query = Ticket.query()
+  let query = Ticket.query()
     .where('archived_at', null)
     .offset(cursor)
     .limit(limit);
@@ -38,7 +33,7 @@ const getTickets = async (req, res) => {
   }
 
   if (withGraph) {
-    getDefaultTicketGraphQuery(query, withGraph);
+    query = getDefaultTicketGraphQuery(query, withGraph);
   }
 
   return res.status(200).json({ tickets: await query });
@@ -48,14 +43,14 @@ const getTicket = async (req, res) => {
   const { ticketId } = req.params;
   const { select, withGraph } = req.query;
 
-  const query = Ticket.query().findById(ticketId);
+  let query = Ticket.query().findById(ticketId);
 
   if (select) {
     query.select(select);
   }
 
   if (withGraph) {
-    getDefaultTicketGraphQuery(query, withGraph);
+    query = getDefaultTicketGraphQuery(query, withGraph);
   }
 
   const result = await query;
@@ -68,15 +63,14 @@ const getTicket = async (req, res) => {
 };
 
 const addTicket = async (req, res) => {
-  const { projectId } = req.query;
   const { name, description, type_id, status_id, priority_id } = req.body;
-
+  const { projectId } = req.query;
   const reporterId = req.api_user.id;
 
   const ticket = await Ticket.query()
     .insert({
       project_id: parseInt(projectId),
-      reporter_id: reporterId,
+      reporter_id: parseInt(reporterId),
       name,
       description,
       type_id,
@@ -89,24 +83,15 @@ const addTicket = async (req, res) => {
 };
 
 const updateTicket = async (req, res) => {
-  const properties = [
-    'name',
-    'description',
-    'type_id',
-    'status_id',
-    'priority_id',
-    'parent_id',
-  ];
+  const newTicketData = req.body;
 
-  const newTicketData = pickExistingProperties(properties, req.body);
+  const ticket = await Ticket.query()
+    .findById(req.ticket.id)
+    .where('project_id', req.project.id)
+    .patch(newTicketData)
+    .returning('*');
 
-  let updatedTicket;
-
-  if (!isEmpty(newTicketData)) {
-    updatedTicket = await req.ticket.$query.patch(newTicketData).returning('*');
-  }
-
-  return res.status(200).json({ ticket: updatedTicket || req.ticket });
+  return res.status(200).json({ ticket });
 };
 
 const deleteTicket = async (req, res) => {
@@ -114,7 +99,15 @@ const deleteTicket = async (req, res) => {
     throw new ErrorHandler(403, 'You are not the owner of the ticket');
   }
 
-  const result = await req.ticket.$query.delete().returning('*');
+  const result = await Ticket.query()
+    .findById(req.ticket.id)
+    .where('project_id', req.project.id)
+    .delete()
+    .returning('*');
+
+  if (typeof Number(result) === 'number' && Number(result) === 0) {
+    throw new ErrorHandler(400, 'Invalid project id');
+  }
 
   return res.status(200).json({ ticket: result });
 };
