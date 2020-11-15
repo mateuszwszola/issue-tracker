@@ -3,7 +3,7 @@ import { app } from '../../../app';
 import db from '../../../db';
 import setupTest from '../../../setupTests';
 import teardownTest from '../../../teardownTests';
-import { Project } from '../project.model';
+import { Project } from '../../project/project.model';
 import { User } from '../../user/user.model';
 import { Ticket } from '../ticket.model';
 import {
@@ -13,7 +13,7 @@ import {
 } from '../../../fixtures/data';
 import { getToken } from '../../../fixtures/jwt';
 
-const BASE_PATH = '/api/v1/projects';
+const BASE_PATH = '/api/v1/tickets';
 
 describe('Test ticket engineer endpoints', () => {
   const thisDb = db;
@@ -31,7 +31,7 @@ describe('Test ticket engineer endpoints', () => {
     await TicketModel.query().delete();
   });
 
-  describe('GET /api/v1/projects/:projectId/tickets/:ticketId/engineers', () => {
+  describe('GET /api/v1/tickets/:ticketId/engineers', () => {
     it('should respond with an array of ticket engineers', async () => {
       const project = await ProjectModel.query().insert(getProjectData());
       const ticket = await ProjectModel.relatedQuery('tickets')
@@ -42,7 +42,7 @@ describe('Test ticket engineer endpoints', () => {
         .insert(getUserData());
 
       const response = await supertest(app).get(
-        `${BASE_PATH}/${project.id}/tickets/${ticket.id}/engineers`
+        `${BASE_PATH}/${ticket.id}/engineers`
       );
 
       expect(response.statusCode).toBe(200);
@@ -55,7 +55,26 @@ describe('Test ticket engineer endpoints', () => {
     });
   });
 
-  describe('POST /api/v1/projects/:projectId/tickets/:ticketId/engineers/:userId', () => {
+  describe('POST /api/v1/tickets/:ticketId/engineers/:userId?projectId=', () => {
+    it('should fail without projectId', async () => {
+      const user = await UserModel.query().insert(
+        getUserData({ sub: 'auth0|123' })
+      );
+      const engineer = await UserModel.query().insert(getUserData());
+      const project = await ProjectModel.query().insert(getProjectData());
+      const ticket = await ProjectModel.relatedQuery('tickets')
+        .for(project.id)
+        .insert(getTicketData());
+
+      const token = getToken({ sub: user.sub });
+
+      const response = await supertest(app)
+        .post(`${BASE_PATH}/${ticket.id}/engineers/${engineer.id}`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.statusCode).toBe(400);
+    });
+
     it('should fail without passing token', async () => {
       const engineer = await UserModel.query().insert(getUserData());
       const project = await ProjectModel.query().insert(getProjectData());
@@ -64,7 +83,7 @@ describe('Test ticket engineer endpoints', () => {
         .insert(getTicketData());
 
       const response = await supertest(app).post(
-        `${BASE_PATH}/${project.id}/tickets/${ticket.id}/engineers/${engineer.id}`
+        `${BASE_PATH}/${ticket.id}/engineers/${engineer.id}?projectId=${project.id}`
       );
 
       expect(response.statusCode).toBe(401);
@@ -84,11 +103,31 @@ describe('Test ticket engineer endpoints', () => {
 
       const response = await supertest(app)
         .post(
-          `${BASE_PATH}/${project.id}/tickets/${ticket.id}/engineers/${engineer.id}`
+          `${BASE_PATH}/${ticket.id}/engineers/${engineer.id}?projectId=${project.id}`
         )
         .set('Authorization', `Bearer ${token}`);
 
       expect(response.statusCode).toBe(403);
+    });
+
+    it('should fail if engineer does not exists', async () => {
+      const user = await UserModel.query().insert(
+        getUserData({ sub: 'auth0|123' })
+      );
+      const project = await ProjectModel.query().insert(
+        getProjectData({ managerId: user.id })
+      );
+      const ticket = await ProjectModel.relatedQuery('tickets')
+        .for(project.id)
+        .insert(getTicketData());
+
+      const token = getToken({ sub: user.sub });
+
+      const response = await supertest(app)
+        .post(`${BASE_PATH}/${ticket.id}/engineers/100?projectId=${project.id}`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.statusCode).toBe(404);
     });
 
     it('should add a ticket engineer if auth user is an admin', async () => {
@@ -105,7 +144,7 @@ describe('Test ticket engineer endpoints', () => {
 
       const response = await supertest(app)
         .post(
-          `${BASE_PATH}/${project.id}/tickets/${ticket.id}/engineers/${engineer.id}`
+          `${BASE_PATH}/${ticket.id}/engineers/${engineer.id}?projectId=${project.id}`
         )
         .set('Authorization', `Bearer ${token}`);
 
@@ -129,7 +168,7 @@ describe('Test ticket engineer endpoints', () => {
 
       const response = await supertest(app)
         .post(
-          `${BASE_PATH}/${project.id}/tickets/${ticket.id}/engineers/${engineer.id}`
+          `${BASE_PATH}/${ticket.id}/engineers/${engineer.id}?projectId=${project.id}`
         )
         .set('Authorization', `Bearer ${token}`);
 
@@ -138,7 +177,31 @@ describe('Test ticket engineer endpoints', () => {
     });
   });
 
-  describe('DELETE /api/v1/projects/:projectId/tickets/:ticketId/engineers/:userId', () => {
+  describe('DELETE /api/v1/tickets/:ticketId/engineers/:userId?projectId=', () => {
+    it('should fail without projectId', async () => {
+      const user = await UserModel.query().insert(
+        getUserData({ sub: 'auth0|123' })
+      );
+      const engineer = await UserModel.query().insert(getUserData());
+      const project = await ProjectModel.query().insert(
+        getProjectData({ managerId: user.id })
+      );
+      const ticket = await ProjectModel.relatedQuery('tickets')
+        .for(project.id)
+        .insert(getTicketData());
+      await TicketModel.relatedQuery('engineers')
+        .for(ticket.id)
+        .relate(engineer.id);
+
+      const token = getToken({ sub: user.sub });
+
+      const response = await supertest(app)
+        .delete(`${BASE_PATH}/${ticket.id}/engineers/${engineer.id}`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.statusCode).toBe(400);
+    });
+
     it('should fail without passing token', async () => {
       const engineer = await UserModel.query().insert(getUserData());
       const project = await ProjectModel.query().insert(getProjectData());
@@ -147,7 +210,7 @@ describe('Test ticket engineer endpoints', () => {
         .insert(getTicketData());
 
       const response = await supertest(app).delete(
-        `${BASE_PATH}/${project.id}/tickets/${ticket.id}/engineers/${engineer.id}`
+        `${BASE_PATH}/${ticket.id}/engineers/${engineer.id}?projectId=${project.id}`
       );
 
       expect(response.statusCode).toBe(401);
@@ -170,7 +233,7 @@ describe('Test ticket engineer endpoints', () => {
 
       const response = await supertest(app)
         .delete(
-          `${BASE_PATH}/${project.id}/tickets/${ticket.id}/engineers/${engineer.id}`
+          `${BASE_PATH}/${ticket.id}/engineers/${engineer.id}?projectId=${project.id}`
         )
         .set('Authorization', `Bearer ${token}`);
 
@@ -194,9 +257,11 @@ describe('Test ticket engineer endpoints', () => {
 
       const response = await supertest(app)
         .delete(
-          `${BASE_PATH}/${project.id}/tickets/${ticket.id}/engineers/${engineer.id}`
+          `${BASE_PATH}/${ticket.id}/engineers/${engineer.id}?projectId=${project.id}`
         )
         .set('Authorization', `Bearer ${token}`);
+
+      console.log(response.body);
 
       expect(response.statusCode).toBe(200);
       expect(response.body).toHaveProperty('message');
@@ -226,7 +291,7 @@ describe('Test ticket engineer endpoints', () => {
 
       const response = await supertest(app)
         .delete(
-          `${BASE_PATH}/${project.id}/tickets/${ticket.id}/engineers/${engineer.id}`
+          `${BASE_PATH}/${ticket.id}/engineers/${engineer.id}?projectId=${project.id}`
         )
         .set('Authorization', `Bearer ${token}`);
 

@@ -25,6 +25,14 @@ const checkJwt = () =>
     algorithms: ['RS256'],
   });
 
+// const authorize = (roles = []) => {
+//   if (typeof roles === 'string') {
+//     roles = [roles];
+//   }
+//
+//   return [checkJwt(), preloadApiUser(), async (req, res, next) => {}];
+// };
+
 const isAdmin = () => {
   return [
     preloadApiUser(),
