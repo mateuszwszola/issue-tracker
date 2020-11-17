@@ -1,20 +1,22 @@
 import { useRouter } from 'next/router';
 import { Layout } from '@/components/Layout';
 import { BackButton } from '@/components/BackButton';
-import { Avatar, Box, Flex, Heading, Spinner, StackDivider, Text, VStack } from '@chakra-ui/core';
+import { Box, Flex, Heading, Spinner, StackDivider, Text, VStack } from '@chakra-ui/core';
 import useSWR from 'swr';
 import { getProjectTickets } from 'utils/tickets-client';
 
 function Project() {
   const router = useRouter();
-  const { key } = router.query;
-  const { data, error } = useSWR(key ? ['tickets', key] : null, () => getProjectTickets(key));
+  const { projectKey } = router.query;
+  const { data, error } = useSWR(projectKey ? ['tickets', projectKey] : null, () =>
+    getProjectTickets(projectKey)
+  );
 
   return (
     <Layout>
       <Box>
-        <BackButton>Go back to projects</BackButton>
-        <Heading mt={2}>{key}</Heading>
+        <BackButton>Go back to project</BackButton>
+        <Heading mt={2}>Issues for project: {projectKey}</Heading>
         {error ? (
           <div>Something went wrong...</div>
         ) : !data ? (
@@ -25,10 +27,15 @@ function Project() {
               <Box px={2} key={ticket?.id}>
                 <Text>{ticket?.name}</Text>
                 <Flex>
-                  <Box flex={1}>{ticket?.type?.name}</Box>
-                  <Box flex={1}>{ticket?.status?.name}</Box>
-                  <Box flex={1}>{ticket?.priority?.name}</Box>
-                  <Avatar size="xs" />
+                  <Box flex={1}>
+                    <Text fontSize="sm">{ticket?.type?.name}</Text>
+                  </Box>
+                  <Box flex={1}>
+                    <Text fontSize="sm">{ticket?.status?.name}</Text>
+                  </Box>
+                  <Box flex={1}>
+                    <Text fontSize="sm">{ticket?.priority?.name}</Text>
+                  </Box>
                 </Flex>
               </Box>
             ))}

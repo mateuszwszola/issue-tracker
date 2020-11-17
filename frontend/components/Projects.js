@@ -25,14 +25,10 @@ export const Projects = ({ data }) => {
     <>
       <ProjectsHeader>
         <Heading size="lg">Projects</Heading>
-        <Button size="sm" colorScheme="blue">
-          Create project
-        </Button>
+        <Box mt={4} w="full" maxW="12rem">
+          <InputSearch />
+        </Box>
       </ProjectsHeader>
-
-      <Box mt={4} w="full" maxW="12rem">
-        <InputSearch />
-      </Box>
 
       <Box mt={8} overflowX="auto">
         <Table w="full" border="2px" borderColor="transparent">
@@ -72,17 +68,17 @@ export const Projects = ({ data }) => {
               ? data.map((project) => (
                   <Tr key={project?.id} _hover={{ background: hoverColor[colorMode] }}>
                     <Td>
-                      <TableLink href={`/projects/${encodeURIComponent(project?.key)}`}>
+                      <TableLink href={`/project/${encodeURIComponent(project?.key)}`}>
                         {project?.name}
                       </TableLink>
                     </Td>
                     <Td p={2}>
-                      <TableLink href={`/projects/${encodeURIComponent(project?.key)}`}>
+                      <TableLink href={`/project/${encodeURIComponent(project?.key)}`}>
                         {project?.key}
                       </TableLink>
                     </Td>
                     <Td>
-                      <TableLink href={`/users/${encodeURIComponent(project?.manager?.sub)}`}>
+                      <TableLink href={`/user/${encodeURIComponent(project?.manager?.sub)}`}>
                         <Avatar bg="red.500" size="sm" mr={2} />
                         <Text as="span">{project?.manager?.name}</Text>
                       </TableLink>
