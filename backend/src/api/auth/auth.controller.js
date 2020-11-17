@@ -29,7 +29,7 @@ const loginUser = async (req, res, next) => {
 
     const { email, picture, nickname } = profile;
 
-    const name = profile.name === email ? nickname : profile.name;
+    const name = profile.name === email && nickname ? nickname : profile.name;
     // Read user roles which comes from the access_token
     const assignedRoles = req.user[`${config.auth0.audience}/roles`];
     // If there is no assignedRoles in the access_token, check for admin based on the email

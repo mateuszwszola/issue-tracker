@@ -1,5 +1,19 @@
 import Joi from 'joi';
+import { createBuilder } from './objection';
 import { validateRequest } from './validateRequest';
+
+function getTicketGraphQuery(query, withGraph) {
+  return query
+    .allowGraph('[project, type, status, priority, reporter, parentTicket]')
+    .withGraphFetched(withGraph)
+    .modifyGraph('type', createBuilder(['name']))
+    .modifyGraph('status', createBuilder(['name']))
+    .modifyGraph('priority', createBuilder(['name']))
+    .modifyGraph(
+      'reporter',
+      createBuilder(['id', 'sub', 'name', 'email', 'picture'])
+    );
+}
 
 function createTicketSchema(req, res, next) {
   const schema = Joi.object({
@@ -25,4 +39,4 @@ function updateTicketSchema(req, res, next) {
   validateRequest(req, next, schema);
 }
 
-export { createTicketSchema, updateTicketSchema };
+export { createTicketSchema, updateTicketSchema, getTicketGraphQuery };

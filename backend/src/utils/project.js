@@ -1,3 +1,5 @@
+import { createBuilder } from './objection';
+
 function createProjectKey(projectName, projectId) {
   let key = '';
   let acronym = projectName
@@ -8,20 +10,19 @@ function createProjectKey(projectName, projectId) {
   if (acronym.length < 2) {
     acronym = projectName.substr(0, 2);
   }
-  key = acronym.toUpperCase() + projectId;
+  key = acronym.toUpperCase() + '-' + projectId;
   return key;
 }
 
-function getDefaultProjectGraphQuery(query, withGraph) {
+function getProjectGraphQuery(query, withGraph) {
   return query
     .allowGraph('[type, manager, engineers]')
     .withGraphFetched(withGraph)
-    .modifyGraph('type', (builder) => {
-      builder.select('id', 'name');
-    })
-    .modifyGraph('manager', (builder) => {
-      builder.select('id', 'sub', 'name', 'email', 'picture');
-    });
+    .modifyGraph('type', createBuilder(['id', 'name']))
+    .modifyGraph(
+      'manager',
+      createBuilder(['id', 'sub', 'name', 'email', 'picture'])
+    );
 }
 
 const validProjectOrders = new Set([
@@ -34,4 +35,4 @@ const validProjectOrders = new Set([
   'updated_at',
 ]);
 
-export { createProjectKey, getDefaultProjectGraphQuery, validProjectOrders };
+export { createProjectKey, getProjectGraphQuery, validProjectOrders };

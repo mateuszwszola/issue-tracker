@@ -5,7 +5,7 @@ const router = Router();
 
 /*
   @route /api/v1/auth/login
-  @desc Return user if exists, if not - create one fetching profile information
+  @desc Return user if exists, if not - create one fetching profile information from Auth0
 */
 router.post('/login', checkJwt(), controllers.loginUser);
 

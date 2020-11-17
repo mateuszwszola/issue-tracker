@@ -1,12 +1,7 @@
 import { isEmpty } from 'lodash';
 import { ErrorHandler } from '../../utils/error';
+import { getTicketGraphQuery } from '../../utils/ticket';
 import { Ticket } from './ticket.model';
-
-export function getDefaultTicketGraphQuery(query, withGraph) {
-  return query
-    .allowGraph('[project, type, status, priority, reporter, parentTicket]')
-    .withGraphFetched(withGraph);
-}
 
 const getTickets = async (req, res) => {
   const { projectId, select, withGraph, cursor, limit, orderBy } = req.query;
@@ -33,7 +28,7 @@ const getTickets = async (req, res) => {
   }
 
   if (withGraph) {
-    query = getDefaultTicketGraphQuery(query, withGraph);
+    query = getTicketGraphQuery(query, withGraph);
   }
 
   return res.status(200).json({ tickets: await query });
@@ -50,7 +45,7 @@ const getTicket = async (req, res) => {
   }
 
   if (withGraph) {
-    query = getDefaultTicketGraphQuery(query, withGraph);
+    query = getTicketGraphQuery(query, withGraph);
   }
 
   const result = await query;

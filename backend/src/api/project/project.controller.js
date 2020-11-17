@@ -2,10 +2,7 @@ import { Project } from './project.model';
 import { isEmpty } from 'lodash';
 import { ErrorHandler } from '../../utils/error';
 import { pickExistingProperties } from '../../utils/helpers';
-import {
-  getDefaultProjectGraphQuery,
-  validProjectOrders,
-} from '../../utils/project';
+import { getProjectGraphQuery, validProjectOrders } from '../../utils/project';
 
 const getProjects = async (req, res) => {
   const { cursor, limit, select, withGraph } = req.query;
@@ -28,7 +25,7 @@ const getProjects = async (req, res) => {
   }
 
   if (withGraph) {
-    getDefaultProjectGraphQuery(query, withGraph);
+    getProjectGraphQuery(query, withGraph);
   }
 
   return res.status(200).json({ projects: await query });
@@ -45,7 +42,7 @@ const getProject = async (req, res) => {
   }
 
   if (withGraph) {
-    getDefaultProjectGraphQuery(query, withGraph);
+    getProjectGraphQuery(query, withGraph);
   }
 
   const result = await query;
