@@ -1,14 +1,19 @@
 import { createContext, useContext } from 'react';
-import PropTypes from 'prop-types';
 import useApi from 'utils/use-api';
-import { API_URL } from 'utils/api-client';
+import { Spinner } from '@chakra-ui/core';
 
 const ApiUserContext = createContext();
 
+const options = {
+  method: 'POST'
+};
+
 function ApiUserProvider(props) {
-  const { data } = useApi(`${API_URL}/auth/login`, true, {
-    method: 'POST'
-  });
+  const { data, loading } = useApi(`auth/login`, true, options);
+
+  if (loading) {
+    return <Spinner />;
+  }
 
   const value = {
     user: data?.user || null
@@ -24,9 +29,5 @@ function useApiUser() {
   }
   return context;
 }
-
-ApiUserProvider.propTypes = {
-  children: PropTypes.element.isRequired
-};
 
 export { ApiUserProvider, useApiUser };

@@ -1,21 +1,16 @@
 import useSWR from 'swr';
-import { Spinner, useToast } from '@chakra-ui/core';
+import { Spinner } from '@chakra-ui/core';
 import { Projects } from '@/components/Projects';
 import { Layout } from '@/components/Layout';
 import { getProjects } from 'utils/projects-client';
 
 function ProjectsPage() {
   const { data, error } = useSWR('projects', getProjects);
-  const toast = useToast();
 
   return (
     <Layout title="Projects">
       {error ? (
-        toast({
-          title: 'Something went wrong...',
-          description: error?.message,
-          status: 'error'
-        })
+        <div>Something went wrong... Please try reload the page</div>
       ) : !data ? (
         <Spinner />
       ) : (

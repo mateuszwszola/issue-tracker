@@ -2,20 +2,15 @@ import client from './api-client';
 import { objToQueryString } from './query-string';
 
 const withGraphQueryString = objToQueryString({
-  withGraph: '[type, manager]'
+  withGraph: '[type, manager, engineers]'
 });
 
 function getProjects(url = 'projects', query = withGraphQueryString) {
   return client(`${url}?${query}`);
 }
 
-const getProjectIdFromKey = (key) => {
-  const [projectId] = key.split('-').slice(-1);
-  return projectId;
-};
-
-function getProjectTickets(projectKey) {
-  return client(`projects/${encodeURIComponent(getProjectIdFromKey(projectKey))}/tickets`);
+function getProjectIdFromKey(key) {
+  return key.split('-').slice(-1)[0];
 }
 
-export { getProjects, getProjectTickets };
+export { getProjects, getProjectIdFromKey };
