@@ -72,19 +72,19 @@ export const Projects = ({ data }) => {
               ? data.map((project) => (
                   <Tr key={project?.id} _hover={{ background: hoverColor[colorMode] }}>
                     <Td>
-                      <TableLink href={`/project/${encodeURIComponent(project?.key)}`}>
+                      <TableLink href={`/projects/${encodeURIComponent(project?.key)}`}>
                         {project?.name}
                       </TableLink>
                     </Td>
                     <Td p={2}>
-                      <TableLink href={`/project/${encodeURIComponent(project?.key)}`}>
+                      <TableLink href={`/projects/${encodeURIComponent(project?.key)}`}>
                         {project?.key}
                       </TableLink>
                     </Td>
                     <Td>
-                      <TableLink href={`/users/${encodeURIComponent(project?.manager)}`}>
+                      <TableLink href={`/users/${encodeURIComponent(project?.manager?.sub)}`}>
                         <Avatar bg="red.500" size="sm" mr={2} />
-                        <Text as="span">{project?.manager}</Text>
+                        <Text as="span">{project?.manager?.name}</Text>
                       </TableLink>
                     </Td>
 

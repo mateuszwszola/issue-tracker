@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import { Layout } from '@/components/Layout';
 import { BackButton } from '@/components/BackButton';
-import { Box, Heading, Spinner } from '@chakra-ui/core';
+import { Avatar, Box, Flex, Heading, Spinner, StackDivider, Text, VStack } from '@chakra-ui/core';
 import useSWR from 'swr';
 import { getProjectTickets } from 'utils/tickets-client';
 
@@ -20,11 +20,19 @@ function Project() {
         ) : !data ? (
           <Spinner />
         ) : (
-          <Box>
+          <VStack mt={2} divider={<StackDivider borderColor="gray.200" />} align="stretch">
             {data?.tickets?.map((ticket) => (
-              <Box key={ticket?.id}>{ticket?.name}</Box>
+              <Box px={2} key={ticket?.id}>
+                <Text>{ticket?.name}</Text>
+                <Flex>
+                  <Box flex={1}>{ticket?.type?.name}</Box>
+                  <Box flex={1}>{ticket?.status?.name}</Box>
+                  <Box flex={1}>{ticket?.priority?.name}</Box>
+                  <Avatar size="xs" />
+                </Flex>
+              </Box>
             ))}
-          </Box>
+          </VStack>
         )}
       </Box>
     </Layout>
