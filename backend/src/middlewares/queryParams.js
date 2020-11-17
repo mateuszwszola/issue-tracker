@@ -15,4 +15,19 @@ const parsePaginationQueryParams = (defaultLimit = 100) => (req, res, next) => {
   }
 };
 
-export { parsePaginationQueryParams };
+const validateOrderByParam = (validOrders) => (req, res, next) => {
+  let { orderBy } = req.query;
+
+  if (orderBy) {
+    orderBy = String(orderBy).toLowerCase();
+    if (!validOrders.has(orderBy)) {
+      next(new ErrorHandler(400, 'Invalid orderBy param'));
+    }
+
+    req.query.orderBy = orderBy;
+  }
+
+  next();
+};
+
+export { parsePaginationQueryParams, validateOrderByParam };

@@ -4,22 +4,24 @@ import client from './api-client';
 
 export const API_AUDIENCE = process.env.NEXT_PUBLIC_AUTH0_AUDIENCE;
 
+const initialState = {
+  error: null,
+  loading: false,
+  data: null
+};
+
 function useApi(url, isTokenRequired, options = {}) {
   const { getAccessTokenSilently, isLoading, isAuthenticated } = useAuth0();
-  const [state, setState] = useState({
-    error: null,
-    loading: false,
-    data: null
-  });
+  const [state, setState] = useState(initialState);
   const [refreshIndex, setRefreshIndex] = useState(0);
 
   useEffect(() => {
-    if (isLoading || !isAuthenticated) return;
+    if (isTokenRequired && (isLoading || !isAuthenticated)) return;
 
     (async () => {
       try {
         const { audience = API_AUDIENCE, ...clientOptions } = options;
-        setState((s) => ({ ...s, loading: true, error: null, data: null }));
+        setState((s) => ({ ...s, loading: true }));
         let token;
         if (isTokenRequired) {
           token = await getAccessTokenSilently({ audience });
@@ -42,15 +44,8 @@ function useApi(url, isTokenRequired, options = {}) {
         }));
       }
     })();
-  }, [
-    refreshIndex,
-    isLoading,
-    isAuthenticated,
-    getAccessTokenSilently,
-    url,
-    isTokenRequired,
-    options
-  ]);
+    // eslint-disable-next-line
+  }, [isTokenRequired, url, refreshIndex, isLoading, isAuthenticated]);
 
   return {
     ...state,

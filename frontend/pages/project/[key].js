@@ -3,7 +3,7 @@ import { Layout } from '@/components/Layout';
 import { BackButton } from '@/components/BackButton';
 import { Box, Heading, Spinner } from '@chakra-ui/core';
 import useSWR from 'swr';
-import { getProjectTickets } from 'utils/projects-client';
+import { getProjectTickets } from 'utils/tickets-client';
 
 function Project() {
   const router = useRouter();
@@ -20,7 +20,11 @@ function Project() {
         ) : !data ? (
           <Spinner />
         ) : (
-          <Box>{JSON.stringify(data?.tickets, null, 2)}</Box>
+          <Box>
+            {data?.tickets?.map((ticket) => (
+              <Box key={ticket?.id}>{ticket?.name}</Box>
+            ))}
+          </Box>
         )}
       </Box>
     </Layout>

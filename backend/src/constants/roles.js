@@ -1,7 +1,7 @@
 const ROLES = {
   admin: 'Admin',
-  product_manager: 'Product Manager',
-  engineer: 'Engineer',
+  project_manager: 'Product Manager',
+  project_engineer: 'Engineer',
   guest: 'Guest',
 };
 

@@ -1,10 +1,11 @@
 import jwt from 'express-jwt';
 import jwksRsa from 'jwks-rsa';
-import { isEmpty } from 'lodash';
 import { Project } from '../api/project/project.model';
-import { User } from '../api/user/user.model';
 import config from '../config';
 import { ErrorHandler } from '../utils/error';
+import { preloadApiUser } from './user';
+import { preloadProject } from './project';
+import { ROLES } from '../constants/roles';
 
 const checkJwt = () =>
   jwt({
@@ -24,63 +25,116 @@ const checkJwt = () =>
     algorithms: ['RS256'],
   });
 
-const isAdmin = () => async (req, res, next) => {
-  const { sub } = req.user;
+// const authorize = (roles = []) => {
+//   if (typeof roles === 'string') {
+//     roles = [roles];
+//   }
+//
+//   return [checkJwt(), preloadApiUser(), async (req, res, next) => {}];
+// };
 
-  const user = await User.query().findOne({ sub });
+const isAdmin = () => {
+  return [
+    preloadApiUser(),
+    async (req, res, next) => {
+      if (!(req.api_user && req.api_user.is_admin)) {
+        return next(
+          new ErrorHandler(
+            403,
+            'You do not have access rights to access the resource'
+          )
+        );
+      }
+      req.api_user.roles = req.api_user.roles || [];
 
-  if (!(user && user.is_admin)) {
-    return next(
-      new ErrorHandler(
-        403,
-        'You do not have access rights to access the resource'
-      )
-    );
-  }
+      if (!req.api_user.roles.includes(ROLES.admin)) {
+        req.api_user.roles = [...req.api_user.roles, ROLES.admin];
+      }
 
-  req.user.api_user_id = user.id;
-
-  next();
+      next();
+    },
+  ];
 };
 
-const isProjectManager = () => async (req, res, next) => {
-  const { sub } = req.user;
-  const { projectId } = req.params;
+const isProjectManager = () => {
+  return [
+    preloadApiUser(),
+    preloadProject(),
+    (req, res, next) => {
+      const isAdmin = req.api_user && req.api_user.is_admin;
+      const isProjectManager =
+        req.api_user.id &&
+        req.project.manager_id &&
+        req.api_user.id === req.project.manager_id;
 
-  const user = await User.query().findOne({ sub });
-  const project = await Project.query().findById(projectId);
+      req.api_user.roles = req.api_user.roles || [];
 
-  if ((user && user.is_admin) || (project && project.manager_id === user.id)) {
-    return next();
-  } else {
-    throw new ErrorHandler(403, 'Unauthorized');
-  }
+      if (isAdmin && !req.api_user.roles.includes(ROLES.admin)) {
+        req.api_user.roles = [...req.api_user.roles, ROLES.admin];
+      }
+
+      if (
+        isProjectManager &&
+        !req.api_user.roles.includes(ROLES.project_manager)
+      ) {
+        req.api_user.roles = [...req.api_user.roles, ROLES.project_manager];
+      }
+
+      if (!(isAdmin || isProjectManager)) {
+        return next(new ErrorHandler(403, 'Unauthorized'));
+      }
+
+      next();
+    },
+  ];
 };
 
-const isProjectEngineer = () => async (req, res, next) => {
-  const { projectId } = req.params;
-  const { sub } = req.user;
+const isProjectEngineer = () => {
+  return [
+    preloadApiUser(),
+    preloadProject(),
+    async (req, res, next) => {
+      const isAdmin = req.api_user && req.api_user.is_admin;
+      const isProjectManager =
+        req.api_user.id &&
+        req.project.manager_id &&
+        req.api_user.id === req.project.manager_id;
 
-  const user = await User.query().findOne({ sub });
-  const project = await Project.query().findById(projectId);
+      req.api_user.roles = req.api_user.roles || [];
 
-  if (user.is_admin || user.id === project.manager_id) {
-    return next();
-  }
+      if (isAdmin && !req.api_user.roles.includes(ROLES.admin)) {
+        req.api_user.roles = [...req.api_user.roles, ROLES.admin];
+      }
 
-  const result = await Project.relatedQuery('engineers')
-    .for(projectId)
-    .first()
-    .where('sub', sub);
+      if (
+        isProjectManager &&
+        !req.api_user.roles.includes(ROLES.project_manager)
+      ) {
+        req.api_user.roles = [...req.api_user.roles, ROLES.project_manager];
+      }
 
-  if (!result || isEmpty(result)) {
-    throw new ErrorHandler(
-      403,
-      'You are not authorized to access this resource'
-    );
-  }
+      if (isAdmin || isProjectManager) {
+        return next();
+      }
 
-  next();
+      const engineer = await Project.relatedQuery('engineers')
+        .for(req.project.id)
+        .findById(req.api_user.id);
+
+      if (!engineer) {
+        throw new ErrorHandler(
+          403,
+          'You are not authorized to access this resource'
+        );
+      }
+
+      if (!req.api_user.roles.includes(ROLES.project_engineer)) {
+        req.api_user.roles = [...req.api_user.roles, ROLES.project_engineer];
+      }
+
+      next();
+    },
+  ];
 };
 
 export { checkJwt, isAdmin, isProjectManager, isProjectEngineer };

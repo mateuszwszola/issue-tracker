@@ -1,9 +1,18 @@
 import { Model } from 'objection';
-import tableNames from '../../../../constants/tableNames';
+import tableNames from '../../../constants/tableNames';
 
-class TicketPriority extends Model {
+class TicketType extends Model {
   static get tableName() {
-    return tableNames.ticket_priority;
+    return tableNames.ticket_type;
+  }
+
+  static get modifiers() {
+    return {
+      defaultSelects(query) {
+        const { ref } = TicketType;
+        query.select(ref('id'), ref('name'));
+      },
+    };
   }
 
   static get jsonSchema() {
@@ -26,12 +35,12 @@ class TicketPriority extends Model {
         relation: Model.HasManyRelation,
         modelClass: Ticket,
         join: {
-          from: `${tableNames.ticket_priority}.id`,
-          to: `${tableNames.ticket}.priority_id`,
+          from: `${tableNames.ticket_type}.id`,
+          to: `${tableNames.ticket}.type_id`,
         },
       },
     };
   }
 }
 
-export { TicketPriority };
+export { TicketType };

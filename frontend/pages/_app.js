@@ -1,11 +1,19 @@
 import Router from 'next/router';
 import { ChakraProvider } from '@chakra-ui/core';
 import { Auth0Provider } from '@auth0/auth0-react';
+import { SWRConfig } from 'swr';
 import theme from '../styles/theme';
 import { ApiUserProvider } from 'contexts/api-user-context';
 
 const onRedirectCallback = (appState) => {
   Router.replace(appState?.returnTo || '/');
+};
+
+const swrGlobalConfig = {
+  onErrorRetry: (error) => {
+    // Never retry on 404.
+    if (error.status === 404) return;
+  }
 };
 
 // eslint-disable-next-line react/prop-types
@@ -19,9 +27,11 @@ function MyApp({ Component, pageProps }) {
       onRedirectCallback={onRedirectCallback}
     >
       <ChakraProvider resetCSS theme={theme}>
-        <ApiUserProvider>
-          <Component {...pageProps} />
-        </ApiUserProvider>
+        <SWRConfig value={swrGlobalConfig}>
+          <ApiUserProvider>
+            <Component {...pageProps} />
+          </ApiUserProvider>
+        </SWRConfig>
       </ChakraProvider>
     </Auth0Provider>
   );
