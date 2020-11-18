@@ -4,7 +4,7 @@ import fetch from 'node-fetch';
 import config from '../../config';
 import { ErrorHandler } from '../../utils/error';
 
-const loginUser = async (req, res, next) => {
+const loginUser = async (req, res) => {
   const { sub } = req.user;
   const token = req.headers?.authorization?.split(' ')[1];
 

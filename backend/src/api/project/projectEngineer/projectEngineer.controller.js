@@ -34,8 +34,8 @@ const getProjectEngineers = async (req, res) => {
   return res.status(200).json({ engineers: result });
 };
 
-/*
-  Add existing user to a project as a project engineer
+/**
+  @desc Add existing user to a project as a project engineer
 */
 const addProjectEngineer = async (req, res) => {
   const { projectId, userId } = req.params;
@@ -47,10 +47,10 @@ const addProjectEngineer = async (req, res) => {
   return res.status(200).json({ message: numRelated });
 };
 
-/*
-  Remove existing project engineer (user) from a project
+/**
+  @desc Remove existing project engineer (user) from a project
 */
-const deleteProjectEnginner = async (req, res) => {
+const deleteProjectEngineer = async (req, res) => {
   const { projectId, userId } = req.params;
 
   const numUnrelated = await Project.relatedQuery('engineers')
@@ -61,4 +61,4 @@ const deleteProjectEnginner = async (req, res) => {
   return res.status(200).json({ message: numUnrelated });
 };
 
-export { getProjectEngineers, addProjectEngineer, deleteProjectEnginner };
+export { getProjectEngineers, addProjectEngineer, deleteProjectEngineer };

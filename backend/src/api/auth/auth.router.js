@@ -3,7 +3,7 @@ import * as controllers from './auth.controller';
 import { checkJwt } from '../../middlewares/auth';
 const router = Router();
 
-/*
+/**
   @route /api/v1/auth/login
   @desc Return user if exists, if not - create one fetching profile information from Auth0
 */

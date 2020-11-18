@@ -7,7 +7,7 @@ const router = Router();
 
 /**
  * @route /api/v1/projects/:projectId/engineers
- * @desc  Get, add and remove enginners from a project
+ * @desc  Get, add and remove engineers from a project
  */
 registerProjectEngineerRoutes(router);
 

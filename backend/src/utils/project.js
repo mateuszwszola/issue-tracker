@@ -1,7 +1,6 @@
 import { createBuilder } from './objection';
 
 function createProjectKey(projectName, projectId) {
-  let key = '';
   let acronym = projectName
     .match(/\b(\w)/g)
     .join('')
@@ -10,8 +9,8 @@ function createProjectKey(projectName, projectId) {
   if (acronym.length < 2) {
     acronym = projectName.substr(0, 2);
   }
-  key = acronym.toUpperCase() + '-' + projectId;
-  return key;
+
+  return acronym.toUpperCase() + '-' + projectId;
 }
 
 function getProjectGraphQuery(query, withGraph) {
