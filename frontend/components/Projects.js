@@ -1,24 +1,45 @@
 import PropTypes from 'prop-types';
 import {
-  Heading,
-  Box,
-  Flex,
-  Button,
-  Text,
   Avatar,
   AvatarGroup,
-  useColorMode,
+  Box,
+  Button,
+  Flex,
+  Heading,
+  Skeleton,
   Stack,
-  Skeleton
+  Text,
+  useColorMode
 } from '@chakra-ui/react';
-import { Table, THead, TBody, TFoot, Tr, Th, Td } from '@/components/Table';
+import { Table, TBody, Td, TFoot, Th, THead, Tr } from '@/components/Table';
 import { InputSearch } from '@/components/InputSearch';
 import { ButtonSort } from '@/components/projects/ButtonSort';
 import { Header as ProjectsHeader } from '@/components/projects/Header';
 import { TableLink } from '@/components/projects/TableLink';
+import { useEffect, useState } from 'react';
 
-export const Projects = ({ projects, isLoading }) => {
+export const Projects = ({ projects: data, isLoading }) => {
   const { colorMode } = useColorMode();
+  const [projects, setProjects] = useState([]);
+  const [nameSort, setNameSort] = useState('');
+
+  useEffect(() => {
+    setProjects(data);
+  }, [data]);
+
+  useEffect(() => {
+    if (!nameSort) return;
+
+    setProjects((prevProjects) => {
+      return prevProjects.sort((a, b) => {
+        return nameSort === 'asc' ? a.name - b.name : b.name - a.name;
+      });
+    });
+  }, [nameSort]);
+
+  const handleNameSortBtnClick = () => {
+    setNameSort((prevSort) => (prevSort === 'asc' ? 'dsc' : 'asc'));
+  };
 
   const borderColor = { light: 'gray.200', dark: 'gray.700' };
   const hoverColor = { light: 'gray.50', dark: 'gray.700' };
@@ -46,7 +67,7 @@ export const Projects = ({ projects, isLoading }) => {
             <THead borderBottom="2px" borderColor={borderColor[colorMode]}>
               <Tr>
                 <Th>
-                  <ButtonSort name="Name" />
+                  <ButtonSort name="Name" onClick={handleNameSortBtnClick} />
                 </Th>
                 <Th>
                   <ButtonSort name="Key" />

@@ -5,7 +5,7 @@ import { Box, Flex, Heading, Spinner, StackDivider, Text, VStack } from '@chakra
 import useSWR from 'swr';
 import { getProjectTickets } from 'utils/tickets-client';
 
-function Project() {
+function ProjectIssuesPage() {
   const router = useRouter();
   const { projectKey } = router.query;
   const { data, error } = useSWR(projectKey ? ['tickets', projectKey] : null, () =>
@@ -46,4 +46,4 @@ function Project() {
   );
 }
 
-export default Project;
+export default ProjectIssuesPage;
