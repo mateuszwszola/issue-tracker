@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import { Layout } from '@/components/Layout';
 import { BackButton } from '@/components/BackButton';
-import { Box, Flex, Heading, Spinner, StackDivider, Text, VStack } from '@chakra-ui/core';
+import { Box, Flex, Heading, Spinner, StackDivider, Text, VStack } from '@chakra-ui/react';
 import useSWR from 'swr';
 import { getProjectTickets } from 'utils/tickets-client';
 

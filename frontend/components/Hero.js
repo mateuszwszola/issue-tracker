@@ -1,4 +1,4 @@
-import { Flex, Box, Image, Heading, Text, Button } from '@chakra-ui/core';
+import { Flex, Box, Image, Heading, Text, Button } from '@chakra-ui/react';
 import { FiArrowRight } from 'react-icons/fi';
 import { projectName } from '@/pages/index';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -36,9 +36,7 @@ export const Hero = (props) => {
         mt={{ base: 4, lg: 0 }}
         mx={{ base: 'auto', lg: 0 }}
       >
-        <Heading as="h1" size="xl">
-          {headingText}
-        </Heading>
+        <Heading as="h1">{headingText}</Heading>
 
         <Text fontSize={{ md: 'lg' }} color="gray.500" mt={2}>
           {heroText}
@@ -46,6 +44,7 @@ export const Hero = (props) => {
 
         <Box mt={6}>
           <Button
+            size="md"
             onClick={() => loginWithRedirect()}
             rightIcon={<FiArrowRight />}
             cursor="pointer"

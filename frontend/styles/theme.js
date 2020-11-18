@@ -1,17 +1,13 @@
-import { extendTheme } from '@chakra-ui/core';
+import { extendTheme } from '@chakra-ui/react';
 
 const colors = {
-  dark: '#3A2E39',
-  light: '#FBFBF2',
-  accent: '#2274A5'
+  brand: {
+    dark: '#3A2E39',
+    light: '#FBFBF2',
+    accent: '#2274A5'
+  }
 };
 
-const config = {
-  colors,
-  useSystemColorMode: true,
-  initialColorMode: 'system'
-};
+const theme = extendTheme({ colors });
 
-const customTheme = extendTheme({ config });
-
-export default extendTheme(customTheme);
+export default theme;

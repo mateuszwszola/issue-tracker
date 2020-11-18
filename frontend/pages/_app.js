@@ -1,5 +1,5 @@
 import Router from 'next/router';
-import { ChakraProvider } from '@chakra-ui/core';
+import { ChakraProvider } from '@chakra-ui/react';
 import { Auth0Provider } from '@auth0/auth0-react';
 import { SWRConfig } from 'swr';
 import theme from '../styles/theme';
@@ -26,7 +26,7 @@ function MyApp({ Component, pageProps }) {
       redirectUri={typeof window !== 'undefined' && window.location.origin}
       onRedirectCallback={onRedirectCallback}
     >
-      <ChakraProvider resetCSS theme={theme}>
+      <ChakraProvider theme={theme}>
         <SWRConfig value={swrGlobalConfig}>
           <ApiUserProvider>
             <Component {...pageProps} />

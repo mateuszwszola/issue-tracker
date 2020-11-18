@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { Flex } from '@chakra-ui/core';
+import { Flex } from '@chakra-ui/react';
 
 export const Header = ({ children, ...props }) => {
   return (

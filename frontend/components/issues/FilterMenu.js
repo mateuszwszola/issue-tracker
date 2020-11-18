@@ -9,7 +9,7 @@ import {
   MenuOptionGroup,
   MenuItemOption,
   Flex
-} from '@chakra-ui/core';
+} from '@chakra-ui/react';
 import { GoChevronDown } from 'react-icons/go';
 
 export const FilterMenu = ({ label, options }) => {

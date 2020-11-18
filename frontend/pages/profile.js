@@ -1,4 +1,4 @@
-import { Flex, Heading, Text, Img } from '@chakra-ui/core';
+import { Flex, Heading, Text, Img } from '@chakra-ui/react';
 import { Layout } from '@/components/Layout';
 import { useAuth0, withAuthenticationRequired } from '@auth0/auth0-react';
 

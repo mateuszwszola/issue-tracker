@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { Button, Icon } from '@chakra-ui/core';
+import { Button, Icon } from '@chakra-ui/react';
 import { FaSort } from 'react-icons/fa';
 
 export const ButtonSort = ({ name, ...props }) => {

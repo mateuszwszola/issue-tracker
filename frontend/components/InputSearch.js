@@ -1,4 +1,4 @@
-import { InputGroup, Input, InputRightElement, Icon, useColorModeValue } from '@chakra-ui/core';
+import { InputGroup, Input, InputRightElement, Icon, useColorModeValue } from '@chakra-ui/react';
 import { BsSearch } from 'react-icons/bs';
 
 export const InputSearch = () => {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Heading, Box, Flex, SimpleGrid } from '@chakra-ui/core';
+import { Heading, Box, Flex, SimpleGrid } from '@chakra-ui/react';
 import { InputSearch } from '@/components/InputSearch';
 import { FilterMenu } from '@/components/issues/FilterMenu';
 

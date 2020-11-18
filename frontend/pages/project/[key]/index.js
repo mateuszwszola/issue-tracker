@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import { Layout } from '@/components/Layout';
 import { BackButton } from '@/components/BackButton';
-import { Box, Heading, Button } from '@chakra-ui/core';
+import { Box, Heading, Button } from '@chakra-ui/react';
 import Link from 'next/link';
 
 function Project() {
