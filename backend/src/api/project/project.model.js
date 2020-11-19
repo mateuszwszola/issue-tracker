@@ -23,14 +23,15 @@ class Project extends Model {
   static get jsonSchema() {
     return {
       type: 'object',
-      required: ['name', 'type_id'],
+      required: ['name', 'type_id', 'creator_id'],
 
       properties: {
         id: { type: 'integer' },
-        key: { type: 'string', minLength: 3, maxLength: 255 },
-        name: { type: 'string', minLength: 5, maxLength: 255 },
+        key: { type: 'string', minLength: 1, maxLength: 255 },
+        name: { type: 'string', minLength: 1, maxLength: 255 },
         type_id: { type: 'integer' },
         manager_id: { type: ['integer', 'null'] },
+        creator_id: { type: 'integer' },
         archived_at: { type: ['string', 'null'] },
       },
     };
@@ -47,6 +48,12 @@ class Project extends Model {
         tableNames.project,
         tableNames.project_type,
         'type_id'
+      ),
+      creator: createBelongsToOneRelation(
+        User,
+        tableNames.project,
+        tableNames.user,
+        'creator_id'
       ),
       manager: createBelongsToOneRelation(
         User,

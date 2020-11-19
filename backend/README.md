@@ -19,14 +19,14 @@ Entities:
 - [x] Goal
 - [x] Attachment
 
-- [ ] Pages (project docs, maybe in markdown)
+- [ ] Pages (project docs, maybe in a markdown)
 - [ ] Notification
 
 Every record will have:
   - Created At
   - Updated At
 
-- Project entity will have archived_at column (in this case we will do soft delete)
+- Project entity will have archived_at a column (in this case we will do soft delete)
 
 ## Authentication Requirements:
   - Auth0 will handle user authentication
@@ -36,7 +36,7 @@ Every record will have:
 
 ## Role & Permissions Requirements:
 - admin:
-  everyting but these are the permissions specific to admin:
+  everything but these are the permissions specific to admin:
     - user and role management
     - manage projects
     - assign project manager
@@ -50,7 +50,7 @@ Every record will have:
   - submit new tickets
   ...user permissions
 - user
-  - just manage their own profile and wait till manager add them to a project to be able to colaborate
+  - just manage their own profile and wait till a manager add them to a project to be able to collaborate
 
 API routes authorization will rely on checking if:
   - user is an admin
@@ -58,4 +58,4 @@ API routes authorization will rely on checking if:
   - user is engineer within a project
 
 That way the role entity is not needed, because a user permissions can vary per project.
-But we need to know who is the admin so user has is_admin property in the database.
+We need to know who is the admin so user has is_admin property in the database.

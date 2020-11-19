@@ -8,7 +8,7 @@ const preloadApiUser = () => async (req, res, next) => {
   const user = await User.query().findOne({ sub });
 
   if (!user || isEmpty(user)) {
-    throw new ErrorHandler(404, 'User not found');
+    throw new ErrorHandler(401, 'Unauthorized');
   }
 
   req.api_user = user;

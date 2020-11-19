@@ -37,7 +37,7 @@ const isAdmin = () => {
   return [
     preloadApiUser(),
     async (req, res, next) => {
-      if (!(req.api_user && req.api_user.is_admin)) {
+      if (!req.api_user.is_admin) {
         return next(
           new ErrorHandler(
             403,

@@ -1,20 +1,11 @@
 import { User } from './user.model';
 import { isEmpty } from 'lodash';
 import { ErrorHandler } from '../../utils/error';
-import { validUserOrders } from '../../constants/user';
-import { pickExistingProperties } from '../../utils/helpers';
 
 const getUsers = async (req, res) => {
-  const { cursor, limit, select } = req.query;
-  let { orderBy } = req.query;
+  const { skip, limit, select, orderBy = 'id' } = req.query;
 
-  orderBy = orderBy ? String(orderBy).toLowerCase() : 'id';
-
-  if (!validUserOrders.has(orderBy)) {
-    throw new ErrorHandler(400, 'Invalid orderBy param');
-  }
-
-  const query = User.query().offset(cursor).limit(limit).orderBy(orderBy);
+  const query = User.query().offset(skip).limit(limit).orderBy(orderBy);
 
   if (select) {
     query.select(select);
@@ -24,10 +15,10 @@ const getUsers = async (req, res) => {
 };
 
 const getUserById = async (req, res) => {
-  const { id } = req.params;
+  const { userId } = req.params;
   const { select } = req.query;
 
-  const query = User.query().findById(id);
+  const query = User.query().findById(userId);
 
   if (select) {
     query.select(select);
@@ -35,7 +26,7 @@ const getUserById = async (req, res) => {
 
   const user = await query;
 
-  if (isEmpty(user)) {
+  if (!user) {
     throw new ErrorHandler(404, 'User not found');
   }
 
@@ -43,36 +34,34 @@ const getUserById = async (req, res) => {
 };
 
 const createUser = async (req, res) => {
-  const { name, email } = req.body;
+  const userData = req.body;
 
-  const user = await User.query().returning('*').insert({ name, email });
+  const user = await User.query().returning('*').insert(userData);
 
   return res.status(201).json({ user });
 };
 
 const updateUser = async (req, res) => {
   const { userId } = req.params;
+  const newUserData = req.body;
 
-  const newUserData = pickExistingProperties(
-    ['name', 'email', 'sub', 'picture'],
-    {
-      ...req.body,
-    }
-  );
+  let user = await User.query().findById(userId);
 
-  let query = User.query().findById(userId);
-
-  if (!isEmpty(newUserData)) {
-    query = query.patch(newUserData).returning('*');
+  if (!user) {
+    throw new ErrorHandler(404, 'User not found');
   }
 
-  return res.status(200).json({ user: await query });
+  if (!isEmpty(newUserData)) {
+    user = user.$query.patch(newUserData).returning('*');
+  }
+
+  return res.status(200).json({ user });
 };
 
 const deleteUser = async (req, res) => {
-  const { id } = req.params;
+  const { userId } = req.params;
 
-  const user = await User.query().findById(id).returning('*').delete();
+  const user = await User.query().findById(userId).returning('*').delete();
 
   return res.status(200).json({ user });
 };

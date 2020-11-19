@@ -13,11 +13,9 @@ const TICKET_STATUSES = {
 };
 
 const TICKET_PRIORITIES = {
-  p1: 'P1',
-  p2: 'P2',
-  p3: 'P3',
-  p4: 'P4',
-  p5: 'P5',
+  p1: 'Critical',
+  p2: 'Major',
+  p3: 'Normal',
 };
 
 const ticketTypes = Object.values(TICKET_TYPES).map((name) => ({

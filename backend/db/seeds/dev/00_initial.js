@@ -33,15 +33,18 @@ export async function seed(knex) {
     knex(tableNames.ticket_priority).insert(ticketPriorities).returning('*'),
   ]);
 
-  const userData = getUserData();
-  const user = await User.query().insert(userData);
+  const user = await User.query().insert(getUserData());
 
   const projectsData = Array(10)
     .fill(null)
-    .map((_, i) => ({
+    .map(() => ({
       ...getProjectData({
         managerId: user.id,
-        typeId: projectTypeResults[0].id,
+        creatorId: user.id,
+        typeId:
+          projectTypeResults[
+            Math.floor(Math.random() * projectTypeResults.length)
+          ].id,
       }),
     }));
 
@@ -49,12 +52,23 @@ export async function seed(knex) {
 
   const ticketsData = Array(100)
     .fill(null)
-    .map((_, i) => ({
-      ...getTicketData({ reporterId: user.id }),
-      project_id: projects[i % projectsData.length].id,
-      type_id: ticketTypeResults[0].id,
-      status_id: ticketStatusResults[0].id,
-      priority_id: ticketPriorityResults[0].id,
+    .map((_, idx) => ({
+      ...getTicketData({
+        reporterId: user.id,
+        projectId: parseInt(projects[idx % projectsData.length].id),
+        typeId:
+          ticketTypeResults[
+            Math.floor(Math.random() * projectTypeResults.length)
+          ].id,
+        statusId:
+          ticketStatusResults[
+            Math.floor(Math.random() * ticketStatusResults.length)
+          ].id,
+        priorityId:
+          ticketPriorityResults[
+            Math.floor(Math.random() * ticketPriorityResults.length)
+          ].id,
+      }),
     }));
 
   await Ticket.query().insert(ticketsData);

@@ -13,7 +13,7 @@ import { createTicketSchema, updateTicketSchema } from '../../utils/ticket';
 const router = Router();
 
 /**
- * @route /api/v1/tickets/:ticketId/engineers?projectId=
+ * @route /api/v1/tickets/:ticketId/engineers?projectId=   TODO: Actually, I can use  a ticket key to get a projectId instead of passing it here as a query string
  * @desc Manage ticket engineers
  */
 registerTicketEngineerRoutes(router);
@@ -38,7 +38,7 @@ router
   );
 
 /**
- * @route /api/v1/tickets/:ticketId?projectId=
+ * @route /api/v1/tickets/:ticketId?projectId= // TODO: The same goes here with a projectId
  * @desc Get, Update and Delete ticket
  */
 router

@@ -1,5 +1,26 @@
 import { ErrorHandler } from '../utils/error';
 
+const parsePageQueryParam = (pageSize = 20) => (req, res, next) => {
+  let { page } = req.query;
+
+  page = page ? parseInt(page) : 1;
+
+  if (Number.isNaN(page)) {
+    throw new ErrorHandler(400, 'Invalid page query param');
+  }
+
+  if (page < 1) {
+    throw new ErrorHandler(400, 'Invalid page number');
+  }
+
+  const skip = (page - 1) * pageSize;
+
+  req.query.limit = pageSize;
+  req.query.skip = skip;
+
+  next();
+};
+
 const parsePaginationQueryParams = (defaultLimit = 100) => (req, res, next) => {
   let { cursor, limit } = req.query;
 
@@ -7,7 +28,7 @@ const parsePaginationQueryParams = (defaultLimit = 100) => (req, res, next) => {
   limit = cursor ? Number(limit) : defaultLimit;
 
   if (Number.isNaN(cursor) || Number.isNaN(limit)) {
-    throw new ErrorHandler(400, 'Cursor and limit params must be a number');
+    next(new ErrorHandler(400, 'Invalid pagination query params'));
   } else {
     req.query.cursor = cursor;
     req.query.limit = limit;
@@ -21,7 +42,7 @@ const validateOrderByParam = (validOrders) => (req, res, next) => {
   if (orderBy) {
     orderBy = String(orderBy).toLowerCase();
     if (!validOrders.has(orderBy)) {
-      next(new ErrorHandler(400, 'Invalid orderBy param'));
+      next(new ErrorHandler(400, `Invalid orderBy param: ${orderBy}`));
     }
 
     req.query.orderBy = orderBy;
@@ -30,4 +51,8 @@ const validateOrderByParam = (validOrders) => (req, res, next) => {
   next();
 };
 
-export { parsePaginationQueryParams, validateOrderByParam };
+export {
+  parsePaginationQueryParams,
+  validateOrderByParam,
+  parsePageQueryParam,
+};

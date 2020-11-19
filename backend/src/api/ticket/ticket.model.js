@@ -31,19 +31,27 @@ class Ticket extends Model {
   static get jsonSchema() {
     return {
       type: 'object',
-      required: ['name', 'type_id', 'status_id', 'priority_id'],
+      required: [
+        'project_id',
+        'name',
+        'type_id',
+        'status_id',
+        'priority_id',
+        'reporter_id',
+      ],
 
       properties: {
         id: { type: 'integer' },
-        project_id: { type: ['integer', 'null'] },
-        key: { type: 'string', minLength: 3, maxLength: 100 },
+        project_id: { type: 'integer' },
+        key: { type: 'string', minLength: 1, maxLength: 255 },
         name: { type: 'string', minLength: 1, maxLength: 255 },
-        description: { type: 'string', minLength: 1, maxLength: 255 },
+        description: { type: 'string', maxLength: 255 },
         parent_id: { type: ['integer', 'null'] },
         type_id: { type: 'integer' },
         status_id: { type: 'integer' },
         priority_id: { type: 'integer' },
-        reporter_id: { type: ['integer', 'null'] },
+        reporter_id: { type: 'integer' },
+        assignee_id: { type: ['integer', 'null'] },
         archived_at: { type: ['string', 'null'] },
       },
     };
@@ -89,6 +97,14 @@ class Ticket extends Model {
           to: `${tableNames.user}.id`,
         },
       },
+      assignee: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: User,
+        join: {
+          from: `${tableNames.ticket}.assignee_id`,
+          to: `${tableNames.user}.id`,
+        },
+      },
       type: {
         relation: Model.BelongsToOneRelation,
         modelClass: TicketType,
@@ -111,18 +127,6 @@ class Ticket extends Model {
         join: {
           from: `${tableNames.ticket}.priority_id`,
           to: `${tableNames.ticket_priority}.id`,
-        },
-      },
-      engineers: {
-        relation: Model.ManyToManyRelation,
-        modelClass: User,
-        join: {
-          from: `${tableNames.ticket}.id`,
-          through: {
-            from: `${tableNames.ticket_engineer}.ticket_id`,
-            to: `${tableNames.ticket_engineer}.user_id`,
-          },
-          to: `${tableNames.user}.id`,
         },
       },
       comments: {

@@ -8,7 +8,6 @@ const tableNames = {
   ticket_status: 'Ticket_status',
   ticket_priority: 'Ticket_priority',
   ticket_comment: 'Ticket_comment',
-  ticket_engineer: 'Ticket_engineer',
   epic: 'Epic',
   epic_ticket: 'epic_ticket',
   sprint: 'Sprint',
@@ -20,7 +19,6 @@ const tableNames = {
 export const orderedTableNames = [
   [
     tableNames.project_engineer,
-    tableNames.ticket_engineer,
     tableNames.ticket_comment,
     tableNames.attachment,
     tableNames.sprint_ticket,
