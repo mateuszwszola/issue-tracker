@@ -52,7 +52,7 @@ class Ticket extends Model {
         priority_id: { type: 'integer' },
         reporter_id: { type: 'integer' },
         assignee_id: { type: ['integer', 'null'] },
-        archived_at: { type: ['string', 'null'] },
+        archived_at: { type: ['timestamp', 'null'] },
       },
     };
   }

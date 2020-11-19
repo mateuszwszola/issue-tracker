@@ -5,8 +5,6 @@ const validUserOrders = new Set([
   'email',
   'created_at',
   'updated_at',
-  'created_at',
-  'updated_at',
 ]);
 
 export { validUserOrders };

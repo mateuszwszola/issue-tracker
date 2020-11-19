@@ -30,7 +30,7 @@ class User extends Model {
         id: { type: 'integer' },
         sub: { type: ['string', 'null'] },
         name: { type: 'string', minLength: 1, maxLength: 255 },
-        email: { type: 'string' },
+        email: { type: 'string', minLength: 1, maxLength: 255 },
         picture: { type: 'string', minLength: 1, maxLength: 255 },
         is_admin: { type: 'boolean' },
         blocked: { type: 'boolean' },

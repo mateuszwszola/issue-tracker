@@ -9,7 +9,6 @@ function createUserSchema(req, res, next) {
 
   if (req.api_user && req.api_user.is_admin) {
     schemaRules.is_admin = Joi.bool();
-    schemaRules.blocked = Joi.bool();
   }
 
   const schema = Joi.object(schemaRules);

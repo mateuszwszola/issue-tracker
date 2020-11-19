@@ -41,7 +41,7 @@ const isAdmin = () => {
         return next(
           new ErrorHandler(
             403,
-            'You do not have access rights to access the resource'
+            'You do not have the access rights to access the resource'
           )
         );
       }

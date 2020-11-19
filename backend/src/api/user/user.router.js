@@ -29,7 +29,7 @@ router
 router
   .route('/:userId')
   .get(controllers.getUserById)
-  .put(updateUserSchema, controllers.updateUser)
+  .patch(updateUserSchema, controllers.updateUser)
   .delete(controllers.deleteUser);
 
 export default router;

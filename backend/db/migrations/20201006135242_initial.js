@@ -30,4 +30,6 @@ export async function down(knex) {
       return knex.schema.dropTableIfExists(table);
     }
   });
+
+  await knex.schema.dropTableIfExists('Ticket_engineer');
 }
