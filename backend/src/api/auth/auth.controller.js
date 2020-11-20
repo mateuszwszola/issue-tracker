@@ -33,8 +33,7 @@ const loginUser = async (req, res) => {
     const profile = await response.json();
 
     const { email, picture, nickname } = profile;
-
-    const name = profile.name === email && nickname ? nickname : profile.name;
+    const name = nickname && profile.name === email ? nickname : profile.name;
     // Read user roles from the access token
     let assignedRoles = req.user[`${config.auth0.audience}/roles`];
     if (assignedRoles && typeof assignedRoles === 'string') {
