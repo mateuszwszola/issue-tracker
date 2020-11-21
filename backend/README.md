@@ -7,11 +7,10 @@ Entities:
 - [x] Project Type (software, ...)
 - [x] Project Engineer
 - [x] Ticket
-- [x] Ticket Type (bug, task, feature_request, epic)
-- [x] Ticket Status (to do, in progress, under review, done)
+- [x] Ticket Type (bug, task, feature, ...)
+- [x] Ticket Status (open, closed, in progress, fixed, ...)
 - [x] Ticket Priority
 - [x] Ticket Comment
-- [x] Ticket Engineer
 - [x] Epic
 - [x] Epic Ticket
 - [x] Sprint
@@ -22,40 +21,31 @@ Entities:
 - [ ] Pages (project docs, maybe in a markdown)
 - [ ] Notification
 
-Every record will have:
+Every record has these fields:
   - Created At
   - Updated At
 
-- Project entity will have archived_at a column (in this case we will do soft delete)
-
-## Authentication Requirements:
+## Authentication:
   - Auth0 will handle user authentication
-  - when user logins or signs up, created Auth0 rule will check if the api_user_id property exists on the user metadata object
-    - if it exists it will be added as a claim to the access_token and proceeded 
-    - if not the rule will call this api sending auth0_user_id along with some basic user information - name, email, picture, and user will be created, and api will send back local db user_id
+  - when user logins or signs up with Auth0 on the frontend it will call `/api/v1/login` endpoint sending access_token, then the backend will check if the user with specific sub exists
+    - if exists, it will simply respond with a user
+    - if not exists, the backend will call Auth0 asking for profile information and will create and then respond with a new user
 
-## Role & Permissions Requirements:
-- admin:
-  everything but these are the permissions specific to admin:
-    - user and role management
-    - manage projects
-    - assign project manager
-- project manager:
-  - add project engineers
-  - add ticket engineers
-  - manage tickets, epics, sprints
-  ...engineer permissions
-- engineer
-  - change ticket status
-  - submit new tickets
-  ...user permissions
-- user
-  - just manage their own profile and wait till a manager add them to a project to be able to collaborate
+## Roles & Permissions:
+- Admin:
+    - users and roles management
+    - assigns project manager
+- Project Manager:
+    - updates project
+    - add and remove project engineers
+    - manage epics, sprints etc.
+- Project Engineer
+    - work on the tickets
+- User
+  - manage their own profile
 
-API routes authorization will rely on checking if:
+API's endpoints authorization will rely on checking if:
   - user is an admin
   - user is a manager of a project
   - user is engineer within a project
-
-That way the role entity is not needed, because a user permissions can vary per project.
-We need to know who is the admin so user has is_admin property in the database.
+  

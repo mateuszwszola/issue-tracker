@@ -1,15 +1,15 @@
 const TICKET_TYPES = {
   bug: 'Bug',
   task: 'Task',
-  feature: 'Feature Request',
-  epic: 'Epic',
+  feature: 'Feature',
 };
 
 const TICKET_STATUSES = {
-  todo: 'To Do',
+  submitted: 'Submitted',
+  open: 'Open',
   in_progress: 'In Progress',
-  under_review: 'Under Review',
-  done: 'Done',
+  fixed: 'Fixed',
+  closed: 'Closed',
 };
 
 const TICKET_PRIORITIES = {

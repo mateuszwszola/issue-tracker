@@ -45,12 +45,13 @@ class Ticket extends Model {
         project_id: { type: 'integer' },
         key: { type: 'string', minLength: 1, maxLength: 255 },
         name: { type: 'string', minLength: 1, maxLength: 255 },
-        description: { type: 'string', maxLength: 255 },
+        description: { type: 'string', minLength: 1, maxLength: 255 },
         parent_id: { type: ['integer', 'null'] },
         type_id: { type: 'integer' },
         status_id: { type: 'integer' },
         priority_id: { type: 'integer' },
-        reporter_id: { type: 'integer' },
+        created_by: { type: 'integer' },
+        updated_by: { type: ['integer', 'null'] },
         assignee_id: { type: ['integer', 'null'] },
         archived_at: { type: ['timestamp', 'null'] },
       },
@@ -89,11 +90,19 @@ class Ticket extends Model {
           to: `${tableNames.ticket}.parent_id`,
         },
       },
-      reporter: {
+      createdBy: {
         relation: Model.BelongsToOneRelation,
         modelClass: User,
         join: {
-          from: `${tableNames.ticket}.reporter_id`,
+          from: `${tableNames.ticket}.created_by`,
+          to: `${tableNames.user}.id`,
+        },
+      },
+      updatedBy: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: User,
+        join: {
+          from: `${tableNames.ticket}.updated_by`,
           to: `${tableNames.user}.id`,
         },
       },

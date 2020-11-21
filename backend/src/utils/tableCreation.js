@@ -44,7 +44,7 @@ const createProjectTable = (knex) =>
     referenceTable(table, 'manager_id', tableNames.user, false).onDelete(
       'SET NULL'
     );
-    referenceTable(table, 'creator_id', tableNames.user, false).onDelete(
+    referenceTable(table, 'created_by', tableNames.user, false).onDelete(
       'SET NULL'
     );
     table.datetime('archived_at');
@@ -62,7 +62,7 @@ const createProjectEngineerTable = (knex) =>
 const createTicketTable = (knex) =>
   knex.schema.createTable(tableNames.ticket, (table) => {
     table.increments().primary();
-    table.string('key', 100).unique();
+    table.string('key');
     table.string('name').notNullable();
     table.string('description');
     referenceTable(table, 'type_id', tableNames.ticket_type, false).onDelete(
@@ -84,12 +84,16 @@ const createTicketTable = (knex) =>
       'CASCADE'
     );
     referenceTable(table, 'project_id', tableNames.project).onDelete('CASCADE');
-    referenceTable(table, 'reporter_id', tableNames.user, false).onDelete(
+    referenceTable(table, 'created_by', tableNames.user, false).onDelete(
+      'SET NULL'
+    );
+    referenceTable(table, 'updated_by', tableNames.user, false).onDelete(
       'SET NULL'
     );
     referenceTable(table, 'assignee_id', tableNames.user, false).onDelete(
       'SET NULL'
     );
+
     table.datetime('archived_at');
     addTimestamps(table);
   });
@@ -142,6 +146,8 @@ const createSprintTable = (knex) =>
 const createAttachmentTable = (knex) =>
   knex.schema.createTable(tableNames.attachment, (table) => {
     table.increments().primary();
+    table.string('name');
+    table.string('description');
     referenceTable(table, 'ticket_id', tableNames.ticket, false).onDelete(
       'SET NULL'
     );
