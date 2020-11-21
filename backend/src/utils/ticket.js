@@ -4,13 +4,15 @@ import { validateRequest } from './validateRequest';
 
 function getTicketGraphQuery(query, withGraph) {
   return query
-    .allowGraph('[project, type, status, priority, reporter, parentTicket]')
+    .allowGraph(
+      '[project, parentTicket, subTicket, createdBy, updatedBy, assignee, type, status, priority, comments]'
+    )
     .withGraphFetched(withGraph)
     .modifyGraph('type', createBuilder(['name']))
     .modifyGraph('status', createBuilder(['name']))
     .modifyGraph('priority', createBuilder(['name']))
     .modifyGraph(
-      'reporter',
+      'createdBy',
       createBuilder(['id', 'sub', 'name', 'email', 'picture'])
     );
 }
@@ -19,9 +21,11 @@ function createTicketSchema(req, res, next) {
   const schema = Joi.object({
     name: Joi.string().required(),
     description: Joi.string(),
+    parent_id: Joi.number(),
     type_id: Joi.number().required(),
     status_id: Joi.number().required(),
     priority_id: Joi.number().required(),
+    assignee_id: Joi.number(),
   });
 
   validateRequest(req, next, schema);
@@ -31,9 +35,11 @@ function updateTicketSchema(req, res, next) {
   const schema = Joi.object({
     name: Joi.string().empty(''),
     description: Joi.string(),
+    parent_id: Joi.number().empty(''),
     type_id: Joi.number().empty(''),
     status_id: Joi.number().empty(''),
     priority_id: Joi.number().empty(''),
+    assignee_id: Joi.number().empty(''),
   });
 
   validateRequest(req, next, schema);

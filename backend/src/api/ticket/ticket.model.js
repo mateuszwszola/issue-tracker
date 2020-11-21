@@ -37,7 +37,7 @@ class Ticket extends Model {
         'type_id',
         'status_id',
         'priority_id',
-        'reporter_id',
+        'created_by',
       ],
 
       properties: {
@@ -53,7 +53,7 @@ class Ticket extends Model {
         created_by: { type: 'integer' },
         updated_by: { type: ['integer', 'null'] },
         assignee_id: { type: ['integer', 'null'] },
-        archived_at: { type: ['timestamp', 'null'] },
+        archived_at: { type: ['string', 'null'] },
       },
     };
   }

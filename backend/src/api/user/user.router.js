@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import * as controllers from './user.controller';
-import { checkJwt, isAdmin } from '../../middlewares/auth';
+import { isAdmin } from '../../middlewares/auth';
 import {
   parsePageQueryParam,
   validateOrderByParam,
@@ -9,7 +9,7 @@ import { validUserOrders } from '../../constants/user';
 import { createUserSchema, updateUserSchema } from '../../utils/user';
 const router = Router();
 
-router.use(checkJwt(), isAdmin());
+router.use(isAdmin());
 
 /**
  * @route /api/v1/users

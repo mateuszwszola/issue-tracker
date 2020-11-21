@@ -1,5 +1,5 @@
 import * as controllers from './projectEngineer.controller';
-import { checkJwt, isProjectManager } from '../../../middlewares/auth';
+import { isProjectManager } from '../../../middlewares/auth';
 import { parsePaginationQueryParams } from '../../../middlewares/queryParams';
 
 export default (router) => {
@@ -21,6 +21,6 @@ export default (router) => {
    */
   router
     .route('/:projectId/engineers/:userId')
-    .post(checkJwt(), isProjectManager(), controllers.addProjectEngineer)
-    .delete(checkJwt(), isProjectManager(), controllers.deleteProjectEngineer);
+    .post(isProjectManager(), controllers.addProjectEngineer)
+    .delete(isProjectManager(), controllers.deleteProjectEngineer);
 };

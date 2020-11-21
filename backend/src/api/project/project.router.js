@@ -1,8 +1,17 @@
 import { Router } from 'express';
 import * as controllers from './project.controller';
-import { checkJwt, isAdmin } from '../../middlewares/auth';
+import { isAdmin } from '../../middlewares/auth';
 import registerProjectEngineerRoutes from './projectEngineer/projectEngineer.routes';
-import { parsePaginationQueryParams } from '../../middlewares/queryParams';
+import {
+  parsePageQueryParam,
+  validateOrderByParam,
+} from '../../middlewares/queryParams';
+import {
+  createProjectSchema,
+  updateProjectSchema,
+  validProjectOrders,
+} from '../../utils/project';
+import { preloadProject } from '../../middlewares/project';
 const router = Router();
 
 /**
@@ -11,17 +20,30 @@ const router = Router();
  */
 registerProjectEngineerRoutes(router);
 
-// /api/v1/projects
+/**
+ * @route /api/v1/projects
+ */
 router
   .route('/')
-  .get(parsePaginationQueryParams(), controllers.getProjects)
-  .post(checkJwt(), isAdmin(), controllers.createProject);
+  .get(
+    parsePageQueryParam(),
+    validateOrderByParam(validProjectOrders),
+    controllers.getProjects
+  )
+  .post(isAdmin(), createProjectSchema, controllers.createProject);
 
-// /api/v1/projects/:projectId
+/**
+ * @route /api/v1/projects/:projectId
+ */
 router
   .route('/:projectId')
   .get(controllers.getProject)
-  .patch(checkJwt(), isAdmin(), controllers.updateProject)
-  .delete(checkJwt(), isAdmin(), controllers.deleteProject);
+  .patch(
+    isAdmin(),
+    preloadProject(),
+    updateProjectSchema,
+    controllers.updateProject
+  )
+  .delete(isAdmin(), preloadProject(), controllers.deleteProject);
 
 export default router;

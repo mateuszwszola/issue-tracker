@@ -38,6 +38,7 @@ const createProjectTable = (knex) =>
     table.increments().primary();
     table.string('key').unique();
     table.string('name').notNullable();
+    table.string('description');
     referenceTable(table, 'type_id', tableNames.project_type, false).onDelete(
       'SET NULL'
     );

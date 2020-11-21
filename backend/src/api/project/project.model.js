@@ -33,7 +33,7 @@ class Project extends Model {
         type_id: { type: 'integer' },
         manager_id: { type: ['integer', 'null'] },
         created_by: { type: 'integer' },
-        archived_at: { type: ['timestamp', 'null'] },
+        archived_at: { type: ['string', 'null'] },
       },
     };
   }

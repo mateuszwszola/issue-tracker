@@ -40,9 +40,9 @@ const validateOrderByParam = (validOrders) => (req, res, next) => {
   let { orderBy } = req.query;
 
   if (orderBy) {
-    orderBy = String(orderBy).toLowerCase();
+    orderBy = orderBy.toLowerCase();
     if (!validOrders.has(orderBy)) {
-      next(new ErrorHandler(400, `Invalid orderBy param: ${orderBy}`));
+      throw new ErrorHandler(400, `Invalid orderBy param: ${orderBy}`);
     }
 
     req.query.orderBy = orderBy;

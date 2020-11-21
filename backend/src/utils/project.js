@@ -1,4 +1,6 @@
 import { createBuilder } from './objection';
+import Joi from 'joi';
+import { validateRequest } from './validateRequest';
 
 function createProjectKey(projectName, projectId) {
   let acronym = projectName
@@ -15,11 +17,19 @@ function createProjectKey(projectName, projectId) {
 
 function getProjectGraphQuery(query, withGraph) {
   return query
-    .allowGraph('[type, manager, engineers]')
+    .allowGraph('[type, createdBy, manager, engineers, tickets]')
     .withGraphFetched(withGraph)
     .modifyGraph('type', createBuilder(['id', 'name']))
     .modifyGraph(
+      'createdBy',
+      createBuilder(['id', 'sub', 'name', 'email', 'picture'])
+    )
+    .modifyGraph(
       'manager',
+      createBuilder(['id', 'sub', 'name', 'email', 'picture'])
+    )
+    .modifyGraph(
+      'engineers',
       createBuilder(['id', 'sub', 'name', 'email', 'picture'])
     );
 }
@@ -30,8 +40,37 @@ const validProjectOrders = new Set([
   'name',
   'type_id',
   'manager_id',
+  'created_by',
   'created_at',
   'updated_at',
 ]);
 
-export { createProjectKey, getProjectGraphQuery, validProjectOrders };
+function createProjectSchema(req, res, next) {
+  const schema = Joi.object({
+    name: Joi.string().required(),
+    description: Joi.string(),
+    type_id: Joi.number().required(),
+    manager_id: Joi.number(),
+  });
+
+  validateRequest(req, next, schema);
+}
+
+function updateProjectSchema(req, res, next) {
+  const schema = Joi.object({
+    name: Joi.string().empty(''),
+    description: Joi.string(),
+    type_id: Joi.number().empty(''),
+    manager_id: Joi.number().empty(''),
+  });
+
+  validateRequest(req, next, schema);
+}
+
+export {
+  createProjectKey,
+  getProjectGraphQuery,
+  validProjectOrders,
+  createProjectSchema,
+  updateProjectSchema,
+};

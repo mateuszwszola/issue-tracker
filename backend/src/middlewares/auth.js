@@ -25,24 +25,15 @@ const checkJwt = () =>
     algorithms: ['RS256'],
   });
 
-// const authorize = (roles = []) => {
-//   if (typeof roles === 'string') {
-//     roles = [roles];
-//   }
-//
-//   return [checkJwt(), preloadApiUser(), async (req, res, next) => {}];
-// };
-
 const isAdmin = () => {
   return [
+    checkJwt(),
     preloadApiUser(),
     async (req, res, next) => {
       if (!req.api_user.is_admin) {
-        return next(
-          new ErrorHandler(
-            403,
-            'You do not have the access rights to access the resource'
-          )
+        throw new ErrorHandler(
+          403,
+          'You do not have the access rights to access the resource'
         );
       }
       req.api_user.roles = req.api_user.roles || [];
@@ -58,6 +49,7 @@ const isAdmin = () => {
 
 const isProjectManager = () => {
   return [
+    checkJwt(),
     preloadApiUser(),
     preloadProject(),
     (req, res, next) => {
@@ -91,6 +83,7 @@ const isProjectManager = () => {
 
 const isProjectEngineer = () => {
   return [
+    checkJwt(),
     preloadApiUser(),
     preloadProject(),
     async (req, res, next) => {

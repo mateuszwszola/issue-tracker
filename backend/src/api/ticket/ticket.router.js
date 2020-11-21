@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { checkJwt, isProjectEngineer } from '../../middlewares/auth';
+import { isProjectEngineer } from '../../middlewares/auth';
 import {
   parsePaginationQueryParams,
   validateOrderByParam,
@@ -30,12 +30,7 @@ router
     preloadProject(false),
     controllers.getTickets
   )
-  .post(
-    checkJwt(),
-    isProjectEngineer(),
-    createTicketSchema,
-    controllers.addTicket
-  );
+  .post(isProjectEngineer(), createTicketSchema, controllers.addTicket);
 
 /**
  * @route /api/v1/tickets/:ticketId?projectId= // TODO: The same goes here with a projectId
@@ -45,17 +40,11 @@ router
   .route('/:ticketId')
   .get(controllers.getTicket)
   .patch(
-    checkJwt(),
     isProjectEngineer(),
     preloadTicket(),
     updateTicketSchema,
     controllers.updateTicket
   )
-  .delete(
-    checkJwt(),
-    isProjectEngineer(),
-    preloadTicket(),
-    controllers.deleteTicket
-  );
+  .delete(isProjectEngineer(), preloadTicket(), controllers.deleteTicket);
 
 export default router;

@@ -38,7 +38,9 @@ const validTicketOrders = new Set([
   'type_id',
   'status_id',
   'priority_id',
-  'reporter_id',
+  'created_by',
+  'updated_by',
+  'assignee_id',
 ]);
 
 export {

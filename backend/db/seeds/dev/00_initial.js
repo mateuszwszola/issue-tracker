@@ -40,7 +40,7 @@ export async function seed(knex) {
     .map(() => ({
       ...getProjectData({
         managerId: user.id,
-        creatorId: user.id,
+        createdBy: user.id,
         typeId:
           projectTypeResults[
             Math.floor(Math.random() * projectTypeResults.length)
@@ -54,7 +54,7 @@ export async function seed(knex) {
     .fill(null)
     .map((_, idx) => ({
       ...getTicketData({
-        reporterId: user.id,
+        createdBy: user.id,
         projectId: parseInt(projects[idx % projectsData.length].id),
         typeId:
           ticketTypeResults[

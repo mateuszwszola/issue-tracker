@@ -13,7 +13,7 @@ const getProjectData = (ctx = {}) => ({
   name: ctx.name || faker.company.companyName(),
   type_id: ctx.typeId || 1,
   manager_id: ctx.managerId || null,
-  creator_id: ctx.creatorId || 1,
+  created_by: ctx.createdBy || 1,
 });
 
 const getTicketData = (ctx = {}) => ({
@@ -24,7 +24,8 @@ const getTicketData = (ctx = {}) => ({
   type_id: ctx.typeId || 1,
   status_id: ctx.statusId || 1,
   priority_id: ctx.priorityId || 1,
-  reporter_id: ctx.reporterId || null,
+  created_by: ctx.createdBy || null,
+  updated_by: ctx.updatedBy || null,
   assignee_id: ctx.assigneeId || null,
 });
 

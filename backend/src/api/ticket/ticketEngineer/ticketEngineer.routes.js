@@ -1,5 +1,5 @@
 import * as controllers from './ticketEngineer.controller';
-import { checkJwt, isProjectManager } from '../../../middlewares/auth';
+import { isProjectManager } from '../../../middlewares/auth';
 import {
   parsePaginationQueryParams,
   validateOrderByParam,
@@ -18,7 +18,6 @@ export default (router) => {
 
   router.post(
     '/:ticketId/engineers/:userId',
-    checkJwt(),
     isProjectManager(),
     preloadTicket(),
     controllers.addTicketEngineer
@@ -26,7 +25,6 @@ export default (router) => {
 
   router.delete(
     '/:ticketId/engineers/:userId',
-    checkJwt(),
     isProjectManager(),
     preloadTicket(),
     controllers.removeTicketEngineer
