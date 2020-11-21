@@ -2,12 +2,15 @@ import Joi from 'joi';
 import { validateRequest } from './validateRequest';
 
 function createUserSchema(req, res, next) {
+  const { api_user } = req;
+
   const schemaRules = {
     name: Joi.string(),
     email: Joi.string().email().required(),
+    picture: Joi.string(),
   };
 
-  if (req.api_user && req.api_user.is_admin) {
+  if (api_user && api_user.is_admin) {
     schemaRules.is_admin = Joi.bool();
   }
 
@@ -17,12 +20,15 @@ function createUserSchema(req, res, next) {
 }
 
 function updateUserSchema(req, res, next) {
+  const { api_user } = req;
+
   const schemaRules = {
     name: Joi.string().empty(''),
     email: Joi.string().email().empty(''),
+    picture: Joi.string().empty(''),
   };
 
-  if (req.api_user && req.api_user.is_admin) {
+  if (api_user && api_user.is_admin) {
     schemaRules.is_admin = Joi.bool().empty('');
     schemaRules.blocked = Joi.bool().empty('');
   }

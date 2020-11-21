@@ -24,6 +24,35 @@ const checkJwt = () =>
     algorithms: ['RS256'],
   });
 
+const authenticate = () => [checkJwt(), preloadApiUser()];
+
+const authorize = (...permittedRoles) => {
+  return [
+    (req, res, next) => {
+      const { api_user } = req;
+
+      if (api_user && api_user.role && permittedRoles.includes(api_user.role)) {
+        next();
+      } else {
+        throw new ErrorHandler(
+          403,
+          'You are not authorized to access this resource'
+        );
+      }
+    },
+  ];
+};
+
+const checkAdmin = () => (req, res, next) => {
+  const { api_user } = req;
+
+  if (api_user && api_user.is_admin) {
+    api_user.role = ROLES.admin;
+  }
+
+  next();
+};
+
 const checkProjectEngineer = () => async (req, res, next) => {
   const { api_user, project } = req;
 
@@ -50,39 +79,11 @@ const checkProjectManager = () => (req, res, next) => {
   next();
 };
 
-const checkAdmin = () => (req, res, next) => {
-  const { api_user } = req;
-
-  if (api_user && api_user.is_admin) {
-    api_user.role = ROLES.admin;
-  }
-
-  next();
-};
-
-const authorize = (...permittedRoles) => {
-  return [
-    checkJwt,
-    preloadApiUser(),
-    (req, res, next) => {
-      const { api_user } = req;
-
-      if (api_user && api_user.role && permittedRoles.includes(api_user.role)) {
-        next();
-      } else {
-        throw new ErrorHandler(
-          403,
-          'You are not authorize to access this resource'
-        );
-      }
-    },
-  ];
-};
-
 export {
   checkJwt,
+  authenticate,
+  authorize,
   checkAdmin,
   checkProjectManager,
   checkProjectEngineer,
-  authorize,
 };
