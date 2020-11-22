@@ -8,7 +8,7 @@ const preloadApiUser = () => async (req, res, next) => {
   const user = await User.query().findOne({ sub });
 
   if (!user || isEmpty(user)) {
-    throw new ErrorHandler(401, 'Unauthorized');
+    return next(new ErrorHandler(401, 'Unauthorized'));
   }
 
   req.api_user = user;
@@ -18,7 +18,7 @@ const preloadApiUser = () => async (req, res, next) => {
 
 const preloadUser = ({ userId, required }) => async (req, res, next) => {
   if (!userId && required) {
-    throw new ErrorHandler(400, 'User id is required');
+    return next(new ErrorHandler(400, 'User id is required'));
   }
 
   let user;
@@ -28,7 +28,7 @@ const preloadUser = ({ userId, required }) => async (req, res, next) => {
   }
 
   if (!user && required) {
-    next(new ErrorHandler(404, `User with ${userId} id not found`));
+    return next(new ErrorHandler(404, `User with ${userId} id not found`));
   }
 
   req.preloaded_user = user;

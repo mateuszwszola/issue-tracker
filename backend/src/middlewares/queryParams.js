@@ -6,11 +6,11 @@ const parsePageQueryParam = (pageSize = 20) => (req, res, next) => {
   page = page ? parseInt(page) : 1;
 
   if (Number.isNaN(page)) {
-    throw new ErrorHandler(400, 'Invalid page query param');
+    return next(new ErrorHandler(400, 'Invalid page query param'));
   }
 
   if (page < 1) {
-    throw new ErrorHandler(400, 'Invalid page number');
+    return next(new ErrorHandler(400, 'Invalid page number'));
   }
 
   const skip = (page - 1) * pageSize;
@@ -49,18 +49,22 @@ const validateOrderByParam = (
 
   if (orderByParam) {
     const entries = orderByParam.toLowerCase().split(',');
+    const errors = [];
 
     entries.forEach((entry) => {
       const [column, order = 'asc'] = entry.split(':');
       if (!validOrderColumns.has(column) || !validOrders.has(order)) {
-        throw new ErrorHandler(
-          400,
-          `Invalid orderBy argument: ${column}:${order}`
-        );
+        errors.push(`${column}:${order}`);
+      } else {
+        orderBy.push({ column, order });
       }
-
-      orderBy.push({ column, order });
     });
+
+    if (errors.length > 0) {
+      return next(
+        new ErrorHandler(400, `Invalid orderBy arguments: ${errors.join(', ')}`)
+      );
+    }
   } else {
     orderBy.push({ column: defaultColumn, order: defaultOrder });
   }

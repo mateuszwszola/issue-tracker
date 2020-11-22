@@ -32,9 +32,8 @@ const authorize = (...permittedRoles) => (req, res, next) => {
   if (api_user && api_user.role && permittedRoles.includes(api_user.role)) {
     next();
   } else {
-    throw new ErrorHandler(
-      403,
-      'You are not authorized to access this resource'
+    next(
+      new ErrorHandler(403, 'You are not authorized to access this resource')
     );
   }
 };

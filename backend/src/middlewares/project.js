@@ -7,7 +7,7 @@ const preloadProject = ({ required = true, projectId }) => async (
   next
 ) => {
   if (!projectId && required) {
-    throw new ErrorHandler(400, 'Project id is required');
+    return next(new ErrorHandler(400, 'Project id is required'));
   }
 
   let project;
@@ -17,7 +17,9 @@ const preloadProject = ({ required = true, projectId }) => async (
   }
 
   if (!project && required) {
-    throw new ErrorHandler(404, `Project with ${projectId} id not found`);
+    return next(
+      new ErrorHandler(404, `Project with ${projectId} id not found`)
+    );
   }
 
   if (project) {

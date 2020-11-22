@@ -1,9 +1,8 @@
 import { Project } from './project.model';
-import { ErrorHandler } from '../../utils/error';
 import { getProjectGraphQuery } from '../../utils/project';
 
 const getProjects = async (req, res) => {
-  const { skip, limit, orderBy = 'id', withGraph } = req.query;
+  const { skip, limit, orderBy, withGraph } = req.query;
 
   const query = Project.query()
     .offset(skip)
@@ -15,14 +14,12 @@ const getProjects = async (req, res) => {
     getProjectGraphQuery(query, withGraph);
   }
 
-  const projects = await query;
-
-  return res.status(200).json({ projects });
+  return res.status(200).json({ projects: await query });
 };
 
 const createProject = async (req, res) => {
-  const createdBy = req.api_user.id;
-  const projectData = { ...req.body, created_by: createdBy };
+  const { id: createdById } = req.api_user;
+  const projectData = { ...req.body, created_by: createdById };
 
   const project = await Project.query().insert(projectData).returning('*');
 
@@ -30,26 +27,24 @@ const createProject = async (req, res) => {
 };
 
 const getProject = async (req, res) => {
-  const { projectId } = req.params;
+  const { id: projectId } = req.project;
   const { withGraph } = req.query;
 
-  const query = Project.query().findById(projectId);
+  let project;
 
   if (withGraph) {
+    const query = Project.query().findById(projectId);
     getProjectGraphQuery(query, withGraph);
-  }
-
-  const project = await query;
-
-  if (!project) {
-    throw new ErrorHandler(404, 'Project not found');
+    project = await query;
+  } else {
+    project = req.project;
   }
 
   return res.status(200).json({ project });
 };
 
 const updateProject = async (req, res) => {
-  const { projectId } = req.params;
+  const { id: projectId } = req.project;
   const newProjectData = { ...req.body };
 
   const project = await Project.query()
@@ -61,7 +56,7 @@ const updateProject = async (req, res) => {
 };
 
 const deleteProject = async (req, res) => {
-  const { projectId } = req.params;
+  const { id: projectId } = req.project;
 
   const project = await Project.query()
     .findById(projectId)

@@ -1,5 +1,4 @@
 import supertest from 'supertest';
-import * as faker from 'faker';
 import { app } from '../../app';
 import db from '../../db';
 import setupTest from '../../setupTests';
@@ -32,7 +31,9 @@ describe('Test the project endpoints', () => {
         getProjectData({ createdBy: user.id })
       );
 
-      const response = await supertest(app).get(BASE_PATH);
+      const response = await supertest(app).get(
+        `${BASE_PATH}?orderBy=name:desc`
+      );
 
       expect(response.statusCode).toBe(200);
       expect(response.body).toHaveProperty('projects');
@@ -117,7 +118,7 @@ describe('Test the project endpoints', () => {
         getProjectData({ createdBy: user.id })
       );
 
-      const newName = faker.commerce.productName();
+      const newName = 'New project name';
 
       const response = await supertest(app)
         .patch(`${BASE_PATH}/${project.id}`)
@@ -133,7 +134,7 @@ describe('Test the project endpoints', () => {
       );
       const token = getToken({ sub: user.sub });
 
-      const newName = faker.commerce.productName();
+      const newName = 'New project name';
 
       const response = await supertest(app)
         .patch(`${BASE_PATH}/${project.id}`)

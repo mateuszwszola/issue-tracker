@@ -16,22 +16,15 @@ function createProjectKey(projectName, projectId) {
 }
 
 function getProjectGraphQuery(query, withGraph) {
+  const userDefaultSelect = ['id', 'sub', 'name', 'email', 'picture'];
+
   return query
     .allowGraph('[type, createdBy, manager, engineers, tickets]')
     .withGraphFetched(withGraph)
     .modifyGraph('type', createBuilder(['id', 'name']))
-    .modifyGraph(
-      'createdBy',
-      createBuilder(['id', 'sub', 'name', 'email', 'picture'])
-    )
-    .modifyGraph(
-      'manager',
-      createBuilder(['id', 'sub', 'name', 'email', 'picture'])
-    )
-    .modifyGraph(
-      'engineers',
-      createBuilder(['id', 'sub', 'name', 'email', 'picture'])
-    );
+    .modifyGraph('createdBy', createBuilder(userDefaultSelect))
+    .modifyGraph('manager', createBuilder(userDefaultSelect))
+    .modifyGraph('engineers', createBuilder(userDefaultSelect));
 }
 
 const validProjectOrders = new Set([

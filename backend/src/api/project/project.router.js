@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import * as controllers from './project.controller';
-import { isAdmin } from '../../middlewares/auth';
+import { authenticate, authorize, checkAdmin } from '../../middlewares/auth';
 import registerProjectEngineerRoutes from './projectEngineer/projectEngineer.routes';
 import {
   parsePageQueryParam,
@@ -12,6 +12,7 @@ import {
   validProjectOrders,
 } from '../../utils/project';
 import { preloadProject } from '../../middlewares/project';
+import { ROLES } from '../../constants/roles';
 const router = Router();
 
 /**
@@ -21,29 +22,65 @@ const router = Router();
 registerProjectEngineerRoutes(router);
 
 /**
- * @route /api/v1/projects
+ * @route GET /api/v1/projects
+ * @desc Get projects
+ * @access Public
  */
-router
-  .route('/')
-  .get(
-    parsePageQueryParam(),
-    validateOrderByParam(validProjectOrders),
-    controllers.getProjects
-  )
-  .post(isAdmin(), createProjectSchema, controllers.createProject);
+router.get('/', [
+  parsePageQueryParam(),
+  validateOrderByParam(validProjectOrders),
+  controllers.getProjects,
+]);
+
+/**
+ * @route POST /api/v1/projects
+ * @desc Create a project
+ * @access Admin
+ */
+router.post('/', [
+  ...authenticate(),
+  checkAdmin(),
+  authorize(ROLES.admin),
+  createProjectSchema,
+  controllers.createProject,
+]);
 
 /**
  * @route /api/v1/projects/:projectId
  */
-router
-  .route('/:projectId')
-  .get(controllers.getProject)
-  .patch(
-    isAdmin(),
-    preloadProject(),
-    updateProjectSchema,
-    controllers.updateProject
-  )
-  .delete(isAdmin(), preloadProject(), controllers.deleteProject);
+router.use('/:projectId', (req, res, next) => {
+  const { projectId } = req.params;
+  preloadProject({ projectId, required: true })(req, res, next);
+});
+
+/**
+ * @route GET /api/v1/projects/:projectId
+ * @desc Get project by Id
+ * @access Public
+ */
+router.get('/:projectId', controllers.getProject);
+
+/**
+ * @route PATCH / DELETE /api/v1/projects/:projectId
+ */
+router.use('/:projectId', [
+  ...authenticate(),
+  checkAdmin(),
+  authorize(ROLES.admin),
+]);
+
+/**
+ * @route PATCH /api/v1/projects/:projectId
+ * @desc Update project
+ * @access Admin
+ */
+router.patch('/:projectId', updateProjectSchema, controllers.updateProject);
+
+/**
+ * @route DELETE /api/v1/projects/:projectId
+ * @desc Delete project
+ * @access Admin
+ */
+router.delete('/:projectId', controllers.deleteProject);
 
 export default router;
