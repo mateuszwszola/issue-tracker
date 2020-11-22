@@ -26,21 +26,17 @@ const checkJwt = () =>
 
 const authenticate = () => [checkJwt(), preloadApiUser()];
 
-const authorize = (...permittedRoles) => {
-  return [
-    (req, res, next) => {
-      const { api_user } = req;
+const authorize = (...permittedRoles) => (req, res, next) => {
+  const { api_user } = req;
 
-      if (api_user && api_user.role && permittedRoles.includes(api_user.role)) {
-        next();
-      } else {
-        throw new ErrorHandler(
-          403,
-          'You are not authorized to access this resource'
-        );
-      }
-    },
-  ];
+  if (api_user && api_user.role && permittedRoles.includes(api_user.role)) {
+    next();
+  } else {
+    throw new ErrorHandler(
+      403,
+      'You are not authorized to access this resource'
+    );
+  }
 };
 
 const checkAdmin = () => (req, res, next) => {

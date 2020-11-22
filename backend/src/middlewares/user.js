@@ -28,7 +28,7 @@ const preloadUser = ({ userId, required }) => async (req, res, next) => {
   }
 
   if (!user && required) {
-    throw new ErrorHandler(404, `User with ${userId} id not found`);
+    next(new ErrorHandler(404, `User with ${userId} id not found`));
   }
 
   req.preloaded_user = user;

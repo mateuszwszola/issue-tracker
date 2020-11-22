@@ -45,15 +45,14 @@ describe('Test the users endpoints', () => {
       );
       const token = getToken({ sub: user.sub });
 
-      await UserModel.query().insert([getUserData(), getUserData()]);
-
       const response = await supertest(app)
-        .get(BASE_PATH)
+        .get(BASE_PATH + '?orderBy=name')
         .set('Authorization', `Bearer ${token}`);
 
       expect(response.statusCode).toBe(200);
       expect(response.body).toHaveProperty('users');
-      expect(response.body.users.length).toBe(3);
+      expect(response.body.users.length).toBe(1);
+      expect(response.body.users[0].id).toBe(user.id);
     });
   });
 
@@ -94,7 +93,7 @@ describe('Test the users endpoints', () => {
       expect(response.statusCode).toBe(422);
     });
 
-    it('should create a user with extra props (that only admin can do) and respond with a user', async () => {
+    it('should create a user with extra props (that only admin can add) and respond with a user', async () => {
       const user = await UserModel.query().insert(
         getUserData({ isAdmin: true })
       );
@@ -117,20 +116,11 @@ describe('Test the users endpoints', () => {
 
   describe(`GET /api/v1/users/:userId`, () => {
     it('should respond with an error if token not provided', async () => {
-      const response = await supertest(app).get(`${BASE_PATH}/123`);
+      const user = await UserModel.query().insert(getUserData());
+
+      const response = await supertest(app).get(`${BASE_PATH}/${user.id}`);
 
       expect(response.statusCode).toBe(401);
-    });
-
-    it('should respond with an error if user is not authorized', async () => {
-      const user = await UserModel.query().insert(getUserData());
-      const token = getToken({ sub: user.sub });
-
-      const response = await supertest(app)
-        .get(`${BASE_PATH}/123`)
-        .set('Authorization', `Bearer ${token}`);
-
-      expect(response.statusCode).toBe(403);
     });
 
     it('should respond with 404 if user does not exists', async () => {
@@ -146,7 +136,20 @@ describe('Test the users endpoints', () => {
       expect(response.statusCode).toBe(404);
     });
 
-    it('should respond with a user', async () => {
+    it('should respond with an error if user is not authorized', async () => {
+      const authUser = await UserModel.query().insert(getUserData());
+      const token = getToken({ sub: authUser.sub });
+
+      const user = await UserModel.query().insert(getUserData());
+
+      const response = await supertest(app)
+        .get(`${BASE_PATH}/${user.id}`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.statusCode).toBe(403);
+    });
+
+    it('should respond with a user if auth user is an admin', async () => {
       const authUser = await UserModel.query().insert(
         getUserData({ isAdmin: true })
       );
@@ -164,21 +167,40 @@ describe('Test the users endpoints', () => {
       expect(response.body.user.name).toBe(user.name);
       expect(response.body.user.email).toBe(user.email);
     });
+
+    it('should respond with a user if auth user is a profile owner', async () => {
+      const authUser = await UserModel.query().insert(getUserData());
+      const token = getToken({ sub: authUser.sub });
+
+      const response = await supertest(app)
+        .get(`${BASE_PATH}/${authUser.id}`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toHaveProperty('user');
+      expect(response.body.user.id).toBe(authUser.id);
+      expect(response.body.user.name).toBe(authUser.name);
+      expect(response.body.user.email).toBe(authUser.email);
+    });
   });
 
-  describe(`PUT /api/v1/users/:userId`, () => {
+  describe(`PATCH /api/v1/users/:userId`, () => {
     it('should respond with an error if token not provided', async () => {
-      const response = await supertest(app).patch(`${BASE_PATH}/123`);
+      const user = await UserModel.query().insert(getUserData());
+
+      const response = await supertest(app).patch(`${BASE_PATH}/${user.id}`);
 
       expect(response.statusCode).toBe(401);
     });
 
     it('should respond with an error if user is not authorized', async () => {
+      const authUser = await UserModel.query().insert(getUserData());
+      const token = getToken({ sub: authUser.sub });
+
       const user = await UserModel.query().insert(getUserData());
-      const token = getToken({ sub: user.sub });
 
       const response = await supertest(app)
-        .patch(`${BASE_PATH}/123`)
+        .patch(`${BASE_PATH}/${user.id}`)
         .set('Authorization', `Bearer ${token}`);
 
       expect(response.statusCode).toBe(403);
@@ -224,7 +246,7 @@ describe('Test the users endpoints', () => {
       expect(response.statusCode).toBe(404);
     });
 
-    it('should update and respond with a user', async () => {
+    it('should update and respond with a user if auth user is an admin', async () => {
       const authUser = await UserModel.query().insert(
         getUserData({ isAdmin: true })
       );
@@ -248,21 +270,50 @@ describe('Test the users endpoints', () => {
       expect(response.body.user.email).toBe(body.email);
       expect(response.body.user.name).toBe(body.name);
     });
+
+    it('should update and respond with a user if auth user is a profile owner (but cannot add admin props)', async () => {
+      const authUser = await UserModel.query().insert(getUserData());
+      const token = getToken({ sub: authUser.sub });
+
+      const body = {
+        email: 'newemail@test.com',
+        name: 'John Doe',
+        is_admin: true, // should ignore it
+      };
+
+      const response = await supertest(app)
+        .patch(`${BASE_PATH}/${authUser.id}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send(body);
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toHaveProperty('user');
+      expect(response.body.user.id).toBe(authUser.id);
+      expect(response.body.user.email).toBe(body.email);
+      expect(response.body.user.name).toBe(body.name);
+      expect(response.body.user.is_admin).toBe(false);
+    });
   });
 
   describe(`DELETE /api/v1/users/:userId`, () => {
     it('should respond with an error if token not provided', async () => {
-      const response = await supertest(app).delete(`${BASE_PATH}/123`);
+      const user = await UserModel.query().insert(getUserData());
+
+      const response = await supertest(app).delete(`${BASE_PATH}/${user.id}`);
 
       expect(response.statusCode).toBe(401);
     });
 
     it('should respond with an error if user is not authorized', async () => {
-      const user = await UserModel.query().insert(getUserData());
-      const token = getToken({ sub: user.sub });
+      const [authUser, user] = await Promise.all([
+        UserModel.query().insert(getUserData()),
+        UserModel.query().insert(getUserData()),
+      ]);
+
+      const token = getToken({ sub: authUser.sub });
 
       const response = await supertest(app)
-        .delete(`${BASE_PATH}/123`)
+        .delete(`${BASE_PATH}/${user.id}`)
         .set('Authorization', `Bearer ${token}`);
 
       expect(response.statusCode).toBe(403);
@@ -272,6 +323,7 @@ describe('Test the users endpoints', () => {
       const authUser = await UserModel.query().insert(
         getUserData({ isAdmin: true })
       );
+
       const token = getToken({ sub: authUser.sub });
 
       const response = await supertest(app)
@@ -282,12 +334,11 @@ describe('Test the users endpoints', () => {
     });
 
     it('should delete and respond with a user', async () => {
-      const authUser = await UserModel.query().insert(
-        getUserData({ isAdmin: true })
-      );
+      const [authUser, user] = await Promise.all([
+        UserModel.query().insert(getUserData({ isAdmin: true })),
+        UserModel.query().insert(getUserData()),
+      ]);
       const token = getToken({ sub: authUser.sub });
-
-      const user = await UserModel.query().insert(getUserData());
 
       const response = await supertest(app)
         .delete(`${BASE_PATH}/${user.id}`)
