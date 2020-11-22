@@ -36,17 +36,36 @@ const parsePaginationQueryParams = (defaultLimit = 100) => (req, res, next) => {
   }
 };
 
-const validateOrderByParam = (validOrders) => (req, res, next) => {
-  let { orderBy } = req.query;
+const validateOrderByParam = (
+  validOrderColumns,
+  defaultColumn = 'id',
+  defaultOrder = 'asc'
+) => (req, res, next) => {
+  const { orderBy: orderByParam } = req.query;
 
-  if (orderBy) {
-    orderBy = orderBy.toLowerCase();
-    if (!validOrders.has(orderBy)) {
-      throw new ErrorHandler(400, `Invalid orderBy param: ${orderBy}`);
-    }
+  const validOrders = new Set(['asc', 'desc']);
 
-    req.query.orderBy = orderBy;
+  const orderBy = [];
+
+  if (orderByParam) {
+    const entries = orderByParam.toLowerCase().split(',');
+
+    entries.forEach((entry) => {
+      const [column, order = 'asc'] = entry.split(':');
+      if (!validOrderColumns.has(column) || !validOrders.has(order)) {
+        throw new ErrorHandler(
+          400,
+          `Invalid orderBy argument: ${column}:${order}`
+        );
+      }
+
+      orderBy.push({ column, order });
+    });
+  } else {
+    orderBy.push({ column: defaultColumn, order: defaultOrder });
   }
+
+  req.query.orderBy = orderBy;
 
   next();
 };
