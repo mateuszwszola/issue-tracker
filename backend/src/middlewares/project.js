@@ -14,15 +14,11 @@ const preloadProject = ({ required = true, projectId }) => async (
 
   if (projectId) {
     project = await Project.query().findById(projectId);
-  }
-
-  if (!project && required) {
-    return next(
-      new ErrorHandler(404, `Project with ${projectId} id not found`)
-    );
-  }
-
-  if (project) {
+    if (!project) {
+      return next(
+        new ErrorHandler(404, `Project with ${projectId} id not found`)
+      );
+    }
     req.project = project;
   }
 

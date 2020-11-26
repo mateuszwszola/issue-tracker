@@ -1,4 +1,4 @@
-import supertest from 'supertest';
+import request from 'supertest';
 import { pick } from 'lodash';
 import { app } from '../../app';
 import db from '../../db';
@@ -14,9 +14,9 @@ import {
   getUserData,
 } from '../../fixtures/data';
 
-const BASE_PATH = '/api/v1/tickets';
+const BASE_PATH = '/api/tickets';
 
-describe('Test ticket endpoints', () => {
+describe('Test a ticket endpoints', () => {
   const thisDb = db;
   const UserModel = User;
   const ProjectModel = Project;
@@ -26,166 +26,177 @@ describe('Test ticket endpoints', () => {
 
   afterAll(() => teardownTest(thisDb));
 
+  let admin, project;
+
+  beforeEach(async () => {
+    admin = await UserModel.query().insert(getUserData({ isAdmin: true }));
+    project = await ProjectModel.query().insert(
+      getProjectData({ createdBy: admin.id })
+    );
+  });
+
   afterEach(async () => {
     await TicketModel.query().delete();
     await ProjectModel.query().delete();
     await UserModel.query().delete();
   });
 
-  describe('GET /api/v1/tickets?projectId=', () => {
-    it('should respond with error for invalid query param', async () => {
-      const response = await supertest(app).get(`${BASE_PATH}?orderBy=invalid`);
+  describe('GET /api/tickets?projectId=', () => {
+    let ticket;
+
+    beforeEach(async () => {
+      ticket = await TicketModel.query().insert(
+        getTicketData({ projectId: project.id, createdBy: admin.id })
+      );
+    });
+
+    it('should respond with an error if invalid query param provided', async () => {
+      const response = await request(app).get(`${BASE_PATH}?orderBy=invalid`);
 
       expect(response.statusCode).toBe(400);
     });
 
     it('should respond with an error if project not found', async () => {
-      const response = await supertest(app).get(`${BASE_PATH}?projectId=123`);
+      const response = await request(app).get(`${BASE_PATH}?projectId=123`);
 
       expect(response.statusCode).toBe(404);
     });
 
     it('should respond with an array of tickets', async () => {
-      const reporter = await UserModel.query().insert(getUserData());
-      const project = await ProjectModel.query().insert(getProjectData());
+      const response = await request(app).get(`${BASE_PATH}`);
 
-      const ticket = await ProjectModel.relatedQuery('tickets')
-        .for(project.id)
-        .insert(getTicketData({ reporterId: reporter.id }));
+      const { statusCode, body } = response;
 
-      const response = await supertest(app).get(`${BASE_PATH}`);
+      expect(statusCode).toBe(200);
+      expect(body).toHaveProperty('tickets');
+      expect(body.tickets.length).toBe(1);
 
-      expect(response.statusCode).toBe(200);
-      expect(response.body).toHaveProperty('tickets');
-      expect(response.body.tickets.length).toBe(1);
-      expect(response.body.tickets[0].id).toBe(ticket.id);
-      expect(response.body.tickets[0].project_id).toBe(project.id);
-      expect(response.body.tickets[0].reporter_id).toBe(reporter.id);
+      const [responseTicket] = body.tickets;
+
+      expect(responseTicket.id).toBe(ticket.id);
+      expect(responseTicket.project_id).toBe(project.id);
+      expect(responseTicket.created_by).toBe(admin.id);
     });
 
     it('should respond with an array of project tickets', async () => {
-      const reporter = await UserModel.query().insert(getUserData());
-      const project = await ProjectModel.query().insert(getProjectData());
-
-      const ticket = await ProjectModel.relatedQuery('tickets')
-        .for(project.id)
-        .insert(getTicketData({ reporterId: reporter.id }));
-
-      const response = await supertest(app).get(
+      const response = await request(app).get(
         `${BASE_PATH}?projectId=${project.id}`
       );
 
-      expect(response.statusCode).toBe(200);
-      expect(response.body).toHaveProperty('tickets');
-      expect(response.body.tickets.length).toBe(1);
-      expect(response.body.tickets[0].id).toBe(ticket.id);
-      expect(response.body.tickets[0].project_id).toBe(project.id);
-      expect(response.body.tickets[0].reporter_id).toBe(reporter.id);
+      const { statusCode, body } = response;
+
+      expect(statusCode).toBe(200);
+      expect(body).toHaveProperty('tickets');
+      expect(body.tickets.length).toBe(1);
+
+      const [responseTicket] = body.tickets;
+
+      expect(responseTicket.id).toBe(ticket.id);
+      expect(responseTicket.project_id).toBe(project.id);
+      expect(responseTicket.created_by).toBe(admin.id);
     });
 
     it('should respond with an array of project tickets withGraphFetched', async () => {
-      const reporter = await UserModel.query().insert(getUserData());
-      const project = await ProjectModel.query().insert(getProjectData());
-
-      const ticket = await ProjectModel.relatedQuery('tickets')
-        .for(project.id)
-        .insert(getTicketData({ reporterId: reporter.id }));
-
-      const response = await supertest(app).get(
-        `${BASE_PATH}?projectId=${project.id}&withGraph=[project,type(defaultSelects),status(defaultSelects),priority(defaultSelects),reporter,parentTicket]`
+      const response = await request(app).get(
+        `${BASE_PATH}?projectId=${project.id}&withGraph=[project,type,status,priority,createdBy]`
       );
 
-      expect(response.statusCode).toBe(200);
-      expect(response.body).toHaveProperty('tickets');
-      expect(response.body.tickets.length).toBe(1);
-      expect(response.body.tickets[0].id).toBe(ticket.id);
-      expect(response.body.tickets[0].project.name).toBe(project.name);
-      expect(response.body.tickets[0].type).toHaveProperty('name');
-      expect(response.body.tickets[0].status).toHaveProperty('name');
-      expect(response.body.tickets[0].priority).toHaveProperty('name');
-      expect(response.body.tickets[0].reporter).toHaveProperty('name');
+      const { statusCode, body } = response;
+
+      expect(statusCode).toBe(200);
+      expect(body).toHaveProperty('tickets');
+      expect(body.tickets.length).toBe(1);
+
+      const [responseTicket] = body.tickets;
+
+      expect(responseTicket.id).toBe(ticket.id);
+      expect(responseTicket.project.name).toBe(project.name);
+      expect(responseTicket.createdBy.email).toBe(admin.email);
+
+      ['type', 'status', 'priority'].forEach((property) => {
+        expect(responseTicket[property]).toHaveProperty('name');
+      });
     });
   });
 
-  describe('GET /api/v1/tickets/:ticketId?projectId=', () => {
-    it('should respond with 404 - ticket not found', async () => {
-      const response = await supertest(app).get(`${BASE_PATH}/100`);
+  describe('GET /api/tickets/:ticketId', () => {
+    let ticket;
+
+    beforeEach(async () => {
+      ticket = await TicketModel.query().insert(
+        getTicketData({
+          projectId: project.id,
+          createdBy: admin.id,
+        })
+      );
+    });
+
+    it('should respond with 404 error if ticket does not exists', async () => {
+      const response = await request(app).get(`${BASE_PATH}/100`);
 
       expect(response.statusCode).toBe(404);
     });
 
     it('should respond with a ticket', async () => {
-      const reporter = await UserModel.query().insert(getUserData());
-      const project = await ProjectModel.query().insert(getProjectData());
-      const ticket = await ProjectModel.relatedQuery('tickets')
-        .for(project.id)
-        .insert(
-          getTicketData({
-            reporterId: reporter.id,
-          })
-        );
+      const response = await request(app).get(`${BASE_PATH}/${ticket.id}`);
 
-      const response = await supertest(app).get(`${BASE_PATH}/${ticket.id}`);
+      const { statusCode, body } = response;
 
-      expect(response.statusCode).toBe(200);
-      expect(response.body).toHaveProperty('ticket');
-      expect(response.body.ticket.id).toBe(ticket.id);
-      expect(response.body.ticket.project_id).toBe(project.id);
-      expect(response.body.ticket.key).toBeTruthy();
-      expect(response.body.ticket.name).toBe(ticket.name);
+      expect(statusCode).toBe(200);
+      expect(body).toHaveProperty('ticket');
+
+      const { ticket: responseTicket } = body;
+
+      expect(responseTicket.id).toBe(ticket.id);
+      expect(responseTicket.project_id).toBe(project.id);
+      expect(responseTicket.created_by).toBe(admin.id);
+      expect(responseTicket.key).toBeTruthy();
+      expect(responseTicket.name).toBe(ticket.name);
     });
 
     it('should respond with a ticket withGraphFetched', async () => {
-      const reporter = await UserModel.query().insert(getUserData());
-      const project = await ProjectModel.query().insert(getProjectData());
-      const ticket = await ProjectModel.relatedQuery('tickets')
-        .for(project.id)
-        .insert(
-          getTicketData({
-            reporterId: reporter.id,
-          })
-        );
-
-      const response = await supertest(app).get(
-        `${BASE_PATH}/${ticket.id}?withGraph=[project,type(defaultSelects),status(defaultSelects),priority(defaultSelects),reporter]`
+      const response = await request(app).get(
+        `${BASE_PATH}/${ticket.id}?withGraph=[project,type,status,priority,createdBy]`
       );
 
-      expect(response.statusCode).toBe(200);
-      expect(response.body).toHaveProperty('ticket');
-      expect(response.body.ticket.id).toBe(ticket.id);
-      expect(response.body.ticket.project_id).toBe(project.id);
-      expect(response.body.ticket.key).toBeTruthy();
-      expect(response.body.ticket.name).toBe(ticket.name);
-      expect(response.body.ticket.project.name).toBe(project.name);
-      expect(response.body.ticket.reporter.name).toBe(reporter.name);
-      expect(response.body.ticket.type).toHaveProperty('name');
-      expect(response.body.ticket.status).toHaveProperty('name');
-      expect(response.body.ticket.priority).toHaveProperty('name');
+      const { statusCode, body } = response;
+
+      expect(statusCode).toBe(200);
+      expect(body).toHaveProperty('ticket');
+
+      const { ticket: responseTicket } = body;
+
+      expect(responseTicket.id).toBe(ticket.id);
+      expect(responseTicket.project_id).toBe(project.id);
+      expect(responseTicket.key).toBeTruthy();
+      expect(responseTicket.name).toBe(ticket.name);
+      expect(responseTicket.project.name).toBe(project.name);
+      expect(responseTicket.createdBy.name).toBe(admin.name);
+
+      ['type', 'status', 'priority'].forEach((property) => {
+        expect(responseTicket[property]).toHaveProperty('name');
+      });
     });
   });
 
-  describe('POST /api/v1/tickets?projectId=', () => {
+  describe('POST /api/tickets', () => {
     it('should fail without token', async () => {
-      const reporter = await UserModel.query().insert(getUserData());
-      const project = await ProjectModel.query().insert(getProjectData());
+      const ticketData = pick(
+        getTicketData({
+          projectId: project.id,
+        }),
+        ['project_id', 'name', 'type_id', 'status_id', 'priority_id']
+      );
 
-      const ticketData = getTicketData({ reporterId: reporter.id });
-
-      const response = await supertest(app)
-        .post(`${BASE_PATH}?projectId=${project.id}`)
-        .send(ticketData);
+      const response = await request(app).post(`${BASE_PATH}`).send(ticketData);
 
       expect(response.statusCode).toBe(401);
     });
 
-    it('should fail if projectId query param is not provided', async () => {
-      const user = await UserModel.query().insert(
-        getUserData({ sub: 'auth0|123' })
-      );
+    it('should fail if empty body provided', async () => {
+      const token = getToken({ sub: admin.sub });
 
-      const token = getToken({ sub: user.sub });
-
-      const response = await supertest(app)
+      const response = await request(app)
         .post(`${BASE_PATH}`)
         .set('Authorization', `Bearer ${token}`);
 
@@ -193,115 +204,107 @@ describe('Test ticket endpoints', () => {
     });
 
     it('should fail if project does not exists', async () => {
-      const user = await UserModel.query().insert(
-        getUserData({ sub: 'auth0|123' })
+      const ticketData = pick(
+        getTicketData({
+          projectId: project.id,
+        }),
+        ['project_id', 'name', 'type_id', 'status_id', 'priority_id']
       );
 
-      const token = getToken({ sub: user.sub });
+      const token = getToken({ sub: admin.sub });
 
-      const response = await supertest(app)
-        .post(`${BASE_PATH}?projectId=123`)
-        .set('Authorization', `Bearer ${token}`);
+      const response = await request(app)
+        .post(`${BASE_PATH}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ ...ticketData, project_id: 123 });
 
       expect(response.statusCode).toBe(404);
     });
 
-    it('should fail if auth user is not a project engineer', async () => {
-      const user = await UserModel.query().insert(
-        getUserData({ sub: 'auth0|123' })
-      );
-      const project = await ProjectModel.query().insert(getProjectData());
-
-      const ticketData = getTicketData({ reporterId: user.id });
-
+    it('should fail if auth user is not authorized', async () => {
+      const user = await UserModel.query().insert(getUserData());
       const token = getToken({ sub: user.sub });
 
-      const response = await supertest(app)
-        .post(`${BASE_PATH}?projectId=${project.id}`)
-        .send(ticketData)
-        .set('Authorization', `Bearer ${token}`);
+      const ticketData = pick(
+        getTicketData({
+          projectId: project.id,
+        }),
+        ['project_id', 'name', 'type_id', 'status_id', 'priority_id']
+      );
+
+      const response = await request(app)
+        .post(`${BASE_PATH}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send(ticketData);
 
       expect(response.statusCode).toBe(403);
     });
 
-    it('should fail if required properties not provided', async () => {
-      const user = await UserModel.query().insert(
-        getUserData({ sub: 'auth0|123' })
-      );
-      const project = await ProjectModel.query().insert(getProjectData());
-      await ProjectModel.relatedQuery('engineers')
-        .for(project.id)
-        .relate(user.id);
+    it('should fail if required properties are not provided', async () => {
+      const token = getToken({ sub: admin.sub });
 
-      const token = getToken({ sub: user.sub });
-
-      const response = await supertest(app)
-        .post(`${BASE_PATH}?projectId=${project.id}`)
-        .send({})
+      const response = await request(app)
+        .post(`${BASE_PATH}`)
+        .send({ project_id: project.id })
         .set('Authorization', `Bearer ${token}`);
 
       expect(response.statusCode).toBe(422);
     });
 
-    it('should add and respond with a ticket', async () => {
-      const user = await UserModel.query().insert(
-        getUserData({ sub: 'auth0|123' })
+    it('should create and respond with a ticket', async () => {
+      const ticketData = pick(
+        getTicketData({
+          projectId: project.id,
+        }),
+        ['project_id', 'name', 'type_id', 'status_id', 'priority_id']
       );
-      const project = await ProjectModel.query().insert(getProjectData());
-      await ProjectModel.relatedQuery('engineers')
-        .for(project.id)
-        .relate(user.id);
 
-      const ticketData = getTicketData({ reporterId: user.id });
+      const token = getToken({ sub: admin.sub });
 
-      const token = getToken({ sub: user.sub });
+      const response = await request(app)
+        .post(`${BASE_PATH}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send(ticketData);
 
-      const response = await supertest(app)
-        .post(`${BASE_PATH}?projectId=${project.id}`)
-        .send(ticketData)
-        .set('Authorization', `Bearer ${token}`);
+      const { statusCode, body } = response;
 
-      expect(response.statusCode).toBe(200);
-      expect(response.body).toHaveProperty('ticket');
-      expect(response.body.ticket.project_id).toBe(project.id);
-      expect(response.body.ticket.key).toBeTruthy();
-      expect(response.body.ticket.name).toBe(ticketData.name);
-      expect(response.body.ticket.description).toBe(ticketData.description);
-      expect(response.body.ticket.type_id).toBe(ticketData.type_id);
-      expect(response.body.ticket.status_id).toBe(ticketData.status_id);
-      expect(response.body.ticket.priority_id).toBe(ticketData.priority_id);
+      expect(statusCode).toBe(200);
+      expect(body).toHaveProperty('ticket');
+
+      const { ticket: responseTicket } = body;
+
+      expect(responseTicket.key).toBeTruthy();
+      expect(responseTicket.created_by).toBe(admin.id);
+
+      Object.entries(ticketData).forEach(([key, value]) => {
+        expect(responseTicket[key]).toBe(value);
+      });
     });
   });
 
-  describe('PATCH /api/v1/tickets/:ticketId?projectId=', () => {
-    it('should fail without token', async () => {
-      const reporter = await UserModel.query().insert(getUserData());
-      const project = await ProjectModel.query().insert(getProjectData());
-      const ticket = await ProjectModel.relatedQuery('tickets')
-        .for(project.id)
-        .insert(getTicketData({ reporterId: reporter.id }));
+  describe('PATCH /api/tickets/:ticketId', () => {
+    let ticket;
 
-      const response = await supertest(app)
-        .patch(`${BASE_PATH}/${ticket.id}?projectId=${project.id}`)
+    beforeEach(async () => {
+      ticket = await TicketModel.query().insert(
+        getTicketData({ projectId: project.id, createdBy: admin.id })
+      );
+    });
+
+    it('should fail without a token', async () => {
+      const response = await request(app)
+        .patch(`${BASE_PATH}/${ticket.id}`)
         .send({ name: 'New name' });
 
       expect(response.statusCode).toBe(401);
     });
 
     it('should fail if user is not authorized', async () => {
-      const user = await UserModel.query().insert(
-        getUserData({ sub: 'auth0|123' })
-      );
-      const reporter = await UserModel.query().insert(getUserData());
-      const project = await ProjectModel.query().insert(getProjectData());
-      const ticket = await ProjectModel.relatedQuery('tickets')
-        .for(project.id)
-        .insert(getTicketData({ reporterId: reporter.id }));
-
+      const user = await UserModel.query().insert(getUserData());
       const token = getToken({ sub: user.sub });
 
-      const response = await supertest(app)
-        .patch(`${BASE_PATH}/${ticket.id}?projectId=${project.id}`)
+      const response = await request(app)
+        .patch(`${BASE_PATH}/${ticket.id}`)
         .send({ name: 'New name' })
         .set('Authorization', `Bearer ${token}`);
 
@@ -309,152 +312,79 @@ describe('Test ticket endpoints', () => {
     });
 
     it('should update and respond with updated ticket', async () => {
-      const user = await UserModel.query().insert(
-        getUserData({ sub: 'auth0|123' })
-      );
-      const reporter = await UserModel.query().insert(getUserData());
-      const project = await ProjectModel.query().insert(getProjectData());
-      await ProjectModel.relatedQuery('engineers')
-        .for(project.id)
-        .relate(user.id);
+      const token = getToken({ sub: admin.sub });
 
-      const ticketData = getTicketData({ reporterId: reporter.id });
+      const newTicketName = 'New ticket name';
 
-      const ticket = await ProjectModel.relatedQuery('tickets')
-        .for(project.id)
-        .insert(ticketData);
-
-      const newTicketData = pick(
-        getTicketData({ typeId: 2, statusId: 2, priorityId: 2 }),
-        ['name', 'description', 'type_id', 'status_id', 'priority_id']
-      );
-
-      const token = getToken({ sub: user.sub });
-
-      const response = await supertest(app)
-        .patch(`${BASE_PATH}/${ticket.id}?projectId=${project.id}`)
-        .send(newTicketData)
+      const response = await request(app)
+        .patch(`${BASE_PATH}/${ticket.id}`)
+        .send({ name: newTicketName })
         .set('Authorization', `Bearer ${token}`);
 
-      expect(response.statusCode).toBe(200);
-      expect(response.body).toHaveProperty('ticket');
-      expect(response.body.ticket.project_id).toBe(project.id);
-      expect(response.body.ticket.reporter_id).toBe(reporter.id);
-      expect(response.body.ticket.key).toBeTruthy();
-      expect(response.body.ticket.name).toBe(newTicketData.name);
-      expect(response.body.ticket.description).toBe(newTicketData.description);
-      expect(response.body.ticket.type_id).toBe(newTicketData.type_id);
-      expect(response.body.ticket.status_id).toBe(newTicketData.status_id);
-      expect(response.body.ticket.priority_id).toBe(newTicketData.priority_id);
+      const { statusCode, body } = response;
+
+      expect(statusCode).toBe(200);
+      expect(body).toHaveProperty('ticket');
+
+      const { ticket: responseTicket } = body;
+
+      expect(responseTicket.id).toBe(ticket.id);
+      expect(responseTicket.project_id).toBe(project.id);
+      expect(responseTicket.created_by).toBe(admin.id);
+      expect(responseTicket.name).toBe(newTicketName);
     });
   });
 
-  describe('DELETE /api/v1/tickets/:ticketId?projectId=', () => {
-    it('should fail without a token', async () => {
-      const user = await UserModel.query().insert(getUserData());
-      const project = await ProjectModel.query().insert(getProjectData());
-      const ticket = await ProjectModel.relatedQuery('tickets')
-        .for(project.id)
-        .insert(
-          getTicketData({
-            reporterId: user.id,
-          })
-        );
+  describe('DELETE /api/tickets/:ticketId', () => {
+    let admin, project, ticket;
 
-      const response = await supertest(app).delete(
-        `${BASE_PATH}/${ticket.id}?projectId=${project.id}`
+    beforeEach(async () => {
+      admin = await UserModel.query().insert(getUserData({ isAdmin: true }));
+      project = await ProjectModel.query().insert(
+        getProjectData({ createdBy: admin.id })
       );
+      ticket = await TicketModel.query().insert(
+        getTicketData({ projectId: project.id, createdBy: admin.id })
+      );
+    });
+
+    it('should fail without a token', async () => {
+      const response = await request(app).delete(`${BASE_PATH}/${ticket.id}`);
 
       expect(response.statusCode).toBe(401);
     });
 
     it('should fail if user is not authorized', async () => {
-      const user = await UserModel.query().insert(
-        getUserData({ sub: 'auth0|123' })
-      );
-      const project = await ProjectModel.query().insert(getProjectData());
-      const ticket = await ProjectModel.relatedQuery('tickets')
-        .for(project.id)
-        .insert(
-          getTicketData({
-            reporterId: user.id,
-          })
-        );
-
+      const user = await UserModel.query().insert(getUserData());
       const token = getToken({ sub: user.sub });
 
-      const response = await supertest(app)
-        .delete(`${BASE_PATH}/${ticket.id}?projectId=${project.id}`)
+      const response = await request(app)
+        .delete(`${BASE_PATH}/${ticket.id}`)
         .set('Authorization', `Bearer ${token}`);
 
       expect(response.statusCode).toBe(403);
     });
 
-    it('should respond with 404 - ticket not found', async () => {
-      const user = await UserModel.query().insert(
-        getUserData({ sub: 'auth0|123', isAdmin: true })
-      );
-      const project = await ProjectModel.query().insert(getProjectData());
+    it('should respond with 404 error if ticket does not exists', async () => {
+      const token = getToken({ sub: admin.sub });
 
-      const token = getToken({ sub: user.sub });
-
-      const response = await supertest(app)
-        .delete(`${BASE_PATH}/100?projectId=${project.id}`)
+      const response = await request(app)
+        .delete(`${BASE_PATH}/100`)
         .set('Authorization', `Bearer ${token}`);
-
-      console.log(response.body);
 
       expect(response.statusCode).toBe(404);
     });
 
-    it('should fail if trying to delete ticket but passing different projectId', async () => {
-      const user = await UserModel.query().insert(
-        getUserData({ sub: 'auth0|123', isAdmin: true })
-      );
-      const project = await ProjectModel.query().insert(getProjectData());
-      const project2 = await ProjectModel.query().insert(getProjectData());
-      const ticket = await ProjectModel.relatedQuery('tickets')
-        .for(project2.id)
-        .insert(
-          getTicketData({
-            reporterId: user.id,
-          })
-        );
+    it('should delete and respond with a ticket', async () => {
+      const token = getToken({ sub: admin.sub });
 
-      const token = getToken({ sub: user.sub });
-
-      const response = await supertest(app)
-        .delete(`${BASE_PATH}/${ticket.id}?projectId=${project.id}`)
+      const response = await request(app)
+        .delete(`${BASE_PATH}/${ticket.id}`)
         .set('Authorization', `Bearer ${token}`);
-
-      expect(response.statusCode).toBe(400);
-    });
-
-    it('should remove and respond with a removed ticket', async () => {
-      const user = await UserModel.query().insert(
-        getUserData({ sub: 'auth0|123', isAdmin: true })
-      );
-      const project = await ProjectModel.query().insert(getProjectData());
-      const ticket = await ProjectModel.relatedQuery('tickets')
-        .for(project.id)
-        .insert(
-          getTicketData({
-            reporterId: user.id,
-          })
-        );
-
-      const token = getToken({ sub: user.sub });
-
-      const response = await supertest(app)
-        .delete(`${BASE_PATH}/${ticket.id}?projectId=${project.id}`)
-        .set('Authorization', `Bearer ${token}`);
-
-      console.log(response.body);
 
       expect(response.statusCode).toBe(200);
       expect(response.body).toHaveProperty('ticket');
       expect(response.body.ticket.id).toBe(ticket.id);
-      expect(response.body.ticket.name).toBe(ticket.name);
       expect(response.body.archived_at).not.toBe(null);
     });
   });

@@ -36,9 +36,8 @@ Every record has these fields:
     - users and roles management
     - assigns project manager
 - Project Manager:
-    - updates project
+    - manage a project
     - add and remove project engineers
-    - manage epics, sprints etc.
 - Project Engineer
     - work on the tickets
 - User

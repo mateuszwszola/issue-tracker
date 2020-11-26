@@ -16,13 +16,13 @@ import { ROLES } from '../../constants/roles';
 const router = Router();
 
 /**
- * @route /api/v1/projects/:projectId/engineers
+ * @route /api/projects/:projectId/engineers
  * @desc  Get, add and remove engineers from a project
  */
 registerProjectEngineerRoutes(router);
 
 /**
- * @route GET /api/v1/projects
+ * @route GET /api/projects
  * @desc Get projects
  * @access Public
  */
@@ -33,7 +33,7 @@ router.get('/', [
 ]);
 
 /**
- * @route POST /api/v1/projects
+ * @route POST /api/projects
  * @desc Create a project
  * @access Admin
  */
@@ -46,7 +46,7 @@ router.post('/', [
 ]);
 
 /**
- * @route /api/v1/projects/:projectId
+ * @route /api/projects/:projectId
  */
 router.use('/:projectId', (req, res, next) => {
   const { projectId } = req.params;
@@ -54,14 +54,14 @@ router.use('/:projectId', (req, res, next) => {
 });
 
 /**
- * @route GET /api/v1/projects/:projectId
+ * @route GET /api/projects/:projectId
  * @desc Get project by Id
  * @access Public
  */
 router.get('/:projectId', controllers.getProject);
 
 /**
- * @route PATCH / DELETE /api/v1/projects/:projectId
+ * @route PATCH / DELETE /api/projects/:projectId
  */
 router.use('/:projectId', [
   ...authenticate(),
@@ -70,14 +70,14 @@ router.use('/:projectId', [
 ]);
 
 /**
- * @route PATCH /api/v1/projects/:projectId
+ * @route PATCH /api/projects/:projectId
  * @desc Update project
  * @access Admin
  */
 router.patch('/:projectId', updateProjectSchema, controllers.updateProject);
 
 /**
- * @route DELETE /api/v1/projects/:projectId
+ * @route DELETE /api/projects/:projectId
  * @desc Delete project
  * @access Admin
  */

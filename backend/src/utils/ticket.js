@@ -14,11 +14,20 @@ function getTicketGraphQuery(query, withGraph) {
     .modifyGraph(
       'createdBy',
       createBuilder(['id', 'sub', 'name', 'email', 'picture'])
+    )
+    .modifyGraph(
+      'updatedBy',
+      createBuilder(['id', 'sub', 'name', 'email', 'picture'])
+    )
+    .modifyGraph(
+      'assignee',
+      createBuilder(['id', 'sub', 'name', 'email', 'picture'])
     );
 }
 
 function createTicketSchema(req, res, next) {
   const schema = Joi.object({
+    project_id: Joi.number().required(),
     name: Joi.string().required(),
     description: Joi.string(),
     parent_id: Joi.number(),

@@ -24,7 +24,7 @@ export default (router) => {
   ]);
 
   /**
-   * @route   GET /api/v1/projects/:projectId/engineers
+   * @route   GET /api/projects/:projectId/engineers
    * @desc    Get project engineers
    */
   router.get('/:projectId/engineers', [
@@ -34,7 +34,7 @@ export default (router) => {
   ]);
 
   /**
-   * @route   POST / DELETE /api/v1/projects/:projectId/engineers/:userId
+   * @route   POST / DELETE /api/projects/:projectId/engineers/:userId
    * @desc    Add or remove project engineers
    * @access  Admin, Project Manager
    */

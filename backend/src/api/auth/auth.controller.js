@@ -4,33 +4,36 @@ import fetch from 'node-fetch';
 import config from '../../config';
 import { ErrorHandler } from '../../utils/error';
 
-const loginUser = async (req, res) => {
+async function fetchUserProfile({ token }) {
+  const response = await fetch(`${config.auth0.issuer}userinfo`, {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    return Promise.reject(data);
+  } else {
+    return data;
+  }
+}
+
+const loginUser = async (req, res, next) => {
   const { sub } = req.user;
   const token = req.headers?.authorization?.split(' ')[1];
 
   if (!sub || !token) {
-    throw new ErrorHandler(401, 'Unauthorized');
+    return next(new ErrorHandler(401, 'Unauthorized'));
   }
 
   let user = await User.query().findOne({ sub });
 
   if (user && !isEmpty(user)) {
-    res.status(200).json({ user });
+    return res.status(200).json({ user });
   } else {
     // fetch user profile from auth0
-    const response = await fetch(`${config.auth0.issuer}userinfo`, {
-      method: 'GET',
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    if (!response.ok) {
-      throw new ErrorHandler(
-        500,
-        'Something went wrong with fetching profile information'
-      );
-    }
-
-    const profile = await response.json();
+    const profile = await fetchUserProfile({ token });
 
     const { email, picture, nickname } = profile;
     const name = nickname && profile.name === email ? nickname : profile.name;

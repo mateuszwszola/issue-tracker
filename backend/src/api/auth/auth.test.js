@@ -1,4 +1,4 @@
-import supertest from 'supertest';
+import request from 'supertest';
 import nock from 'nock';
 import * as faker from 'faker';
 import { app } from '../../app';
@@ -10,7 +10,7 @@ import { getToken } from '../../fixtures/jwt';
 import { getUserData } from '../../fixtures/data';
 import config from '../../config';
 
-const PATH = '/api/v1/auth/login';
+const PATH = '/api/auth/login';
 
 function mockAuth0UserInfoCall(
   resStatusCode = 200,
@@ -33,9 +33,9 @@ describe('Test the auth endpoints', () => {
     await UserModel.query().delete();
   });
 
-  describe('POST /api/v1/auth/login', () => {
+  describe('POST /api/auth/login', () => {
     it('should respond with an error if token not provided', async () => {
-      const response = await supertest(app).post(PATH);
+      const response = await request(app).post(PATH);
 
       expect(response.statusCode).toBe(401);
     });
@@ -44,7 +44,7 @@ describe('Test the auth endpoints', () => {
       const user = await UserModel.query().insert(getUserData());
       const token = getToken({ sub: user.sub });
 
-      const response = await supertest(app)
+      const response = await request(app)
         .post(PATH)
         .set('Authorization', `Bearer ${token}`);
 
@@ -58,7 +58,7 @@ describe('Test the auth endpoints', () => {
 
       const token = getToken({ sub: faker.random.uuid() });
 
-      const response = await supertest(app)
+      const response = await request(app)
         .post(PATH)
         .set('Authorization', `Bearer ${token}`);
 
@@ -73,7 +73,7 @@ describe('Test the auth endpoints', () => {
 
       mockAuth0UserInfoCall(200, userProfile);
 
-      const response = await supertest(app)
+      const response = await request(app)
         .post(PATH)
         .set('Authorization', `Bearer ${token}`);
 

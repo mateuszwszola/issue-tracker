@@ -1,4 +1,4 @@
-import supertest from 'supertest';
+import request from 'supertest';
 import { app } from '../../app';
 import db from '../../db';
 import setupTests from '../../setupTests';
@@ -7,7 +7,7 @@ import { User } from './user.model';
 import { getToken } from '../../fixtures/jwt';
 import { getUserData } from '../../fixtures/data';
 
-const BASE_PATH = '/api/v1/users';
+const BASE_PATH = '/api/users';
 
 describe('Test the users endpoints', () => {
   const thisDb = db;
@@ -21,9 +21,9 @@ describe('Test the users endpoints', () => {
     await UserModel.query().delete();
   });
 
-  describe(`GET /api/v1/users`, () => {
+  describe(`GET /api/users`, () => {
     it('should respond with an error if token not provided', async () => {
-      const response = await supertest(app).get(BASE_PATH);
+      const response = await request(app).get(BASE_PATH);
 
       expect(response.statusCode).toBe(401);
     });
@@ -32,7 +32,7 @@ describe('Test the users endpoints', () => {
       const user = await UserModel.query().insert(getUserData());
       const token = getToken({ sub: user.sub });
 
-      const response = await supertest(app)
+      const response = await request(app)
         .get(BASE_PATH)
         .set('Authorization', `Bearer ${token}`);
 
@@ -45,7 +45,7 @@ describe('Test the users endpoints', () => {
       );
       const token = getToken({ sub: user.sub });
 
-      const response = await supertest(app)
+      const response = await request(app)
         .get(BASE_PATH + '?orderBy=name')
         .set('Authorization', `Bearer ${token}`);
 
@@ -56,9 +56,9 @@ describe('Test the users endpoints', () => {
     });
   });
 
-  describe(`POST /api/v1/users`, () => {
+  describe(`POST /api/users`, () => {
     it('should respond with an error if token not provided', async () => {
-      const response = await supertest(app).post(BASE_PATH);
+      const response = await request(app).post(BASE_PATH);
 
       expect(response.statusCode).toBe(401);
     });
@@ -67,7 +67,7 @@ describe('Test the users endpoints', () => {
       const user = await UserModel.query().insert(getUserData());
       const token = getToken({ sub: user.sub });
 
-      const response = await supertest(app)
+      const response = await request(app)
         .post(BASE_PATH)
         .set('Authorization', `Bearer ${token}`);
 
@@ -85,7 +85,7 @@ describe('Test the users endpoints', () => {
         name: '',
       };
 
-      const response = await supertest(app)
+      const response = await request(app)
         .post(BASE_PATH)
         .set('Authorization', `Bearer ${token}`)
         .send(body);
@@ -101,7 +101,7 @@ describe('Test the users endpoints', () => {
 
       const { name, email } = getUserData();
 
-      const response = await supertest(app)
+      const response = await request(app)
         .post(BASE_PATH)
         .set('Authorization', `Bearer ${token}`)
         .send({ name, email, is_admin: true });
@@ -114,11 +114,11 @@ describe('Test the users endpoints', () => {
     });
   });
 
-  describe(`GET /api/v1/users/:userId`, () => {
+  describe(`GET /api/users/:userId`, () => {
     it('should respond with an error if token not provided', async () => {
       const user = await UserModel.query().insert(getUserData());
 
-      const response = await supertest(app).get(`${BASE_PATH}/${user.id}`);
+      const response = await request(app).get(`${BASE_PATH}/${user.id}`);
 
       expect(response.statusCode).toBe(401);
     });
@@ -129,7 +129,7 @@ describe('Test the users endpoints', () => {
       );
       const token = getToken({ sub: authUser.sub });
 
-      const response = await supertest(app)
+      const response = await request(app)
         .get(`${BASE_PATH}/123`)
         .set('Authorization', `Bearer ${token}`);
 
@@ -142,7 +142,7 @@ describe('Test the users endpoints', () => {
 
       const user = await UserModel.query().insert(getUserData());
 
-      const response = await supertest(app)
+      const response = await request(app)
         .get(`${BASE_PATH}/${user.id}`)
         .set('Authorization', `Bearer ${token}`);
 
@@ -157,7 +157,7 @@ describe('Test the users endpoints', () => {
 
       const user = await UserModel.query().insert(getUserData());
 
-      const response = await supertest(app)
+      const response = await request(app)
         .get(`${BASE_PATH}/${user.id}`)
         .set('Authorization', `Bearer ${token}`);
 
@@ -172,7 +172,7 @@ describe('Test the users endpoints', () => {
       const authUser = await UserModel.query().insert(getUserData());
       const token = getToken({ sub: authUser.sub });
 
-      const response = await supertest(app)
+      const response = await request(app)
         .get(`${BASE_PATH}/${authUser.id}`)
         .set('Authorization', `Bearer ${token}`);
 
@@ -184,11 +184,11 @@ describe('Test the users endpoints', () => {
     });
   });
 
-  describe(`PATCH /api/v1/users/:userId`, () => {
+  describe(`PATCH /api/users/:userId`, () => {
     it('should respond with an error if token not provided', async () => {
       const user = await UserModel.query().insert(getUserData());
 
-      const response = await supertest(app).patch(`${BASE_PATH}/${user.id}`);
+      const response = await request(app).patch(`${BASE_PATH}/${user.id}`);
 
       expect(response.statusCode).toBe(401);
     });
@@ -199,7 +199,7 @@ describe('Test the users endpoints', () => {
 
       const user = await UserModel.query().insert(getUserData());
 
-      const response = await supertest(app)
+      const response = await request(app)
         .patch(`${BASE_PATH}/${user.id}`)
         .set('Authorization', `Bearer ${token}`);
 
@@ -219,7 +219,7 @@ describe('Test the users endpoints', () => {
         name: '',
       };
 
-      const response = await supertest(app)
+      const response = await request(app)
         .patch(`${BASE_PATH}/${user.id}`)
         .set('Authorization', `Bearer ${token}`)
         .send(body);
@@ -238,7 +238,7 @@ describe('Test the users endpoints', () => {
         name: 'John Doe',
       };
 
-      const response = await supertest(app)
+      const response = await request(app)
         .patch(`${BASE_PATH}/123`)
         .set('Authorization', `Bearer ${token}`)
         .send(body);
@@ -259,7 +259,7 @@ describe('Test the users endpoints', () => {
         name: 'John Doe',
       };
 
-      const response = await supertest(app)
+      const response = await request(app)
         .patch(`${BASE_PATH}/${user.id}`)
         .set('Authorization', `Bearer ${token}`)
         .send(body);
@@ -281,7 +281,7 @@ describe('Test the users endpoints', () => {
         is_admin: true, // should ignore it
       };
 
-      const response = await supertest(app)
+      const response = await request(app)
         .patch(`${BASE_PATH}/${authUser.id}`)
         .set('Authorization', `Bearer ${token}`)
         .send(body);
@@ -295,11 +295,11 @@ describe('Test the users endpoints', () => {
     });
   });
 
-  describe(`DELETE /api/v1/users/:userId`, () => {
+  describe(`DELETE /api/users/:userId`, () => {
     it('should respond with an error if token not provided', async () => {
       const user = await UserModel.query().insert(getUserData());
 
-      const response = await supertest(app).delete(`${BASE_PATH}/${user.id}`);
+      const response = await request(app).delete(`${BASE_PATH}/${user.id}`);
 
       expect(response.statusCode).toBe(401);
     });
@@ -312,7 +312,7 @@ describe('Test the users endpoints', () => {
 
       const token = getToken({ sub: authUser.sub });
 
-      const response = await supertest(app)
+      const response = await request(app)
         .delete(`${BASE_PATH}/${user.id}`)
         .set('Authorization', `Bearer ${token}`);
 
@@ -326,7 +326,7 @@ describe('Test the users endpoints', () => {
 
       const token = getToken({ sub: authUser.sub });
 
-      const response = await supertest(app)
+      const response = await request(app)
         .delete(`${BASE_PATH}/123`)
         .set('Authorization', `Bearer ${token}`);
 
@@ -340,7 +340,7 @@ describe('Test the users endpoints', () => {
       ]);
       const token = getToken({ sub: authUser.sub });
 
-      const response = await supertest(app)
+      const response = await request(app)
         .delete(`${BASE_PATH}/${user.id}`)
         .set('Authorization', `Bearer ${token}`);
 

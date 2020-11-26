@@ -21,7 +21,7 @@ app.use(urlencoded({ extended: false }));
 
 registerApi(router);
 
-app.use('/api/v1', router);
+app.use('/api', router);
 
 app.get('/api/auth', checkJwt(), (req, res) => {
   console.log(req.user);
