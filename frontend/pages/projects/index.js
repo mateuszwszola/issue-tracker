@@ -14,7 +14,7 @@ function ProjectsPage() {
           Something went wrong... Please try reload the page
         </Text>
       ) : (
-        <Projects isLoading={!data} projects={data?.projects || []} />
+        <Projects data={data} />
       )}
     </Layout>
   );

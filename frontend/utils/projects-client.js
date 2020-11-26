@@ -1,11 +1,11 @@
 import client from './api-client';
 import { objToQueryString } from './query-string';
 
-const withGraphQueryString = objToQueryString({
-  withGraph: '[type, manager, engineers]'
+const defaultProjectGraphQueryString = objToQueryString({
+  withGraph: '[type, manager, engineers, createdBy]'
 });
 
-function getProjects(url = 'projects', query = withGraphQueryString) {
+function getProjects(url = 'projects', query = defaultProjectGraphQueryString) {
   return client(`${url}?${query}`);
 }
 

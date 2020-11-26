@@ -3,7 +3,7 @@ import { getProjectIdFromKey } from './projects-client';
 import { objToQueryString } from './query-string';
 
 const withGraphQueryString = objToQueryString({
-  withGraph: '[type, status, priority, reporter]'
+  withGraph: '[type, status, priority, createdBy]'
 });
 
 function getProjectTickets(projectKey) {

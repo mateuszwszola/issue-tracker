@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 
 const styles = {
   table: {
-    // tableLayout: 'fixed',
     borderCollapse: 'collapse'
   }
 };
