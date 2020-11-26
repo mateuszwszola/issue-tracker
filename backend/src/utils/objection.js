@@ -26,4 +26,12 @@ const createBuilder = (select) => (builder) => {
   builder.select(...select);
 };
 
-export { createBelongsToOneRelation, createBuilder };
+const createDefaultSelectsBuilder = (builder) => {
+  builder.modify('defaultSelects');
+};
+
+export {
+  createBelongsToOneRelation,
+  createBuilder,
+  createDefaultSelectsBuilder,
+};

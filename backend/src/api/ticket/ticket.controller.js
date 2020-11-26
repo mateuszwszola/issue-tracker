@@ -2,13 +2,12 @@ import { getTicketGraphQuery } from '../../utils/ticket';
 import { Ticket } from './ticket.model';
 
 const getTickets = async (req, res) => {
-  const { withGraph, skip, limit, orderBy } = req.query;
+  const { withGraph, page, pageSize, orderBy } = req.query;
   const { project } = req;
 
   const query = Ticket.query()
     .where('archived_at', null)
-    .offset(skip)
-    .limit(limit)
+    .page(page, pageSize)
     .orderBy(orderBy);
 
   if (project) {

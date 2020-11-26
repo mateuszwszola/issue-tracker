@@ -68,10 +68,10 @@ describe('Test a ticket endpoints', () => {
       const { statusCode, body } = response;
 
       expect(statusCode).toBe(200);
-      expect(body).toHaveProperty('tickets');
-      expect(body.tickets.length).toBe(1);
+      expect(body).toHaveProperty('tickets.results');
+      expect(body.tickets.results.length).toBe(1);
 
-      const [responseTicket] = body.tickets;
+      const [responseTicket] = body.tickets.results;
 
       expect(responseTicket.id).toBe(ticket.id);
       expect(responseTicket.project_id).toBe(project.id);
@@ -86,10 +86,10 @@ describe('Test a ticket endpoints', () => {
       const { statusCode, body } = response;
 
       expect(statusCode).toBe(200);
-      expect(body).toHaveProperty('tickets');
-      expect(body.tickets.length).toBe(1);
+      expect(body).toHaveProperty('tickets.results');
+      expect(body.tickets.results.length).toBe(1);
 
-      const [responseTicket] = body.tickets;
+      const [responseTicket] = body.tickets.results;
 
       expect(responseTicket.id).toBe(ticket.id);
       expect(responseTicket.project_id).toBe(project.id);
@@ -104,10 +104,10 @@ describe('Test a ticket endpoints', () => {
       const { statusCode, body } = response;
 
       expect(statusCode).toBe(200);
-      expect(body).toHaveProperty('tickets');
-      expect(body.tickets.length).toBe(1);
+      expect(body).toHaveProperty('tickets.results');
+      expect(body.tickets.results.length).toBe(1);
 
-      const [responseTicket] = body.tickets;
+      const [responseTicket] = body.tickets.results;
 
       expect(responseTicket.id).toBe(ticket.id);
       expect(responseTicket.project.name).toBe(project.name);

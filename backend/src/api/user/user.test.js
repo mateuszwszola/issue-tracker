@@ -50,9 +50,9 @@ describe('Test the users endpoints', () => {
         .set('Authorization', `Bearer ${token}`);
 
       expect(response.statusCode).toBe(200);
-      expect(response.body).toHaveProperty('users');
-      expect(response.body.users.length).toBe(1);
-      expect(response.body.users[0].id).toBe(user.id);
+      expect(response.body).toHaveProperty('users.results');
+      expect(response.body.users.results.length).toBe(1);
+      expect(response.body.users.results[0].id).toBe(user.id);
     });
   });
 

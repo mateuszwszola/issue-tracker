@@ -38,9 +38,9 @@ describe('Test the project endpoints', () => {
       const response = await request(app).get(`${BASE_PATH}`);
 
       expect(response.statusCode).toBe(200);
-      expect(response.body).toHaveProperty('projects');
-      expect(response.body.projects.length).toBe(1);
-      expect(response.body.projects[0].id).toBe(project.id);
+      expect(response.body).toHaveProperty('projects.results');
+      expect(response.body.projects.results.length).toBe(1);
+      expect(response.body.projects.results[0].id).toBe(project.id);
     });
   });
 
