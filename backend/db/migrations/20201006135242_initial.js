@@ -21,6 +21,8 @@ export async function up(knex) {
 }
 
 export async function down(knex) {
+  await knex.schema.dropTableIfExists('Ticket_engineer');
+
   await runInSequence(orderedTableNames, (table) => {
     if (Array.isArray(table)) {
       return Promise.all(
@@ -30,6 +32,4 @@ export async function down(knex) {
       return knex.schema.dropTableIfExists(table);
     }
   });
-
-  await knex.schema.dropTableIfExists('Ticket_engineer');
 }
