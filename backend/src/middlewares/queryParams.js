@@ -1,5 +1,26 @@
 import { ErrorHandler } from '../utils/error';
 
+const parsePageQueryParam = (pageSize = 20) => (req, res, next) => {
+  let { page } = req.query;
+
+  page = page ? parseInt(page) : 1;
+
+  if (Number.isNaN(page)) {
+    return next(new ErrorHandler(400, 'Invalid page query param'));
+  }
+
+  if (page < 1) {
+    return next(new ErrorHandler(400, 'Invalid page number'));
+  }
+
+  const skip = (page - 1) * pageSize;
+
+  req.query.limit = pageSize;
+  req.query.skip = skip;
+
+  next();
+};
+
 const parsePaginationQueryParams = (defaultLimit = 100) => (req, res, next) => {
   let { cursor, limit } = req.query;
 
@@ -7,7 +28,7 @@ const parsePaginationQueryParams = (defaultLimit = 100) => (req, res, next) => {
   limit = cursor ? Number(limit) : defaultLimit;
 
   if (Number.isNaN(cursor) || Number.isNaN(limit)) {
-    throw new ErrorHandler(400, 'Cursor and limit params must be a number');
+    next(new ErrorHandler(400, 'Invalid pagination query params'));
   } else {
     req.query.cursor = cursor;
     req.query.limit = limit;
@@ -15,19 +36,46 @@ const parsePaginationQueryParams = (defaultLimit = 100) => (req, res, next) => {
   }
 };
 
-const validateOrderByParam = (validOrders) => (req, res, next) => {
-  let { orderBy } = req.query;
+const validateOrderByParam = (
+  validOrderColumns,
+  defaultColumn = 'id',
+  defaultOrder = 'asc'
+) => (req, res, next) => {
+  const { orderBy: orderByParam } = req.query;
 
-  if (orderBy) {
-    orderBy = String(orderBy).toLowerCase();
-    if (!validOrders.has(orderBy)) {
-      next(new ErrorHandler(400, 'Invalid orderBy param'));
+  const validOrders = new Set(['asc', 'desc']);
+
+  const orderBy = [];
+
+  if (orderByParam) {
+    const entries = orderByParam.toLowerCase().split(',');
+    const errors = [];
+
+    entries.forEach((entry) => {
+      const [column, order = 'asc'] = entry.split(':');
+      if (!validOrderColumns.has(column) || !validOrders.has(order)) {
+        errors.push(`${column}:${order}`);
+      } else {
+        orderBy.push({ column, order });
+      }
+    });
+
+    if (errors.length > 0) {
+      return next(
+        new ErrorHandler(400, `Invalid orderBy arguments: ${errors.join(', ')}`)
+      );
     }
-
-    req.query.orderBy = orderBy;
+  } else {
+    orderBy.push({ column: defaultColumn, order: defaultOrder });
   }
+
+  req.query.orderBy = orderBy;
 
   next();
 };
 
-export { parsePaginationQueryParams, validateOrderByParam };
+export {
+  parsePaginationQueryParams,
+  validateOrderByParam,
+  parsePageQueryParam,
+};

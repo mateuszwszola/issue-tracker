@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { Button } from '@chakra-ui/core';
+import { Button } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { FiArrowLeft } from 'react-icons/fi';
 

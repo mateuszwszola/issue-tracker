@@ -13,10 +13,9 @@ import {
   MenuItem,
   MenuGroup,
   Avatar
-} from '@chakra-ui/core';
+} from '@chakra-ui/react';
 import { GoRocket } from 'react-icons/go';
 import { FiMoon, FiSun } from 'react-icons/fi';
-import { projectName } from '../pages/index';
 import { useAuth0 } from '@auth0/auth0-react';
 
 export const Header = () => {
@@ -34,49 +33,51 @@ export const Header = () => {
         mx="auto"
         p={[2, 4]}
       >
-        <Box>
-          <NextLink href="/" passHref>
-            <ChakraLink fontSize="xl" fontWeight="medium">
-              <Icon as={GoRocket} mr={1} />
-              {projectName}
-            </ChakraLink>
-          </NextLink>
-        </Box>
-        <Flex align="center">
+        <NextLink href="/" passHref>
+          <ChakraLink fontSize="xl">
+            <Icon as={GoRocket} />
+          </ChakraLink>
+        </NextLink>
+
+        <Flex>
           <NextLink href="/projects" passHref>
-            <Button as="a" mr={4}>
+            <Button as="a" variant="link" size="sm" colorScheme="blue">
               Projects
             </Button>
           </NextLink>
 
-          {isAuthenticated ? (
-            <>
-              <Menu>
-                <Avatar as={MenuButton} size="md" variant="ghost" />
-                <MenuList>
-                  <MenuGroup title="Profile">
-                    <MenuItem>
-                      <NextLink href="/profile" passHref>
-                        <a>Profile</a>
-                      </NextLink>
-                    </MenuItem>
-                    <MenuItem onClick={() => logout({ returnTo: window.location.origin })}>
-                      Sign Out
-                    </MenuItem>
-                  </MenuGroup>
-                </MenuList>
-              </Menu>
-            </>
-          ) : (
-            <Button onClick={() => loginWithRedirect()}>Sign In</Button>
-          )}
-
-          <IconButton
-            ml={4}
-            onClick={toggleColorMode}
-            aria-label="Toggle theme"
-            icon={colorMode === 'dark' ? <FiMoon /> : <FiSun />}
-          />
+          <Box ml={4}>
+            {isAuthenticated ? (
+              <>
+                <Menu>
+                  <Avatar as={MenuButton} size="sm" variant="ghost" />
+                  <MenuList>
+                    <MenuGroup title="Profile">
+                      <MenuItem>
+                        <NextLink href="/profile" passHref>
+                          <a>Profile</a>
+                        </NextLink>
+                      </MenuItem>
+                      <MenuItem onClick={() => logout({ returnTo: window.location.origin })}>
+                        Sign Out
+                      </MenuItem>
+                    </MenuGroup>
+                  </MenuList>
+                </Menu>
+              </>
+            ) : (
+              <Button colorScheme="blue" size="sm" onClick={() => loginWithRedirect()}>
+                Sign In
+              </Button>
+            )}
+            <IconButton
+              ml={4}
+              size="sm"
+              onClick={toggleColorMode}
+              aria-label="Toggle theme"
+              icon={colorMode === 'dark' ? <FiMoon /> : <FiSun />}
+            />
+          </Box>
         </Flex>
       </Flex>
     </Box>

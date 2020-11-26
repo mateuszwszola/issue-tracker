@@ -1,8 +1,9 @@
 const ROLES = {
   admin: 'Admin',
-  project_manager: 'Product Manager',
-  project_engineer: 'Engineer',
-  guest: 'Guest',
+  project_manager: 'Project Manager',
+  project_engineer: 'Project Engineer',
+  user: 'User',
+  owner: 'Owner',
 };
 
 export { ROLES };

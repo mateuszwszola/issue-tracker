@@ -1,23 +1,21 @@
 const TICKET_TYPES = {
   bug: 'Bug',
   task: 'Task',
-  feature: 'Feature Request',
-  epic: 'Epic',
+  feature: 'Feature',
 };
 
 const TICKET_STATUSES = {
-  todo: 'To Do',
+  submitted: 'Submitted',
+  open: 'Open',
   in_progress: 'In Progress',
-  under_review: 'Under Review',
-  done: 'Done',
+  fixed: 'Fixed',
+  closed: 'Closed',
 };
 
 const TICKET_PRIORITIES = {
-  p1: 'P1',
-  p2: 'P2',
-  p3: 'P3',
-  p4: 'P4',
-  p5: 'P5',
+  p1: 'Critical',
+  p2: 'Major',
+  p3: 'Normal',
 };
 
 const ticketTypes = Object.values(TICKET_TYPES).map((name) => ({
@@ -40,7 +38,9 @@ const validTicketOrders = new Set([
   'type_id',
   'status_id',
   'priority_id',
-  'reporter_id',
+  'created_by',
+  'updated_by',
+  'assignee_id',
 ]);
 
 export {

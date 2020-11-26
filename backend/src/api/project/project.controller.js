@@ -1,97 +1,69 @@
 import { Project } from './project.model';
-import { isEmpty } from 'lodash';
-import { ErrorHandler } from '../../utils/error';
-import { pickExistingProperties } from '../../utils/helpers';
-import {
-  getDefaultProjectGraphQuery,
-  validProjectOrders,
-} from '../../utils/project';
+import { getProjectGraphQuery } from '../../utils/project';
 
 const getProjects = async (req, res) => {
-  const { cursor, limit, select, withGraph } = req.query;
-  let { orderBy } = req.query;
-
-  orderBy = orderBy ? orderBy.toLowerCase() : 'id';
-
-  if (!validProjectOrders.has(orderBy)) {
-    throw new ErrorHandler(400, 'Invalid orderBy param');
-  }
+  const { skip, limit, orderBy, withGraph } = req.query;
 
   const query = Project.query()
-    .offset(cursor)
+    .offset(skip)
     .limit(limit)
     .where('archived_at', null)
     .orderBy(orderBy);
 
-  if (select) {
-    query.select(select);
-  }
-
   if (withGraph) {
-    getDefaultProjectGraphQuery(query, withGraph);
+    getProjectGraphQuery(query, withGraph);
   }
 
   return res.status(200).json({ projects: await query });
 };
 
-const getProject = async (req, res) => {
-  const { projectId } = req.params;
-  const { select, withGraph } = req.query;
+const createProject = async (req, res) => {
+  const { id: createdById } = req.api_user;
+  const projectData = { ...req.body, created_by: createdById };
 
-  const query = Project.query().findById(projectId);
+  const project = await Project.query().insert(projectData).returning('*');
 
-  if (select) {
-    query.select(select);
-  }
-
-  if (withGraph) {
-    getDefaultProjectGraphQuery(query, withGraph);
-  }
-
-  const result = await query;
-
-  if (isEmpty(result)) {
-    throw new ErrorHandler(404, 'Project not found');
-  }
-
-  return res.status(200).json({ project: result });
+  return res.status(201).json({ project });
 };
 
-const createProject = async (req, res) => {
-  const { name, type_id, manager_id } = req.body;
+const getProject = async (req, res) => {
+  const { id: projectId } = req.project;
+  const { withGraph } = req.query;
 
-  const result = await Project.query()
-    .insert({ name, type_id, manager_id })
-    .returning('*');
+  let project;
 
-  return res.status(201).json({ project: result });
+  if (withGraph) {
+    const query = Project.query().findById(projectId);
+    getProjectGraphQuery(query, withGraph);
+    project = await query;
+  } else {
+    project = req.project;
+  }
+
+  return res.status(200).json({ project });
 };
 
 const updateProject = async (req, res) => {
-  const { projectId } = req.params;
+  const { id: projectId } = req.project;
+  const newProjectData = { ...req.body };
 
-  const newProjectData = pickExistingProperties(
-    ['name', 'type_id', 'manager_id'],
-    req.body
-  );
-
-  const result = await Project.query()
+  const project = await Project.query()
     .findById(projectId)
     .patch(newProjectData)
     .returning('*');
 
-  return res.status(200).json({ project: result });
+  return res.status(200).json({ project });
 };
 
 const deleteProject = async (req, res) => {
-  const { projectId } = req.params;
+  const { id: projectId } = req.project;
 
-  const result = await Project.query()
+  const project = await Project.query()
     .findById(projectId)
     .delete()
     .returning('*');
 
-  return res.status(200).json({ project: result });
+  return res.status(200).json({ project });
 };
 
 export { getProjects, getProject, createProject, updateProject, deleteProject };

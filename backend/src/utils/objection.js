@@ -1,20 +1,29 @@
 import { Model } from 'objection';
 
-function createBelongsToOneRelation(
+const createBelongsToOneRelation = (
   modelClass,
   tableA,
   tableB,
   tableAColumn,
   tableBColumn = 'id'
-) {
-  return {
-    relation: Model.BelongsToOneRelation,
-    modelClass,
-    join: {
-      from: `${tableA}.${tableAColumn}`,
-      to: `${tableB}.${tableBColumn}`,
-    },
-  };
-}
+) => ({
+  relation: Model.BelongsToOneRelation,
+  modelClass,
+  join: {
+    from: `${tableA}.${tableAColumn}`,
+    to: `${tableB}.${tableBColumn}`,
+  },
+});
 
-export { createBelongsToOneRelation };
+/**
+ * @desc Creates modify graph builder which accepts properties to select from a query
+ */
+const createBuilder = (select) => (builder) => {
+  if (!Array.isArray(select)) {
+    select = [select];
+  }
+
+  builder.select(...select);
+};
+
+export { createBelongsToOneRelation, createBuilder };

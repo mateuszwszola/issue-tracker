@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react';
 import useApi from 'utils/use-api';
-import { Spinner } from '@chakra-ui/core';
+import { Spinner } from '@chakra-ui/react';
 
 const ApiUserContext = createContext();
 

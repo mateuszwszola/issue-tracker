@@ -1,6 +1,6 @@
 function createNameTable(knex, tableName, columnName = 'name') {
   return knex.schema.createTable(tableName, (table) => {
-    table.increments();
+    table.increments().primary();
     table.string(columnName).notNullable().unique();
     addTimestamps(table);
   });

@@ -1,6 +1,6 @@
 import NextLink from 'next/link';
 import PropTypes from 'prop-types';
-import { Button } from '@chakra-ui/core';
+import { Button } from '@chakra-ui/react';
 
 export const TableLink = ({ children, href, ...props }) => (
   <NextLink href={href} passHref>

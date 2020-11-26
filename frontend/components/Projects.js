@@ -1,167 +1,143 @@
 import PropTypes from 'prop-types';
 import {
-  Heading,
-  Box,
-  Flex,
-  Button,
-  Text,
   Avatar,
   AvatarGroup,
+  Box,
+  Button,
+  Flex,
+  Heading,
+  Skeleton,
+  Stack,
+  Text,
   useColorMode
-} from '@chakra-ui/core';
-import { Table, THead, TBody, TFoot, Tr, Th, Td, Caption } from '@/components/Table';
+} from '@chakra-ui/react';
+import { Table, TBody, Td, TFoot, Th, THead, Tr } from '@/components/Table';
 import { InputSearch } from '@/components/InputSearch';
 import { ButtonSort } from '@/components/projects/ButtonSort';
 import { Header as ProjectsHeader } from '@/components/projects/Header';
 import { TableLink } from '@/components/projects/TableLink';
+import { useEffect, useState } from 'react';
 
-export const Projects = ({ data }) => {
+export const Projects = ({ projects: data, isLoading }) => {
   const { colorMode } = useColorMode();
+  const [projects, setProjects] = useState([]);
+  const [nameSort, setNameSort] = useState('');
+
+  useEffect(() => {
+    setProjects(data);
+  }, [data]);
+
+  useEffect(() => {
+    if (!nameSort) return;
+
+    setProjects((prevProjects) => {
+      return prevProjects.sort((a, b) => {
+        return nameSort === 'asc' ? a.name - b.name : b.name - a.name;
+      });
+    });
+  }, [nameSort]);
+
+  const handleNameSortBtnClick = () => {
+    setNameSort((prevSort) => (prevSort === 'asc' ? 'dsc' : 'asc'));
+  };
 
   const borderColor = { light: 'gray.200', dark: 'gray.700' };
   const hoverColor = { light: 'gray.50', dark: 'gray.700' };
 
   return (
     <>
-      <ProjectsHeader>
+      <ProjectsHeader mt={2}>
         <Heading size="lg">Projects</Heading>
-        <Button size="sm" colorScheme="blue">
-          Create project
-        </Button>
+        <Box w="full" maxW="12rem">
+          <InputSearch />
+        </Box>
       </ProjectsHeader>
 
-      <Box mt={4} w="full" maxW="12rem">
-        <InputSearch />
-      </Box>
-
       <Box mt={8} overflowX="auto">
-        <Table w="full" border="2px" borderColor="transparent">
-          <Caption
-            mb={1}
-            fontSize="xs"
-            textAlign="left"
-            textTransform="uppercase"
-            letterSpacing="wide"
-            fontWeight="medium"
-          >
-            Active projects{' '}
-            <Text as="span" d="inline-block" ml={2} fontWeight="semibold">
-              {data.length}
-            </Text>
-          </Caption>
-          <THead borderBottom="2px" borderColor={borderColor[colorMode]}>
-            <Tr>
-              <Th>
-                <ButtonSort name="Name" />
-              </Th>
-              <Th>
-                <ButtonSort name="Key" />
-              </Th>
-              <Th>
-                <ButtonSort name="Lead" />
-              </Th>
-              <Th px={2} py={1} textAlign="left">
-                <Text as="span" fontSize="sm" fontWeight="semibold">
-                  Engineers
-                </Text>
-              </Th>
-            </Tr>
-          </THead>
-          <TBody fontSize={['sm', 'md']}>
-            {Array.isArray(data) && data?.length > 0
-              ? data.map((project) => (
-                  <Tr key={project?.id} _hover={{ background: hoverColor[colorMode] }}>
-                    <Td>
-                      <TableLink href={`/project/${encodeURIComponent(project?.key)}`}>
-                        {project?.name}
-                      </TableLink>
-                    </Td>
-                    <Td p={2}>
-                      <TableLink href={`/project/${encodeURIComponent(project?.key)}`}>
-                        {project?.key}
-                      </TableLink>
-                    </Td>
-                    <Td>
-                      <TableLink href={`/users/${encodeURIComponent(project?.manager)}`}>
-                        <Avatar bg="red.500" size="sm" mr={2} />
-                        <Text as="span">{project?.manager}</Text>
-                      </TableLink>
-                    </Td>
+        {isLoading ? (
+          <Stack>
+            {Array(5)
+              .fill(null)
+              .map((_, idx) => (
+                <Skeleton key={idx} height="40px" />
+              ))}
+          </Stack>
+        ) : (
+          <Table w="full" border="2px" borderColor="transparent">
+            <THead borderBottom="2px" borderColor={borderColor[colorMode]}>
+              <Tr>
+                <Th>
+                  <ButtonSort name="Name" onClick={handleNameSortBtnClick} />
+                </Th>
+                <Th>
+                  <ButtonSort name="Key" />
+                </Th>
+                <Th>
+                  <ButtonSort name="Lead" />
+                </Th>
+                <Th px={2} py={1} textAlign="left">
+                  <Text as="span" fontSize="sm" fontWeight="semibold">
+                    Engineers
+                  </Text>
+                </Th>
+              </Tr>
+            </THead>
+            <TBody fontSize={['sm', 'md']}>
+              {Array.isArray(projects)
+                ? projects.map((project) => (
+                    <Tr key={project.id} _hover={{ background: hoverColor[colorMode] }}>
+                      <Td>
+                        <TableLink href={`/project/${encodeURIComponent(project.key)}`}>
+                          {project?.name}
+                        </TableLink>
+                      </Td>
+                      <Td p={2}>
+                        <TableLink href={`/project/${encodeURIComponent(project.key)}`}>
+                          {project?.key}
+                        </TableLink>
+                      </Td>
+                      <Td>
+                        <TableLink href={`/user/${encodeURIComponent(project.manager?.sub)}`}>
+                          <Avatar bg="red.500" size="sm" mr={2} />
+                          <Text as="span">{project.manager?.name}</Text>
+                        </TableLink>
+                      </Td>
 
-                    <Td p={2}>
-                      <AvatarGroup size="sm" max={2}>
-                        {project?.engineers?.map((user) => (
-                          <Avatar key={user?.id} />
-                        ))}
-                      </AvatarGroup>
-                    </Td>
-                  </Tr>
-                ))
-              : ''}
-          </TBody>
-          <TFoot borderTop="2px" borderColor={borderColor[colorMode]}>
-            <Tr>
-              <Td p={2} colSpan="2">
-                <Flex align="center">
-                  <Button size="sm" variant="link" colorScheme="blue">
-                    Show more projects
-                  </Button>
-                </Flex>
-              </Td>
-              <Td p={2} colSpan="2">
-                <Text fontSize="sm" textAlign="right" color="gray.500" fontWeight="medium">
-                  {data.length} of {data.length}
-                </Text>
-              </Td>
-            </Tr>
-          </TFoot>
-        </Table>
+                      <Td p={2}>
+                        <AvatarGroup size="sm" max={2}>
+                          {project.engineers?.map((user) => (
+                            <Avatar key={user.id} />
+                          ))}
+                        </AvatarGroup>
+                      </Td>
+                    </Tr>
+                  ))
+                : ''}
+            </TBody>
+            <TFoot borderTop="2px" borderColor={borderColor[colorMode]}>
+              <Tr>
+                <Td p={2} colSpan="2">
+                  <Flex align="center">
+                    <Button size="sm" variant="link" colorScheme="blue">
+                      Show more projects
+                    </Button>
+                  </Flex>
+                </Td>
+                <Td p={2} colSpan="2">
+                  <Text fontSize="sm" textAlign="right" color="gray.500" fontWeight="medium">
+                    Active projects: {projects.length}
+                  </Text>
+                </Td>
+              </Tr>
+            </TFoot>
+          </Table>
+        )}
       </Box>
     </>
   );
 };
 
-Projects.defaultProps = {
-  data: [
-    {
-      id: 1,
-      key: 'PRO-1',
-      name: 'Create React App',
-      lead: 'Johnjohny Doe',
-      engineers: [
-        {
-          id: 1,
-          name: 'User name',
-          picture: 'picture'
-        },
-        {
-          id: 2,
-          name: 'User name 2',
-          picture: 'picture'
-        },
-        {
-          id: 3,
-          name: 'User name 3',
-          picture: 'picture'
-        }
-      ]
-    },
-    {
-      id: 2,
-      key: 'PRO-2',
-      name: 'Project #2',
-      lead: 'Janna Doe',
-      engineers: [
-        {
-          id: 1,
-          name: 'User name',
-          picture: 'picture'
-        }
-      ]
-    }
-  ]
-};
-
 Projects.propTypes = {
-  data: PropTypes.array.isRequired
+  projects: PropTypes.array.isRequired,
+  isLoading: PropTypes.bool.isRequired
 };

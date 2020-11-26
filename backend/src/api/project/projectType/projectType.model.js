@@ -6,6 +6,15 @@ class ProjectType extends Model {
     return tableNames.project_type;
   }
 
+  static get modifiers() {
+    return {
+      defaultSelects(query) {
+        const { ref } = ProjectType;
+        query.select(ref('id'), ref('name'));
+      },
+    };
+  }
+
   static get jsonSchema() {
     return {
       type: 'object',

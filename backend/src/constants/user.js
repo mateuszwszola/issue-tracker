@@ -1,5 +1,6 @@
 const validUserOrders = new Set([
   'id',
+  'sub',
   'name',
   'email',
   'created_at',

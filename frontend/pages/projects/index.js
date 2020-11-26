@@ -1,5 +1,5 @@
 import useSWR from 'swr';
-import { Spinner } from '@chakra-ui/core';
+import { Text } from '@chakra-ui/react';
 import { Projects } from '@/components/Projects';
 import { Layout } from '@/components/Layout';
 import { getProjects } from 'utils/projects-client';
@@ -10,11 +10,11 @@ function ProjectsPage() {
   return (
     <Layout title="Projects">
       {error ? (
-        <div>Something went wrong... Please try reload the page</div>
-      ) : !data ? (
-        <Spinner />
+        <Text textAlign="center" mt={4}>
+          Something went wrong... Please try reload the page
+        </Text>
       ) : (
-        <Projects data={data?.projects || []} />
+        <Projects isLoading={!data} projects={data?.projects || []} />
       )}
     </Layout>
   );

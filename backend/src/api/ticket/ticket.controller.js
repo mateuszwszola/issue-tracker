@@ -1,39 +1,22 @@
-import { isEmpty } from 'lodash';
-import { ErrorHandler } from '../../utils/error';
+import { getTicketGraphQuery } from '../../utils/ticket';
 import { Ticket } from './ticket.model';
 
-export function getDefaultTicketGraphQuery(query, withGraph) {
-  return query
-    .allowGraph('[project, type, status, priority, reporter, parentTicket]')
-    .withGraphFetched(withGraph);
-}
-
 const getTickets = async (req, res) => {
-  const { projectId, select, withGraph, cursor, limit, orderBy } = req.query;
+  const { withGraph, skip, limit, orderBy } = req.query;
+  const { project } = req;
 
-  if (projectId && !req.project) {
-    throw new ErrorHandler(404, `Project with ${projectId} not found`);
-  }
-
-  let query = Ticket.query()
+  const query = Ticket.query()
     .where('archived_at', null)
-    .offset(cursor)
-    .limit(limit);
+    .offset(skip)
+    .limit(limit)
+    .orderBy(orderBy);
 
-  if (projectId) {
-    query.where('project_id', projectId);
-  }
-
-  if (select) {
-    query.select(select);
-  }
-
-  if (orderBy) {
-    query.orderBy(orderBy);
+  if (project) {
+    query.where('project_id', project.id);
   }
 
   if (withGraph) {
-    query = getDefaultTicketGraphQuery(query, withGraph);
+    getTicketGraphQuery(query, withGraph);
   }
 
   return res.status(200).json({ tickets: await query });
@@ -41,41 +24,32 @@ const getTickets = async (req, res) => {
 
 const getTicket = async (req, res) => {
   const { ticketId } = req.params;
-  const { select, withGraph } = req.query;
+  const { withGraph } = req.query;
+  const { ticket: preloadedTicket } = req;
 
-  let query = Ticket.query().findById(ticketId);
-
-  if (select) {
-    query.select(select);
-  }
+  let ticket;
 
   if (withGraph) {
-    query = getDefaultTicketGraphQuery(query, withGraph);
+    const query = Ticket.query().findById(ticketId);
+
+    getTicketGraphQuery(query, withGraph);
+
+    ticket = await query;
+  } else {
+    ticket = preloadedTicket;
   }
 
-  const result = await query;
-
-  if (isEmpty(result)) {
-    throw new ErrorHandler(404, `Ticket with ${ticketId} id not found`);
-  }
-
-  return res.status(200).json({ ticket: result });
+  return res.status(200).json({ ticket });
 };
 
-const addTicket = async (req, res) => {
-  const { name, description, type_id, status_id, priority_id } = req.body;
-  const { projectId } = req.query;
-  const reporterId = req.api_user.id;
+const createTicket = async (req, res) => {
+  const ticketData = req.body;
+  const { id: createdById } = req.api_user;
 
   const ticket = await Ticket.query()
     .insert({
-      project_id: parseInt(projectId),
-      reporter_id: parseInt(reporterId),
-      name,
-      description,
-      type_id,
-      status_id,
-      priority_id,
+      ...ticketData,
+      created_by: createdById,
     })
     .returning('*');
 
@@ -84,32 +58,26 @@ const addTicket = async (req, res) => {
 
 const updateTicket = async (req, res) => {
   const newTicketData = req.body;
+  const { id: apiUserId } = req.api_user;
+  const { id: ticketId } = req.ticket;
 
   const ticket = await Ticket.query()
-    .findById(req.ticket.id)
-    .where('project_id', req.project.id)
-    .patch(newTicketData)
+    .findById(ticketId)
+    .patch({ ...newTicketData, updated_by: apiUserId })
     .returning('*');
 
   return res.status(200).json({ ticket });
 };
 
 const deleteTicket = async (req, res) => {
-  if (req.ticket.reporter_id !== req.api_user.id) {
-    throw new ErrorHandler(403, 'You are not the owner of the ticket');
-  }
+  const { id: ticketId } = req.ticket;
 
-  const result = await Ticket.query()
-    .findById(req.ticket.id)
-    .where('project_id', req.project.id)
+  const ticket = await Ticket.query()
+    .findById(ticketId)
     .delete()
     .returning('*');
 
-  if (typeof Number(result) === 'number' && Number(result) === 0) {
-    throw new ErrorHandler(400, 'Invalid project id');
-  }
-
-  return res.status(200).json({ ticket: result });
+  return res.status(200).json({ ticket });
 };
 
-export { getTickets, getTicket, addTicket, updateTicket, deleteTicket };
+export { getTickets, getTicket, createTicket, updateTicket, deleteTicket };
