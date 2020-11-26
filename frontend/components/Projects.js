@@ -37,16 +37,16 @@ export const Projects = ({ data }) => {
         <Table w="full" border="2px" borderColor="transparent">
           <THead borderBottom="2px" borderColor={borderColor[colorMode]}>
             <Tr>
-              <Th>
+              <Th px={1}>
                 <ButtonSort name="Name" />
               </Th>
-              <Th>
+              <Th px={1}>
                 <ButtonSort name="Key" />
               </Th>
-              <Th>
+              <Th px={1}>
                 <ButtonSort name="Lead" />
               </Th>
-              <Th px={2} py={1} textAlign="left">
+              <Th px={1} textAlign="left">
                 <Text as="span" fontSize="sm" fontWeight="semibold">
                   Engineers
                 </Text>
@@ -60,16 +60,16 @@ export const Projects = ({ data }) => {
                   .fill(null)
                   .map((_, idx) => (
                     <Tr key={idx}>
-                      <Td py={1}>
+                      <Td p={1}>
                         <Skeleton width="100%" height="40px" />
                       </Td>
-                      <Td p={2}>
+                      <Td p={1}>
                         <Skeleton width="100%" height="40px" />
                       </Td>
-                      <Td p={2}>
+                      <Td p={1}>
                         <SkeletonCircle size="10" />
                       </Td>
-                      <Td p={2}>
+                      <Td p={1}>
                         <AvatarGroup>
                           <SkeletonCircle size="10" />
                           <SkeletonCircle size="10" />
@@ -87,36 +87,36 @@ export const Projects = ({ data }) => {
                     _hover={{ background: hoverColor[colorMode] }}
                     bgColor={idx % 2 === 0 ? 'transparent' : rowBgColor[colorMode]}
                   >
-                    <Td>
+                    <Td p={1}>
                       <TableLink href={`/project/${encodeURIComponent(project.key)}`}>
                         {project?.name}
                       </TableLink>
                     </Td>
-                    <Td p={2}>
+                    <Td p={1}>
                       <TableLink href={`/project/${encodeURIComponent(project.key)}`}>
                         {project?.key}
                       </TableLink>
                     </Td>
-                    <Td>
+                    <Td p={1}>
                       {project.manager && (
                         <Flex align="center">
-                          {project.manager?.picture && (
-                            <Avatar
-                              name={project.manager?.name}
-                              src={project.manager?.picture}
-                              bg="red.500"
-                              size="sm"
-                              mr={2}
-                            />
-                          )}
                           <TableLink href={`/user/${encodeURIComponent(project.manager?.sub)}`}>
+                            {project.manager?.picture && (
+                              <Avatar
+                                name={project.manager?.name}
+                                src={project.manager?.picture}
+                                bg="red.500"
+                                size="sm"
+                                mr={2}
+                              />
+                            )}
                             <Text as="span">{project.manager?.name}</Text>
                           </TableLink>
                         </Flex>
                       )}
                     </Td>
 
-                    <Td p={2}>
+                    <Td p={1}>
                       <AvatarGroup size="sm" max={2}>
                         {project.engineers?.map((user) => (
                           <Avatar name={user.name} picture={user.picture} key={user.id} />
@@ -130,7 +130,7 @@ export const Projects = ({ data }) => {
           </TBody>
           <TFoot borderTop="2px" borderColor={borderColor[colorMode]}>
             <Tr>
-              <Td p={2} colSpan="2">
+              <Td px={1} py={2} colSpan="2">
                 <Flex align="center">
                   {data?.projects?.length < data?.projects?.total && (
                     <Button size="sm" variant="link" colorScheme="blue">
@@ -139,7 +139,7 @@ export const Projects = ({ data }) => {
                   )}
                 </Flex>
               </Td>
-              <Td p={2} colSpan="2">
+              <Td px={1} py={2} colSpan="2">
                 <Text fontSize="sm" textAlign="right" color="gray.500" fontWeight="medium">
                   Projects: {data?.projects?.results?.length}
                 </Text>
