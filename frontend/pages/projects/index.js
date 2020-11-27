@@ -1,56 +1,42 @@
-import { useState, useCallback } from 'react';
-import { useSWRInfinite } from 'swr';
+import { useCallback } from 'react';
 import { Text } from '@chakra-ui/react';
 import { Projects } from '@/components/Projects';
 import { Layout } from '@/components/Layout';
 import { getProjects } from 'utils/projects-client';
+import { useOrderBy } from '../../hooks/use-order-by';
+import { useInfiniteScroll } from '../../hooks/use-infinite-scroll';
 
-const PAGE_SIZE = 4;
-
-function parseOrderByQueryObject(orderByObj) {
-  return Object.keys(orderByObj)
-    .filter((order) => orderByObj[order])
-    .map((order) => `${order}:${orderByObj[order]}`)
-    .join(',');
-}
+const PAGE_SIZE = 10;
 
 function ProjectsPage() {
-  const [orderBy, setOrderBy] = useState({
-    name: '',
-    key: '',
-    manager_id: ''
-  });
+  const { orderBy, handleOrderByButtonClick, getOrderByQueryString } = useOrderBy([
+    'name',
+    'key',
+    'manager_id'
+  ]);
 
   const getKey = useCallback(
     (pageIndex) => {
-      const orders = parseOrderByQueryObject(orderBy);
+      const orderByQueryString = getOrderByQueryString();
 
-      return `projects?page=${pageIndex}&limit=${PAGE_SIZE}${orders ? `&orderBy=${orders}` : ''}`;
+      return `projects?page=${pageIndex}&limit=${PAGE_SIZE}${
+        orderByQueryString ? `&${orderByQueryString}` : ''
+      }`;
     },
-    [orderBy]
+    [getOrderByQueryString]
   );
 
-  const { data, isValidating, size, setSize, error } = useSWRInfinite(getKey, getProjects);
-
-  const handleOrderByButtonClick = (column) => () => {
-    setOrderBy((prev) => ({
-      ...prev,
-      [column]: prev[column] === 'asc' ? 'desc' : 'asc'
-    }));
-  };
-
-  const fetchMore = () => setSize(size + 1);
-
-  const projects = data ? [].concat(...data.map(({ projects }) => projects)) : [];
-  const isLoadingInitialData = !data && !error;
-  const isLoadingMore =
-    isLoadingInitialData || (size > 0 && data && typeof data[size - 1] === 'undefined');
-  const isEmpty = data?.[0]?.projects?.length === 0;
-  const isReachingEnd = !!(
-    isEmpty ||
-    (data && data[data.length - 1]?.projects?.length < PAGE_SIZE)
-  );
-  const isRefreshing = !!(isValidating && data && data.length === size);
+  const {
+    error,
+    results: projects,
+    isLoadingInitialData,
+    isLoadingMore,
+    isReachingEnd,
+    isRefreshing,
+    isEmpty,
+    size,
+    fetchMore
+  } = useInfiniteScroll(getKey, getProjects, 'projects', PAGE_SIZE);
 
   return (
     <Layout title="Projects">
