@@ -47,7 +47,9 @@ export const Projects = ({
   size,
   isEmpty,
   isReachingEnd,
-  fetchMore
+  fetchMore,
+  orderBy,
+  handleOrderByButtonClick
 }) => {
   const { colorMode } = useColorMode();
 
@@ -75,13 +77,13 @@ export const Projects = ({
           <THead borderBottom="2px" borderColor={borderColor[colorMode]}>
             <Tr>
               <Th px={1}>
-                <ButtonSort name="Name" />
+                <ButtonSort onClick={handleOrderByButtonClick('name')} name="Name" />
               </Th>
               <Th px={1}>
-                <ButtonSort name="Key" />
+                <ButtonSort onClick={handleOrderByButtonClick('key')} name="Key" />
               </Th>
               <Th px={1}>
-                <ButtonSort name="Lead" />
+                <ButtonSort onClick={handleOrderByButtonClick('manager_id')} name="Lead" />
               </Th>
               <Th px={1} textAlign="left">
                 <Text as="span" fontSize="sm" fontWeight="semibold">
@@ -116,15 +118,15 @@ export const Projects = ({
                       {project.manager && (
                         <Flex align="center">
                           <TableLink href={`/user/${encodeURIComponent(project.manager?.sub)}`}>
-                            {project.manager?.picture && (
-                              <Avatar
-                                name={project.manager?.name}
-                                src={project.manager?.picture}
-                                bg="red.500"
-                                size="sm"
-                                mr={2}
-                              />
-                            )}
+                            {/*{project.manager?.picture && (*/}
+                            {/*  <Avatar*/}
+                            {/*    name={project.manager?.name}*/}
+                            {/*    src={project.manager?.picture}*/}
+                            {/*    bg="red.500"*/}
+                            {/*    size="sm"*/}
+                            {/*    mr={2}*/}
+                            {/*  />*/}
+                            {/*)}*/}
                             <Text as="span">{project.manager?.name}</Text>
                           </TableLink>
                         </Flex>
@@ -179,5 +181,7 @@ Projects.propTypes = {
   isEmpty: PropTypes.bool.isRequired,
   isReachingEnd: PropTypes.bool.isRequired,
   isRefreshing: PropTypes.bool.isRequired,
-  fetchMore: PropTypes.func.isRequired
+  fetchMore: PropTypes.func.isRequired,
+  orderBy: PropTypes.object.isRequired,
+  handleOrderByButtonClick: PropTypes.func.isRequired
 };
