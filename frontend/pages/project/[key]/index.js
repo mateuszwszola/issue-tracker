@@ -40,68 +40,68 @@ function ProjectPage() {
           </Text>
         ) : (
           <Skeleton isLoaded={!!data}>
-            <Box>
-              <Heading as="h2" display="flex" alignItems="center" size="lg">
-                {data?.project?.name}
-                <Tag ml={2}>{data?.project?.type?.name}</Tag>
-              </Heading>
-              {data?.project?.description && <Text mt={1}>{data.project.description}</Text>}
+            <Flex direction={['column', 'row']}>
+              <Box width={['100%', '50%']}>
+                <Heading as="h2" display="flex" alignItems="center" size="lg">
+                  {data?.project?.name}
+                  <Tag ml={3}>{data?.project?.type?.name}</Tag>
+                </Heading>
+                {data?.project?.description && <Text mt={2}>{data.project.description}</Text>}
+              </Box>
+              <Box width={['100%', '50%']} mt={[4, 0]}>
+                <Link href={`/issues/${encodeURIComponent(projectKey)}`} passHref>
+                  <Button as="a" variant="outline" colorScheme="blue">
+                    Issues
+                  </Button>
+                </Link>
+              </Box>
+            </Flex>
 
-              <Flex mt={6} direction={['column', 'row']}>
-                <Box width={['100%', '50%']}>
-                  <Link href={`/issues/${encodeURIComponent(projectKey)}`} passHref>
-                    <Button as="a" variant="outline" colorScheme="blue">
-                      Issues
+            <Flex mt={12} direction={['column', 'row']}>
+              <Box width={['100%', '50%']}>
+                <Heading as="h3" size="md">
+                  About
+                </Heading>
+                <Text mt={4} display="flex" alignItems="center">
+                  Created by
+                  <Link
+                    href={`/users/${encodeURIComponent(data?.project?.createdBy?.sub)}`}
+                    passHref
+                  >
+                    <Button ml={1} as="a" variant="link" colorScheme="blue">
+                      {data?.project?.createdBy?.name}
                     </Button>
                   </Link>
-                </Box>
-                <Box width={['100%', '50%']} my={[8, 0]}>
-                  <Heading as="h3" size="md">
-                    About
-                  </Heading>
+                </Text>
+                {data?.project?.manager && (
                   <Text mt={4} display="flex" alignItems="center">
-                    Created by
-                    <Link
-                      href={`/users/${encodeURIComponent(data?.project?.createdBy?.sub)}`}
-                      passHref
-                    >
+                    Manager
+                    <Link href={`/users/${encodeURIComponent(data.project.manager.sub)}`} passHref>
                       <Button ml={1} as="a" variant="link" colorScheme="blue">
-                        {data?.project?.createdBy?.name}
+                        {data.project.manager.name}
                       </Button>
                     </Link>
                   </Text>
-                  {data?.project?.manager && (
-                    <Text mt={4} display="flex" alignItems="center">
-                      Manager
-                      <Link
-                        href={`/users/${encodeURIComponent(data.project.manager.sub)}`}
-                        passHref
-                      >
-                        <Button ml={1} as="a" variant="link" colorScheme="blue">
-                          {data.project.manager.name}
-                        </Button>
-                      </Link>
-                    </Text>
-                  )}
-                  {data?.project?.created_at && (
-                    <Text mt={4}>
-                      Created at {format(new Date(data.project.created_at), 'MM/dd/yyyy')}
-                    </Text>
-                  )}
-                </Box>
-              </Flex>
-
-              <Wrap mt={4}>
-                <Heading as="h3" size="md">
-                  Project engineers:
-                </Heading>
-                {data?.project?.engineers?.map((engineer) => (
-                  <WrapItem key={engineer.id}>
-                    <Avatar name={engineer.name} src={engineer.picture} />
-                  </WrapItem>
-                ))}
-              </Wrap>
-            </Box>
+                )}
+                {data?.project?.created_at && (
+                  <Text mt={4}>
+                    Created at {format(new Date(data.project.created_at), 'MMM M, yyyy')}
+                  </Text>
+                )}
+              </Box>
+              <Box width={['100%', '50%']} mt={[12, 0]}>
+                <Wrap>
+                  <Heading as="h3" size="md">
+                    Project engineers:
+                  </Heading>
+                  {data?.project?.engineers?.map((engineer) => (
+                    <WrapItem key={engineer.id}>
+                      <Avatar name={engineer.name} src={engineer.picture} />
+                    </WrapItem>
+                  ))}
+                </Wrap>
+              </Box>
+            </Flex>
           </Skeleton>
         )}
       </Box>
