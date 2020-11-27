@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import client from './api-client';
+import client from '../utils/api-client';
 
 export const API_AUDIENCE = process.env.NEXT_PUBLIC_AUTH0_AUDIENCE;
 

@@ -1,16 +1,15 @@
 import client from './api-client';
-import { objToQueryString } from './query-string';
-
-const defaultProjectGraphQueryString = objToQueryString({
-  withGraph: '[type, manager, engineers, createdBy]'
-});
 
 function getProjects(key) {
-  return client(`${key}&${defaultProjectGraphQueryString}`);
+  return client(key);
 }
 
-function getProjectIdFromKey(key) {
+function getProject(key) {
+  return client(key);
+}
+
+function getProjectIdFromProjectKey(key) {
   return key.split('-').slice(-1)[0];
 }
 
-export { getProjects, getProjectIdFromKey };
+export { getProjects, getProject, getProjectIdFromProjectKey };

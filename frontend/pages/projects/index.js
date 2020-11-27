@@ -6,7 +6,7 @@ import { getProjects } from 'utils/projects-client';
 import { useOrderBy } from '../../hooks/use-order-by';
 import { useInfiniteScroll } from '../../hooks/use-infinite-scroll';
 import { useDebouncedSearchKey } from '../../hooks/use-search';
-import { objToQueryString } from '../../utils/query-string';
+import { objToQueryString } from '@/utils/query-string';
 
 const PAGE_SIZE = 10;
 
@@ -25,7 +25,8 @@ function ProjectsPage() {
         page: pageIndex,
         limit: PAGE_SIZE,
         orderBy: getOrderByQueryValue(),
-        search: searchKey
+        search: searchKey,
+        withGraph: '[manager, engineers]'
       });
 
       return `projects?${queryString}`;
