@@ -65,9 +65,9 @@ describe('Test project engineers endpoints', () => {
         .set('Authorization', `Bearer ${token}`);
 
       expect(response.statusCode).toBe(200);
-      expect(response.body).toHaveProperty('engineers.results');
-      expect(response.body.engineers.results.length).toBe(1);
-      expect(response.body.engineers.results[0].id).toBe(engineer.id);
+      expect(response.body).toHaveProperty('engineers');
+      expect(response.body.engineers.length).toBe(1);
+      expect(response.body.engineers[0].id).toBe(engineer.id);
     });
   });
 

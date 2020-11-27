@@ -8,7 +8,7 @@ const styles = {
 };
 
 const childrenPropTypes = {
-  children: PropTypes.node.isRequired
+  children: PropTypes.node
 };
 
 export const Table = ({ children, ...props }) => (

@@ -1,22 +1,17 @@
 import { ErrorHandler } from '../utils/error';
 
 const parsePageQueryParam = (defaultPageSize = 20) => (req, res, next) => {
-  let { page, pageSize } = req.query;
+  let { page, limit } = req.query;
 
   page = page ? parseInt(page) : 0;
-  pageSize = pageSize ? parseInt(pageSize) : defaultPageSize;
+  limit = limit ? parseInt(limit) : defaultPageSize;
 
-  if (
-    Number.isNaN(page) ||
-    Number.isNaN(pageSize) ||
-    page < 0 ||
-    pageSize < 0
-  ) {
+  if (Number.isNaN(page) || Number.isNaN(limit) || page < 0 || limit < 1) {
     return next(new ErrorHandler(400, 'Invalid page query params'));
   }
 
-  req.query.page = page;
-  req.query.pageSize = pageSize;
+  req.query.skip = page * limit;
+  req.query.limit = limit;
 
   next();
 };

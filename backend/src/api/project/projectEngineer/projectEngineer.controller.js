@@ -3,12 +3,13 @@ import tableNames from '../../../constants/tableNames';
 
 const getProjectEngineers = async (req, res) => {
   const { projectId } = req.params;
-  const { page, pageSize, orderBy } = req.query;
+  const { skip, limit, orderBy } = req.query;
 
   const engineers = await Project.relatedQuery('engineers')
     .modify('defaultSelects')
     .for(projectId)
-    .page(page, pageSize)
+    .offset(skip)
+    .limit(limit)
     .orderBy(orderBy);
 
   return res.status(200).json({ engineers });

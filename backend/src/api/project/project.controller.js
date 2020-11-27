@@ -2,10 +2,11 @@ import { Project } from './project.model';
 import { getProjectGraphQuery } from '../../utils/project';
 
 const getProjects = async (req, res) => {
-  const { page, pageSize, orderBy, withGraph } = req.query;
+  const { skip, limit, orderBy, withGraph } = req.query;
 
   const query = Project.query()
-    .page(page, pageSize)
+    .offset(skip)
+    .limit(limit)
     .where('archived_at', null)
     .orderBy(orderBy);
 

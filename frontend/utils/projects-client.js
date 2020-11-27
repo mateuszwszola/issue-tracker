@@ -5,8 +5,8 @@ const defaultProjectGraphQueryString = objToQueryString({
   withGraph: '[type, manager, engineers, createdBy]'
 });
 
-function getProjects(url = 'projects', query = defaultProjectGraphQueryString) {
-  return client(`${url}?${query}`);
+function getProjects(key) {
+  return client(`${key}&${defaultProjectGraphQueryString}`);
 }
 
 function getProjectIdFromKey(key) {

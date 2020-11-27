@@ -17,12 +17,49 @@ import { ButtonSort } from '@/components/projects/ButtonSort';
 import { Header as ProjectsHeader } from '@/components/projects/Header';
 import { TableLink } from '@/components/projects/TableLink';
 
-export const Projects = ({ data }) => {
+function LoadingRow() {
+  return (
+    <Tr>
+      <Td p={1}>
+        <Skeleton width="100%" height="40px" />
+      </Td>
+      <Td p={1}>
+        <Skeleton width="100%" height="40px" />
+      </Td>
+      <Td p={1}>
+        <SkeletonCircle size="10" />
+      </Td>
+      <Td p={1}>
+        <AvatarGroup>
+          <SkeletonCircle size="10" as={Avatar} />
+          <SkeletonCircle size="10" as={Avatar} />
+          <SkeletonCircle size="10" as={Avatar} />
+        </AvatarGroup>
+      </Td>
+    </Tr>
+  );
+}
+
+export const Projects = ({
+  projects,
+  isLoadingInitialData,
+  isLoadingMore,
+  size,
+  isEmpty,
+  isReachingEnd,
+  fetchMore
+}) => {
   const { colorMode } = useColorMode();
 
   const borderColor = { light: 'gray.200', dark: 'gray.700' };
   const hoverColor = { light: 'gray.100', dark: 'gray.700' };
   const rowBgColor = { light: 'gray.50', dark: 'gray.900' };
+
+  let loadingRows = [];
+
+  for (let i = 0; i < 4; i++) {
+    loadingRows.push(<LoadingRow key={i} />);
+  }
 
   return (
     <>
@@ -54,34 +91,12 @@ export const Projects = ({ data }) => {
             </Tr>
           </THead>
           <TBody fontSize={['sm', 'md']}>
-            {!data ? (
-              <>
-                {Array(4)
-                  .fill(null)
-                  .map((_, idx) => (
-                    <Tr key={idx}>
-                      <Td p={1}>
-                        <Skeleton width="100%" height="40px" />
-                      </Td>
-                      <Td p={1}>
-                        <Skeleton width="100%" height="40px" />
-                      </Td>
-                      <Td p={1}>
-                        <SkeletonCircle size="10" />
-                      </Td>
-                      <Td p={1}>
-                        <AvatarGroup>
-                          <SkeletonCircle size="10" />
-                          <SkeletonCircle size="10" />
-                          <SkeletonCircle size="10" />
-                        </AvatarGroup>
-                      </Td>
-                    </Tr>
-                  ))}
-              </>
+            {isLoadingInitialData ? (
+              <>{loadingRows}</>
             ) : (
               <>
-                {data.projects?.results?.map((project, idx) => (
+                {isEmpty && <Text textAlign="center">No projects found</Text>}
+                {projects.map((project, idx) => (
                   <Tr
                     key={project.id}
                     _hover={{ background: hoverColor[colorMode] }}
@@ -89,12 +104,12 @@ export const Projects = ({ data }) => {
                   >
                     <Td p={1}>
                       <TableLink href={`/project/${encodeURIComponent(project.key)}`}>
-                        {project?.name}
+                        {project.name}
                       </TableLink>
                     </Td>
                     <Td p={1}>
                       <TableLink href={`/project/${encodeURIComponent(project.key)}`}>
-                        {project?.key}
+                        {project.key}
                       </TableLink>
                     </Td>
                     <Td p={1}>
@@ -130,18 +145,22 @@ export const Projects = ({ data }) => {
           </TBody>
           <TFoot borderTop="2px" borderColor={borderColor[colorMode]}>
             <Tr>
-              <Td px={1} py={2} colSpan="2">
+              <Td px={1} py={4} colSpan="2">
                 <Flex align="center">
-                  {data?.projects?.length < data?.projects?.total && (
-                    <Button size="sm" variant="link" colorScheme="blue">
-                      Show more projects
-                    </Button>
-                  )}
+                  <Button
+                    disabled={isLoadingMore || isReachingEnd}
+                    onClick={fetchMore}
+                    size="sm"
+                    variant="link"
+                    colorScheme="blue"
+                  >
+                    Show more projects
+                  </Button>
                 </Flex>
               </Td>
               <Td px={1} py={2} colSpan="2">
                 <Text fontSize="sm" textAlign="right" color="gray.500" fontWeight="medium">
-                  Projects: {data?.projects?.results?.length}
+                  Showing {size} page(s) of {isLoadingMore ? '...' : projects.length} projects
                 </Text>
               </Td>
             </Tr>
@@ -153,5 +172,12 @@ export const Projects = ({ data }) => {
 };
 
 Projects.propTypes = {
-  data: PropTypes.object
+  projects: PropTypes.array.isRequired,
+  isLoadingInitialData: PropTypes.bool.isRequired,
+  isLoadingMore: PropTypes.bool.isRequired,
+  size: PropTypes.number.isRequired,
+  isEmpty: PropTypes.bool.isRequired,
+  isReachingEnd: PropTypes.bool.isRequired,
+  isRefreshing: PropTypes.bool.isRequired,
+  fetchMore: PropTypes.func.isRequired
 };
