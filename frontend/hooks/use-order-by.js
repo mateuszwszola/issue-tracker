@@ -19,16 +19,13 @@ function useOrderBy(columns) {
   const handleOrderByButtonClick = (column) => () => {
     setOrderBy((prev) => ({
       ...prev,
-      [column]: prev[column] === 'asc' ? 'desc' : 'asc'
+      [column]: prev[column] === '' ? 'asc' : prev[column] === 'asc' ? 'desc' : ''
     }));
   };
 
-  const getOrderByQueryString = useCallback(() => {
-    const orders = parseOrderByQueryObject(orderBy);
-    return orders ? `orderBy=${orders}` : '';
-  }, [orderBy]);
+  const getOrderByQueryValue = useCallback(() => parseOrderByQueryObject(orderBy), [orderBy]);
 
-  return { orderBy, handleOrderByButtonClick, getOrderByQueryString };
+  return { orderBy, handleOrderByButtonClick, getOrderByQueryValue };
 }
 
 export { useOrderBy };

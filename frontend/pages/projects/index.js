@@ -5,25 +5,32 @@ import { Layout } from '@/components/Layout';
 import { getProjects } from 'utils/projects-client';
 import { useOrderBy } from '../../hooks/use-order-by';
 import { useInfiniteScroll } from '../../hooks/use-infinite-scroll';
+import { useDebouncedSearchKey } from '../../hooks/use-search';
+import { objToQueryString } from '../../utils/query-string';
 
 const PAGE_SIZE = 10;
 
 function ProjectsPage() {
-  const { orderBy, handleOrderByButtonClick, getOrderByQueryString } = useOrderBy([
+  const { orderBy, handleOrderByButtonClick, getOrderByQueryValue } = useOrderBy([
     'name',
     'key',
     'manager_id'
   ]);
 
+  const { inputValue, handleInputValueChange, searchKey } = useDebouncedSearchKey('');
+
   const getKey = useCallback(
     (pageIndex) => {
-      const orderByQueryString = getOrderByQueryString();
+      const queryString = objToQueryString({
+        page: pageIndex,
+        limit: PAGE_SIZE,
+        orderBy: getOrderByQueryValue(),
+        search: searchKey
+      });
 
-      return `projects?page=${pageIndex}&limit=${PAGE_SIZE}${
-        orderByQueryString ? `&${orderByQueryString}` : ''
-      }`;
+      return `projects?${queryString}`;
     },
-    [getOrderByQueryString]
+    [getOrderByQueryValue, searchKey]
   );
 
   const {
@@ -56,6 +63,8 @@ function ProjectsPage() {
           fetchMore={fetchMore}
           orderBy={orderBy}
           handleOrderByButtonClick={handleOrderByButtonClick}
+          inputValue={inputValue}
+          handleInputValueChange={handleInputValueChange}
         />
       )}
     </Layout>

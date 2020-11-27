@@ -1,8 +1,10 @@
 import PropTypes from 'prop-types';
 import { Button, Icon } from '@chakra-ui/react';
-import { FaSort } from 'react-icons/fa';
+import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
 
-export const ButtonSort = ({ name, ...props }) => {
+export const ButtonSort = ({ name, order, ...props }) => {
+  const SortIcon = order === '' ? FaSort : order === 'asc' ? FaSortUp : FaSortDown;
+
   return (
     <Button
       {...props}
@@ -13,7 +15,7 @@ export const ButtonSort = ({ name, ...props }) => {
       py={1}
       size="sm"
       variant="ghost"
-      rightIcon={<Icon as={FaSort} aria-label={`Sort by ${name}`} color="gray.400" />}
+      rightIcon={<Icon as={SortIcon} aria-label={`Order by ${name}`} color="gray.400" />}
     >
       {name}
     </Button>
@@ -21,5 +23,6 @@ export const ButtonSort = ({ name, ...props }) => {
 };
 
 ButtonSort.propTypes = {
-  name: PropTypes.string.isRequired
+  name: PropTypes.string.isRequired,
+  order: PropTypes.string.isRequired
 };

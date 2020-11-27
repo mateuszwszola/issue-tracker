@@ -49,7 +49,9 @@ export const Projects = ({
   isReachingEnd,
   fetchMore,
   orderBy,
-  handleOrderByButtonClick
+  handleOrderByButtonClick,
+  inputValue,
+  handleInputValueChange
 }) => {
   const { colorMode } = useColorMode();
 
@@ -68,22 +70,39 @@ export const Projects = ({
       <ProjectsHeader mt={2}>
         <Heading size="lg">Projects</Heading>
         <Box mt={[1, 0]} w="full" maxW="12rem">
-          <InputSearch />
+          <InputSearch value={inputValue} onChange={handleInputValueChange} />
         </Box>
       </ProjectsHeader>
 
       <Box mt={8} overflowX="auto">
+        {isEmpty && (
+          <Text textAlign="center" my={4}>
+            No projects found
+          </Text>
+        )}
         <Table w="full" border="2px" borderColor="transparent">
           <THead borderBottom="2px" borderColor={borderColor[colorMode]}>
             <Tr>
               <Th px={1}>
-                <ButtonSort onClick={handleOrderByButtonClick('name')} name="Name" />
+                <ButtonSort
+                  order={orderBy['name']}
+                  onClick={handleOrderByButtonClick('name')}
+                  name="Name"
+                />
               </Th>
               <Th px={1}>
-                <ButtonSort onClick={handleOrderByButtonClick('key')} name="Key" />
+                <ButtonSort
+                  order={orderBy['key']}
+                  onClick={handleOrderByButtonClick('key')}
+                  name="Key"
+                />
               </Th>
               <Th px={1}>
-                <ButtonSort onClick={handleOrderByButtonClick('manager_id')} name="Lead" />
+                <ButtonSort
+                  order={orderBy['manager_id']}
+                  onClick={handleOrderByButtonClick('manager_id')}
+                  name="Lead"
+                />
               </Th>
               <Th px={1} textAlign="left">
                 <Text as="span" fontSize="sm" fontWeight="semibold">
@@ -97,7 +116,6 @@ export const Projects = ({
               <>{loadingRows}</>
             ) : (
               <>
-                {isEmpty && <Text textAlign="center">No projects found</Text>}
                 {projects.map((project, idx) => (
                   <Tr
                     key={project.id}
@@ -183,5 +201,7 @@ Projects.propTypes = {
   isRefreshing: PropTypes.bool.isRequired,
   fetchMore: PropTypes.func.isRequired,
   orderBy: PropTypes.object.isRequired,
-  handleOrderByButtonClick: PropTypes.func.isRequired
+  handleOrderByButtonClick: PropTypes.func.isRequired,
+  inputValue: PropTypes.string.isRequired,
+  handleInputValueChange: PropTypes.func.isRequired
 };

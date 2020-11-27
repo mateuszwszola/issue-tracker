@@ -2,7 +2,9 @@
 function objToQueryString(obj) {
   const keyValuePairs = [];
   for (const key in obj) {
-    keyValuePairs.push(encodeURIComponent(key) + '=' + encodeURIComponent(obj[key]));
+    if (Object.prototype.hasOwnProperty.call(obj, key) && obj[key] !== '') {
+      keyValuePairs.push(encodeURIComponent(key) + '=' + encodeURIComponent(obj[key]));
+    }
   }
   return keyValuePairs.join('&');
 }
