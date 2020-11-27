@@ -6,8 +6,6 @@ import {
   Button,
   Flex,
   Heading,
-  Skeleton,
-  SkeletonCircle,
   Text,
   useColorMode
 } from '@chakra-ui/react';
@@ -15,30 +13,8 @@ import { Table, TBody, Td, TFoot, Th, THead, Tr } from '@/components/Table';
 import { InputSearch } from '@/components/InputSearch';
 import { ButtonSort } from '@/components/projects/ButtonSort';
 import { Header as ProjectsHeader } from '@/components/projects/Header';
+import { LoadingRow } from '@/components/projects/LoadingRow';
 import { TableLink } from '@/components/projects/TableLink';
-
-function LoadingRow() {
-  return (
-    <Tr>
-      <Td p={1}>
-        <Skeleton width="100%" height="40px" />
-      </Td>
-      <Td p={1}>
-        <Skeleton width="100%" height="40px" />
-      </Td>
-      <Td p={1}>
-        <SkeletonCircle size="10" />
-      </Td>
-      <Td p={1}>
-        <AvatarGroup>
-          <SkeletonCircle size="10" as={Avatar} />
-          <SkeletonCircle size="10" as={Avatar} />
-          <SkeletonCircle size="10" as={Avatar} />
-        </AvatarGroup>
-      </Td>
-    </Tr>
-  );
-}
 
 export const Projects = ({
   projects,
@@ -136,15 +112,15 @@ export const Projects = ({
                       {project.manager && (
                         <Flex align="center">
                           <TableLink href={`/user/${encodeURIComponent(project.manager?.sub)}`}>
-                            {/*{project.manager?.picture && (*/}
-                            {/*  <Avatar*/}
-                            {/*    name={project.manager?.name}*/}
-                            {/*    src={project.manager?.picture}*/}
-                            {/*    bg="red.500"*/}
-                            {/*    size="sm"*/}
-                            {/*    mr={2}*/}
-                            {/*  />*/}
-                            {/*)}*/}
+                            {project.manager?.picture && (
+                              <Avatar
+                                name={project.manager?.name}
+                                src={project.manager?.picture}
+                                bg="red.500"
+                                size="sm"
+                                mr={2}
+                              />
+                            )}
                             <Text as="span">{project.manager?.name}</Text>
                           </TableLink>
                         </Flex>
