@@ -1,9 +1,9 @@
 import { User } from './user.model';
 
 const getUsers = async (req, res) => {
-  const { page, limit, orderBy } = req.query;
+  const { skip, limit, orderBy } = req.query;
 
-  const users = await User.query().page(page, limit).orderBy(orderBy);
+  const users = await User.query().offset(skip).limit(limit).orderBy(orderBy);
 
   res.status(200).json({ users });
 };

@@ -16,21 +16,6 @@ const parsePageQueryParam = (defaultPageSize = 20) => (req, res, next) => {
   next();
 };
 
-const parsePaginationQueryParams = (defaultLimit = 100) => (req, res, next) => {
-  let { cursor, limit } = req.query;
-
-  cursor = cursor ? Number(cursor) : 0;
-  limit = cursor ? Number(limit) : defaultLimit;
-
-  if (Number.isNaN(cursor) || Number.isNaN(limit)) {
-    next(new ErrorHandler(400, 'Invalid pagination query params'));
-  } else {
-    req.query.cursor = cursor;
-    req.query.limit = limit;
-    next();
-  }
-};
-
 const validateOrderByParam = (
   validOrderColumns,
   defaultColumn = 'id',
@@ -69,8 +54,4 @@ const validateOrderByParam = (
   next();
 };
 
-export {
-  parsePaginationQueryParams,
-  validateOrderByParam,
-  parsePageQueryParam,
-};
+export { validateOrderByParam, parsePageQueryParam };

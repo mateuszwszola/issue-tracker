@@ -11,18 +11,9 @@ function getTicketGraphQuery(query, withGraph) {
     .modifyGraph('type', createBuilder(['name']))
     .modifyGraph('status', createBuilder(['name']))
     .modifyGraph('priority', createBuilder(['name']))
-    .modifyGraph(
-      'createdBy',
-      createBuilder(['id', 'sub', 'name', 'email', 'picture'])
-    )
-    .modifyGraph(
-      'updatedBy',
-      createBuilder(['id', 'sub', 'name', 'email', 'picture'])
-    )
-    .modifyGraph(
-      'assignee',
-      createBuilder(['id', 'sub', 'name', 'email', 'picture'])
-    );
+    .modifyGraph('createdBy', createBuilder(['id', 'sub', 'name', 'picture']))
+    .modifyGraph('updatedBy', createBuilder(['id', 'sub', 'name', 'picture']))
+    .modifyGraph('assignee', createBuilder(['id', 'sub', 'name', 'picture']));
 }
 
 function createTicketSchema(req, res, next) {

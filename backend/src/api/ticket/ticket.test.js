@@ -111,7 +111,6 @@ describe('Test a ticket endpoints', () => {
 
       expect(responseTicket.id).toBe(ticket.id);
       expect(responseTicket.project.name).toBe(project.name);
-      expect(responseTicket.createdBy.email).toBe(admin.email);
 
       ['type', 'status', 'priority'].forEach((property) => {
         expect(responseTicket[property]).toHaveProperty('name');
