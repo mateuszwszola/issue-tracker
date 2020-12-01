@@ -3,29 +3,46 @@ import NextLink from 'next/link';
 import { Layout } from '@/components/Layout';
 import { BackButton } from '@/components/BackButton';
 import {
+  Badge,
   Box,
+  Button,
+  Divider,
   Flex,
   Heading,
-  Divider,
-  Text,
+  Link,
   SimpleGrid,
   Skeleton,
   Stack,
-  Link,
-  Button,
-  Badge
+  Text
 } from '@chakra-ui/react';
 import useSWR from 'swr';
-import { getProjectTickets } from 'utils/tickets-client';
 import { InputSearch } from '@/components/InputSearch';
+import { objToQueryString } from '@/utils/query-string';
 import { FilterMenu } from '@/components/issues/FilterMenu';
-import React from 'react';
+import { getProjectIdFromProjectKey } from '@/utils/projects-client';
+import fetcher from '@/utils/api-client';
+
+const ticketStatusColors = {
+  Normal: 'gray',
+  Major: 'orange',
+  Critical: 'red'
+};
+
+function getQueryString(projectId) {
+  return objToQueryString({
+    projectId,
+    withGraph: '[type, status, priority, assignee, createdBy, updatedBy, comments]'
+  });
+}
 
 function ProjectIssuesPage() {
   const router = useRouter();
   const { projectKey } = router.query;
-  const { data, error } = useSWR(projectKey ? ['tickets', projectKey] : null, () =>
-    getProjectTickets(projectKey)
+  const projectId = projectKey && getProjectIdFromProjectKey(projectKey);
+
+  const { data, error } = useSWR(
+    projectId ? `tickets?${getQueryString(projectId)}` : null,
+    fetcher
   );
 
   return (
@@ -33,7 +50,7 @@ function ProjectIssuesPage() {
       <Box>
         <BackButton>Go back</BackButton>
         <Heading as="h2" fontSize="xl" mt={2}>
-          Issues for project: {projectKey}
+          Issues for: {projectKey}
         </Heading>
       </Box>
 
@@ -61,50 +78,61 @@ function ProjectIssuesPage() {
       <Box mt={8}>
         {error ? (
           <Text>Something went wrong... Try reload the page</Text>
-        ) : !data ? (
-          <Stack>
-            {Array(5)
-              .fill(null)
-              .map((_, idx) => (
-                <Skeleton key={idx} height="40px" />
-              ))}
-          </Stack>
         ) : (
           <Flex direction="column" align="stretch" overflowX="auto">
-            {data.tickets?.map((ticket) => (
-              <Box key={ticket.id}>
-                <Box py={2}>
-                  <Flex align="center">
-                    <NextLink href={`/issue/${encodeURIComponent(ticket.key)}`} passHref>
-                      <Link fontSize="sm">{ticket.key}</Link>
-                    </NextLink>
-                    <NextLink href={`/issue/${encodeURIComponent(ticket.key)}`} passHref>
-                      <Button as="a" ml={3} colorScheme="blue" size="sm" variant="link">
-                        {ticket.name}
-                      </Button>
-                    </NextLink>
-                  </Flex>
-                  <Flex mt={2}>
-                    <Box flex={1}>
-                      <Badge fontSize="xs" colorScheme="red">
-                        {ticket.priority?.name}
-                      </Badge>
+            {!data ? (
+              <Stack>
+                <Skeleton height="50px" />
+                <Skeleton height="50px" />
+                <Skeleton height="50px" />
+              </Stack>
+            ) : (
+              <>
+                {data.tickets?.map((ticket) => {
+                  const fixed = ticket.status?.name === 'Fixed';
+
+                  return (
+                    <Box key={ticket.id}>
+                      <Box py={2}>
+                        <Flex align="center">
+                          <NextLink href={`/issue/${encodeURIComponent(ticket.key)}`} passHref>
+                            <Link textDecoration={fixed ? 'line-through' : 'none'} fontSize="sm">
+                              {ticket.key}
+                            </Link>
+                          </NextLink>
+                          <NextLink href={`/issue/${encodeURIComponent(ticket.key)}`} passHref>
+                            <Button as="a" ml={3} colorScheme="blue" size="sm" variant="link">
+                              {ticket.name}
+                            </Button>
+                          </NextLink>
+                        </Flex>
+                        <Flex mt={2}>
+                          <Box flex={1}>
+                            <Badge
+                              fontSize="xs"
+                              colorScheme={ticketStatusColors[ticket.priority?.name]}
+                            >
+                              {ticket.priority?.name}
+                            </Badge>
+                          </Box>
+                          <Box flex={1}>
+                            <Badge fontSize="xs" colorScheme="green">
+                              {ticket.type?.name}
+                            </Badge>
+                          </Box>
+                          <Box flex={1}>
+                            <Badge fontSize="xs" colorScheme="blue">
+                              {ticket.status?.name}
+                            </Badge>
+                          </Box>
+                        </Flex>
+                      </Box>
+                      <Divider />
                     </Box>
-                    <Box flex={1}>
-                      <Badge fontSize="xs" colorScheme="green">
-                        {ticket.type?.name}
-                      </Badge>
-                    </Box>
-                    <Box flex={1}>
-                      <Badge fontSize="xs" colorScheme="blue">
-                        {ticket.status?.name}
-                      </Badge>
-                    </Box>
-                  </Flex>
-                </Box>
-                <Divider />
-              </Box>
-            ))}
+                  );
+                })}
+              </>
+            )}
           </Flex>
         )}
       </Box>

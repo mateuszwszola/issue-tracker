@@ -19,13 +19,14 @@ import { getProjectIdFromProjectKey } from '@/utils/projects-client';
 import { objToQueryString } from '@/utils/query-string';
 import fetcher from '@/utils/api-client';
 
+const queryString = objToQueryString({
+  withGraph: '[type, createdBy, manager, engineers]'
+});
+
 function ProjectPage() {
   const router = useRouter();
   const { key: projectKey } = router.query;
   const projectId = projectKey && getProjectIdFromProjectKey(projectKey);
-  const queryString = objToQueryString({
-    withGraph: '[type, createdBy, manager, engineers]'
-  });
   const { data, error } = useSWR(
     projectId ? `projects/${projectId}?${queryString}` : null,
     fetcher
@@ -41,14 +42,16 @@ function ProjectPage() {
         ) : (
           <Skeleton isLoaded={!!data}>
             <Flex direction={['column', 'row']}>
-              <Box width={['100%', '50%']}>
-                <Heading as="h2" display="flex" alignItems="center" size="lg">
-                  {data?.project?.name}
-                  <Tag ml={3}>{data?.project?.type?.name}</Tag>
+              <Box width={['100%', '50%']} px={1}>
+                <Heading as="h2" display="flex" flexWrap="wrap" alignItems="center" size="lg">
+                  <Text as="span" mr={3}>
+                    Name: {data?.project?.name}
+                  </Text>
+                  {data?.project?.type?.name && <Tag>{data.project.type.name}</Tag>}
                 </Heading>
                 {data?.project?.description && <Text mt={2}>{data.project.description}</Text>}
               </Box>
-              <Box width={['100%', '50%']} mt={[4, 0]}>
+              <Box width={['100%', '50%']} mt={[4, 0]} px={1}>
                 <Link href={`/issues/${encodeURIComponent(projectKey)}`} passHref>
                   <Button as="a" variant="outline" colorScheme="blue">
                     Issues
