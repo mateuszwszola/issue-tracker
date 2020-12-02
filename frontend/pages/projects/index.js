@@ -1,12 +1,14 @@
 import { useCallback } from 'react';
-import { Text } from '@chakra-ui/react';
-import { Projects } from '@/components/Projects';
+import { Box, Heading, Text } from '@chakra-ui/react';
+import { Projects } from '@/components/projects/Projects';
 import { Layout } from '@/components/Layout';
 import { getProjects } from 'utils/projects-client';
 import { useOrderBy } from '../../hooks/use-order-by';
 import { useInfiniteScroll } from '../../hooks/use-infinite-scroll';
 import { useDebouncedSearchKey } from '../../hooks/use-search';
 import { objToQueryString } from '@/utils/query-string';
+import { Header as ProjectsHeader } from '@/components/projects/Header';
+import { InputSearch } from '@/components/InputSearch';
 
 const PAGE_SIZE = 10;
 
@@ -48,25 +50,34 @@ function ProjectsPage() {
 
   return (
     <Layout title="Projects">
+      <ProjectsHeader mt={2}>
+        <Heading size="lg">Projects</Heading>
+        <Box mt={[1, 0]} w="full" maxW="12rem">
+          <InputSearch value={inputValue} onChange={handleInputValueChange} />
+        </Box>
+      </ProjectsHeader>
+
       {error ? (
         <Text textAlign="center" mt={4}>
           Something went wrong... Please try reload the page
         </Text>
       ) : (
-        <Projects
-          projects={projects}
-          isLoadingInitialData={isLoadingInitialData}
-          isLoadingMore={isLoadingMore}
-          isReachingEnd={isReachingEnd}
-          isRefreshing={isRefreshing}
-          isEmpty={isEmpty}
-          size={size}
-          fetchMore={fetchMore}
-          orderBy={orderBy}
-          handleOrderByButtonClick={handleOrderByButtonClick}
-          inputValue={inputValue}
-          handleInputValueChange={handleInputValueChange}
-        />
+        <Box mt={8} overflow="auto">
+          <Projects
+            projects={projects}
+            isLoadingInitialData={isLoadingInitialData}
+            isLoadingMore={isLoadingMore}
+            isReachingEnd={isReachingEnd}
+            isRefreshing={isRefreshing}
+            isEmpty={isEmpty}
+            size={size}
+            fetchMore={fetchMore}
+            orderBy={orderBy}
+            handleOrderByButtonClick={handleOrderByButtonClick}
+            inputValue={inputValue}
+            handleInputValueChange={handleInputValueChange}
+          />
+        </Box>
       )}
     </Layout>
   );

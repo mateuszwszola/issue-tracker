@@ -30,5 +30,5 @@ Layout.defaultProps = {
 Layout.propTypes = {
   title: PropTypes.string.isRequired,
   withOverlay: PropTypes.bool,
-  children: PropTypes.element
+  children: PropTypes.node
 };

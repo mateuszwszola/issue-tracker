@@ -1,139 +1,93 @@
+import { useCallback } from 'react';
 import { useRouter } from 'next/router';
-import NextLink from 'next/link';
 import { Layout } from '@/components/Layout';
 import { BackButton } from '@/components/BackButton';
-import {
-  Badge,
-  Box,
-  Button,
-  Divider,
-  Flex,
-  Heading,
-  Link,
-  SimpleGrid,
-  Skeleton,
-  Stack,
-  Text
-} from '@chakra-ui/react';
-import useSWR from 'swr';
+import { Box, Flex, Heading, SimpleGrid, Text } from '@chakra-ui/react';
 import { InputSearch } from '@/components/InputSearch';
 import { objToQueryString } from '@/utils/query-string';
 import { FilterMenu } from '@/components/issues/FilterMenu';
 import { getProjectIdFromProjectKey } from '@/utils/projects-client';
 import fetcher from '@/utils/api-client';
+import { useInfiniteScroll } from '../../../hooks/use-infinite-scroll';
+import { Issues } from '@/components/issues/Issues';
 
-const ticketStatusColors = {
-  Normal: 'gray',
-  Major: 'orange',
-  Critical: 'red'
-};
-
-function getQueryString(projectId) {
-  return objToQueryString({
-    projectId,
-    withGraph: '[type, status, priority, assignee, createdBy, updatedBy, comments]'
-  });
-}
+const PAGE_SIZE = 10;
 
 function ProjectIssuesPage() {
   const router = useRouter();
   const { projectKey } = router.query;
   const projectId = projectKey && getProjectIdFromProjectKey(projectKey);
 
-  const { data, error } = useSWR(
-    projectId ? `tickets?${getQueryString(projectId)}` : null,
-    fetcher
+  const getKey = useCallback(
+    (pageIndex) => {
+      const queryString = objToQueryString({
+        page: pageIndex,
+        limit: PAGE_SIZE,
+        projectId,
+        withGraph: '[type, status, priority, assignee, createdBy, updatedBy, comments]'
+      });
+
+      return projectId ? `tickets?${queryString}` : null;
+    },
+    [projectId]
   );
+
+  const {
+    error,
+    results: tickets,
+    isLoadingInitialData,
+    isLoadingMore,
+    isReachingEnd,
+    isRefreshing,
+    isEmpty,
+    size,
+    fetchMore
+  } = useInfiniteScroll(getKey, fetcher, 'tickets', PAGE_SIZE);
 
   return (
     <Layout>
       <Box>
         <BackButton>Go back</BackButton>
-        <Heading as="h2" fontSize="xl" mt={2}>
+        <Heading as="h2" fontSize="xl" mt={6}>
           Issues for: {projectKey}
         </Heading>
       </Box>
 
-      <Flex mt={1} direction={['column', null, 'row']} align={{ sm: 'center' }}>
+      <Flex mt={4} direction={['column', null, 'row']} align={{ sm: 'center' }}>
         <Box w="full" maxW={['100%', 'xs']}>
           <InputSearch />
         </Box>
 
         <SimpleGrid mt={{ base: 2, md: 0 }} ml={{ md: 4 }} columns={[2, 4]} spacing={1}>
           <Box>
-            <FilterMenu label="Assignee" options={['User #1', 'User #2']} />
+            <FilterMenu label="Type" options={['Task', 'Bug', 'Feature Request']} />
+          </Box>
+          <Box>
+            <FilterMenu label="State" options={['To Do', 'In Progress', 'Done']} />
           </Box>
           <Box>
             <FilterMenu label="Priority" options={['P1', 'P2', 'P3', 'P4', 'P5']} />
           </Box>
           <Box>
-            <FilterMenu label="Status" options={['To Do', 'In Progress', 'Done']} />
-          </Box>
-          <Box width="auto">
-            <FilterMenu label="Type" options={['Task', 'Bug', 'Feature Request']} />
+            <FilterMenu label="Assignee" options={['User #1', 'User #2']} />
           </Box>
         </SimpleGrid>
       </Flex>
 
-      <Box mt={8}>
+      <Box my={12}>
         {error ? (
           <Text>Something went wrong... Try reload the page</Text>
         ) : (
-          <Flex direction="column" align="stretch" overflowX="auto">
-            {!data ? (
-              <Stack>
-                <Skeleton height="50px" />
-                <Skeleton height="50px" />
-                <Skeleton height="50px" />
-              </Stack>
-            ) : (
-              <>
-                {data.tickets?.map((ticket) => {
-                  const fixed = ticket.status?.name === 'Fixed';
-
-                  return (
-                    <Box key={ticket.id}>
-                      <Box py={2}>
-                        <Flex align="center">
-                          <NextLink href={`/issue/${encodeURIComponent(ticket.key)}`} passHref>
-                            <Link textDecoration={fixed ? 'line-through' : 'none'} fontSize="sm">
-                              {ticket.key}
-                            </Link>
-                          </NextLink>
-                          <NextLink href={`/issue/${encodeURIComponent(ticket.key)}`} passHref>
-                            <Button as="a" ml={3} colorScheme="blue" size="sm" variant="link">
-                              {ticket.name}
-                            </Button>
-                          </NextLink>
-                        </Flex>
-                        <Flex mt={2}>
-                          <Box flex={1}>
-                            <Badge
-                              fontSize="xs"
-                              colorScheme={ticketStatusColors[ticket.priority?.name]}
-                            >
-                              {ticket.priority?.name}
-                            </Badge>
-                          </Box>
-                          <Box flex={1}>
-                            <Badge fontSize="xs" colorScheme="green">
-                              {ticket.type?.name}
-                            </Badge>
-                          </Box>
-                          <Box flex={1}>
-                            <Badge fontSize="xs" colorScheme="blue">
-                              {ticket.status?.name}
-                            </Badge>
-                          </Box>
-                        </Flex>
-                      </Box>
-                      <Divider />
-                    </Box>
-                  );
-                })}
-              </>
-            )}
-          </Flex>
+          <Issues
+            tickets={tickets}
+            isLoadingInitialData={isLoadingInitialData}
+            isLoadingMore={isLoadingMore}
+            isReachingEnd={isReachingEnd}
+            isRefreshing={isRefreshing}
+            fetchMore={fetchMore}
+            isEmpty={isEmpty}
+            size={size}
+          />
         )}
       </Box>
     </Layout>
