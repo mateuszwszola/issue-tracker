@@ -2,7 +2,7 @@ import { getTicketGraphQuery } from '../../utils/ticket';
 import { Ticket } from './ticket.model';
 
 const getTickets = async (req, res) => {
-  const { skip, limit, orderBy, withGraph } = req.query;
+  const { skip, limit, orderBy, withGraph, search } = req.query;
   const { project } = req;
 
   const query = Ticket.query()
@@ -17,6 +17,10 @@ const getTickets = async (req, res) => {
 
   if (withGraph) {
     getTicketGraphQuery(query, withGraph);
+  }
+
+  if (search) {
+    query.modify('search', search);
   }
 
   return res.status(200).json({ tickets: await query });
