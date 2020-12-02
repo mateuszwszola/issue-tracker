@@ -45,7 +45,7 @@ function ProjectPage() {
               <Box width={['100%', '50%']} px={1}>
                 <Heading as="h2" display="flex" flexWrap="wrap" alignItems="center" size="lg">
                   <Text as="span" mr={3}>
-                    Name: {data?.project?.name}
+                    Project: {data?.project?.name}
                   </Text>
                   {data?.project?.type?.name && <Tag>{data.project.type.name}</Tag>}
                 </Heading>

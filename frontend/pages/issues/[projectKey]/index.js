@@ -10,6 +10,7 @@ import { getProjectIdFromProjectKey } from '@/utils/projects-client';
 import fetcher from '@/utils/api-client';
 import { useInfiniteScroll } from '../../../hooks/use-infinite-scroll';
 import { Issues } from '@/components/issues/Issues';
+import { useDebouncedSearchKey } from '../../../hooks/use-search';
 
 const PAGE_SIZE = 10;
 
@@ -17,6 +18,7 @@ function ProjectIssuesPage() {
   const router = useRouter();
   const { projectKey } = router.query;
   const projectId = projectKey && getProjectIdFromProjectKey(projectKey);
+  const { inputValue, handleInputValueChange, searchKey } = useDebouncedSearchKey('');
 
   const getKey = useCallback(
     (pageIndex) => {
@@ -24,12 +26,13 @@ function ProjectIssuesPage() {
         page: pageIndex,
         limit: PAGE_SIZE,
         projectId,
+        search: searchKey,
         withGraph: '[type, status, priority, assignee, createdBy, updatedBy, comments]'
       });
 
       return projectId ? `tickets?${queryString}` : null;
     },
-    [projectId]
+    [projectId, searchKey]
   );
 
   const {
@@ -55,7 +58,7 @@ function ProjectIssuesPage() {
 
       <Flex mt={4} direction={['column', null, 'row']} align={{ sm: 'center' }}>
         <Box w="full" maxW={['100%', 'xs']}>
-          <InputSearch />
+          <InputSearch value={inputValue} handleChange={handleInputValueChange} />
         </Box>
 
         <SimpleGrid mt={{ base: 2, md: 0 }} ml={{ md: 4 }} columns={[2, 4]} spacing={1}>

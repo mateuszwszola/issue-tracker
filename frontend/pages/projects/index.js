@@ -53,7 +53,7 @@ function ProjectsPage() {
       <ProjectsHeader mt={2}>
         <Heading size="lg">Projects</Heading>
         <Box mt={[1, 0]} w="full" maxW="12rem">
-          <InputSearch value={inputValue} onChange={handleInputValueChange} />
+          <InputSearch value={inputValue} handleChange={handleInputValueChange} />
         </Box>
       </ProjectsHeader>
 
