@@ -91,7 +91,9 @@ export const Issues = ({
                   </Box>
                   <Box flex={1} minWidth="100px">
                     <Tooltip label="Assignee">
-                      <Text fontSize="sm">{ticket.assignee?.name || 'Unassigned'}</Text>
+                      <Text as="span" fontSize="sm">
+                        {ticket.assignee?.name || 'Unassigned'}
+                      </Text>
                     </Tooltip>
                   </Box>
                   <Box flex={1} minWidth="100px">

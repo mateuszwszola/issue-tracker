@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useRouter } from 'next/router';
 import { Layout } from '@/components/Layout';
 import { BackButton } from '@/components/BackButton';
@@ -11,28 +11,47 @@ import fetcher from '@/utils/api-client';
 import { useInfiniteScroll } from '../../../hooks/use-infinite-scroll';
 import { Issues } from '@/components/issues/Issues';
 import { useDebouncedSearchKey } from '../../../hooks/use-search';
+import { reduceArrToObj } from '@/utils/helpers';
 
 const PAGE_SIZE = 10;
+
+const filterNames = ['type_id', 'status_id', 'priority_id', 'assignee_id'];
 
 function ProjectIssuesPage() {
   const router = useRouter();
   const { projectKey } = router.query;
   const projectId = projectKey && getProjectIdFromProjectKey(projectKey);
   const { inputValue, handleInputValueChange, searchKey } = useDebouncedSearchKey('');
+  const [filters, setFilters] = useState(() => reduceArrToObj(filterNames, -1));
+
+  const handleFilterChange = (name) => (value) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [name]: value
+    }));
+  };
 
   const getKey = useCallback(
     (pageIndex) => {
-      const queryString = objToQueryString({
+      const queryStringObj = {
         page: pageIndex,
         limit: PAGE_SIZE,
-        projectId,
+        project_id: projectId,
         search: searchKey,
         withGraph: '[type, status, priority, assignee, createdBy, updatedBy, comments]'
+      };
+
+      filterNames.forEach((filterName) => {
+        if (filters[filterName] > -1) {
+          queryStringObj[filterName] = filters[filterName];
+        }
       });
+
+      const queryString = objToQueryString(queryStringObj);
 
       return projectId ? `tickets?${queryString}` : null;
     },
-    [projectId, searchKey]
+    [projectId, searchKey, filters]
   );
 
   const {
@@ -63,16 +82,32 @@ function ProjectIssuesPage() {
 
         <SimpleGrid mt={{ base: 2, md: 0 }} ml={{ md: 4 }} columns={[2, 4]} spacing={1}>
           <Box>
-            <FilterMenu label="Type" options={['Task', 'Bug', 'Feature Request']} />
+            <FilterMenu
+              filterName="type"
+              filterValue={filters['type_id']}
+              handleFilterChange={handleFilterChange('type_id')}
+            />
           </Box>
           <Box>
-            <FilterMenu label="State" options={['To Do', 'In Progress', 'Done']} />
+            <FilterMenu
+              filterName="status"
+              filterValue={filters['status_id']}
+              handleFilterChange={handleFilterChange('status_id')}
+            />
           </Box>
           <Box>
-            <FilterMenu label="Priority" options={['P1', 'P2', 'P3', 'P4', 'P5']} />
+            <FilterMenu
+              filterName="priority"
+              filterValue={filters['priority_id']}
+              handleFilterChange={handleFilterChange('priority_id')}
+            />
           </Box>
           <Box>
-            <FilterMenu label="Assignee" options={['User #1', 'User #2']} />
+            <FilterMenu
+              filterName="assignee"
+              filterValue={filters['assignee_id']}
+              handleFilterChange={handleFilterChange('assignee_id')}
+            />
           </Box>
         </SimpleGrid>
       </Flex>
