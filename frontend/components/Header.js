@@ -12,7 +12,8 @@ import {
   MenuList,
   MenuItem,
   MenuGroup,
-  Avatar
+  Avatar,
+  HStack
 } from '@chakra-ui/react';
 import { GoRocket } from 'react-icons/go';
 import { FiMoon, FiSun } from 'react-icons/fi';
@@ -39,14 +40,20 @@ export const Header = () => {
           </ChakraLink>
         </NextLink>
 
-        <Flex>
+        <HStack spacing={4}>
           <NextLink href="/projects" passHref>
             <Button as="a" variant="link" size="sm" colorScheme="blue">
               Projects
             </Button>
           </NextLink>
 
-          <Box ml={4}>
+          <NextLink href="/issues" passHref>
+            <Button as="a" variant="link" size="sm" colorScheme="blue">
+              Issues
+            </Button>
+          </NextLink>
+
+          <Box>
             {isAuthenticated ? (
               <>
                 <Menu>
@@ -70,15 +77,15 @@ export const Header = () => {
                 Sign In
               </Button>
             )}
-            <IconButton
-              ml={4}
-              size="sm"
-              onClick={toggleColorMode}
-              aria-label="Toggle theme"
-              icon={colorMode === 'dark' ? <FiMoon /> : <FiSun />}
-            />
           </Box>
-        </Flex>
+
+          <IconButton
+            size="sm"
+            onClick={toggleColorMode}
+            aria-label="Toggle theme"
+            icon={colorMode === 'dark' ? <FiMoon /> : <FiSun />}
+          />
+        </HStack>
       </Flex>
     </Box>
   );

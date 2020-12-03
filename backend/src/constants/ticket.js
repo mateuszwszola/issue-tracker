@@ -43,6 +43,21 @@ const validTicketOrders = new Set([
   'assignee_id',
 ]);
 
+const validTicketState = new Set(['archived', 'active']);
+
+const ticketSearchProps = [
+  'id',
+  'project_id',
+  'key',
+  'parent_id',
+  'type_id',
+  'status_id',
+  'priority_id',
+  'created_by',
+  'updated_by',
+  'assignee_id',
+];
+
 export {
   TICKET_TYPES,
   TICKET_STATUSES,
@@ -51,4 +66,6 @@ export {
   ticketStatuses,
   ticketPriorities,
   validTicketOrders,
+  validTicketState,
+  ticketSearchProps,
 };

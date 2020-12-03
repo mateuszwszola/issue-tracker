@@ -1,111 +1,127 @@
+import { useCallback, useState } from 'react';
 import { useRouter } from 'next/router';
-import NextLink from 'next/link';
 import { Layout } from '@/components/Layout';
 import { BackButton } from '@/components/BackButton';
-import {
-  Box,
-  Flex,
-  Heading,
-  Divider,
-  Text,
-  SimpleGrid,
-  Skeleton,
-  Stack,
-  Link,
-  Button,
-  Badge
-} from '@chakra-ui/react';
-import useSWR from 'swr';
-import { getProjectTickets } from 'utils/tickets-client';
+import { Box, Flex, Heading, SimpleGrid, Text } from '@chakra-ui/react';
 import { InputSearch } from '@/components/InputSearch';
+import { objToQueryString } from '@/utils/query-string';
 import { FilterMenu } from '@/components/issues/FilterMenu';
-import React from 'react';
+import { getProjectIdFromProjectKey } from '@/utils/projects-client';
+import fetcher from '@/utils/api-client';
+import { useInfiniteScroll } from '../../../hooks/use-infinite-scroll';
+import { Issues } from '@/components/issues/Issues';
+import { useDebouncedSearchKey } from '../../../hooks/use-search';
+import { reduceArrToObj } from '@/utils/helpers';
+import { IssueDrawer } from '@/components/issues/IssueDrawer';
+
+const PAGE_SIZE = 10;
+
+const filterNames = ['type_id', 'status_id', 'priority_id', 'assignee_id'];
 
 function ProjectIssuesPage() {
   const router = useRouter();
   const { projectKey } = router.query;
-  const { data, error } = useSWR(projectKey ? ['tickets', projectKey] : null, () =>
-    getProjectTickets(projectKey)
+  const projectId = projectKey && getProjectIdFromProjectKey(projectKey);
+  const { inputValue, handleInputValueChange, searchKey } = useDebouncedSearchKey('');
+  const [filters, setFilters] = useState(() => reduceArrToObj(filterNames, -1));
+
+  const handleFilterChange = (name) => (value) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [name]: value
+    }));
+  };
+
+  const getKey = useCallback(
+    (pageIndex) => {
+      const queryStringObj = {
+        page: pageIndex,
+        limit: PAGE_SIZE,
+        project_id: projectId,
+        search: searchKey,
+        withGraph: '[type, status, priority, assignee, createdBy, updatedBy, comments]'
+      };
+
+      filterNames.forEach((filterName) => {
+        if (filters[filterName] > -1) {
+          queryStringObj[filterName] = filters[filterName];
+        }
+      });
+
+      const queryString = objToQueryString(queryStringObj);
+
+      return projectId ? `tickets?${queryString}` : null;
+    },
+    [projectId, searchKey, filters]
   );
+
+  const {
+    error,
+    results: tickets,
+    isLoadingInitialData,
+    isLoadingMore,
+    isReachingEnd,
+    isRefreshing,
+    isEmpty,
+    size,
+    fetchMore
+  } = useInfiniteScroll(getKey, fetcher, 'tickets', PAGE_SIZE);
 
   return (
     <Layout>
       <Box>
         <BackButton>Go back</BackButton>
-        <Heading as="h2" fontSize="xl" mt={2}>
-          Issues for project: {projectKey}
+        <Heading as="h2" fontSize="lg" mt={6}>
+          Issues for: {projectKey}
         </Heading>
       </Box>
 
-      <Flex mt={1} direction={['column', null, 'row']} align={{ sm: 'center' }}>
+      <IssueDrawer />
+
+      <Flex mt={4} direction={['column', null, 'row']} align={{ sm: 'center' }}>
         <Box w="full" maxW={['100%', 'xs']}>
-          <InputSearch />
+          <InputSearch value={inputValue} handleChange={handleInputValueChange} />
         </Box>
 
         <SimpleGrid mt={{ base: 2, md: 0 }} ml={{ md: 4 }} columns={[2, 4]} spacing={1}>
           <Box>
-            <FilterMenu label="Assignee" options={['User #1', 'User #2']} />
+            <FilterMenu
+              filterName="type"
+              filterValue={filters['type_id']}
+              handleFilterChange={handleFilterChange('type_id')}
+            />
           </Box>
           <Box>
-            <FilterMenu label="Priority" options={['P1', 'P2', 'P3', 'P4', 'P5']} />
+            <FilterMenu
+              filterName="status"
+              filterValue={filters['status_id']}
+              handleFilterChange={handleFilterChange('status_id')}
+            />
           </Box>
           <Box>
-            <FilterMenu label="Status" options={['To Do', 'In Progress', 'Done']} />
-          </Box>
-          <Box width="auto">
-            <FilterMenu label="Type" options={['Task', 'Bug', 'Feature Request']} />
+            <FilterMenu
+              filterName="priority"
+              filterValue={filters['priority_id']}
+              handleFilterChange={handleFilterChange('priority_id')}
+            />
           </Box>
         </SimpleGrid>
       </Flex>
 
-      <Box mt={8}>
+      <Box my={12}>
         {error ? (
           <Text>Something went wrong... Try reload the page</Text>
-        ) : !data ? (
-          <Stack>
-            {Array(5)
-              .fill(null)
-              .map((_, idx) => (
-                <Skeleton key={idx} height="40px" />
-              ))}
-          </Stack>
         ) : (
-          <Flex direction="column" align="stretch" overflowX="auto">
-            {data.tickets?.map((ticket) => (
-              <Box key={ticket.id}>
-                <Box py={2}>
-                  <Flex align="center">
-                    <NextLink href={`/issue/${encodeURIComponent(ticket.key)}`} passHref>
-                      <Link fontSize="sm">{ticket.key}</Link>
-                    </NextLink>
-                    <NextLink href={`/issue/${encodeURIComponent(ticket.key)}`} passHref>
-                      <Button as="a" ml={3} colorScheme="blue" size="sm" variant="link">
-                        {ticket.name}
-                      </Button>
-                    </NextLink>
-                  </Flex>
-                  <Flex mt={2}>
-                    <Box flex={1}>
-                      <Badge fontSize="xs" colorScheme="red">
-                        {ticket.priority?.name}
-                      </Badge>
-                    </Box>
-                    <Box flex={1}>
-                      <Badge fontSize="xs" colorScheme="green">
-                        {ticket.type?.name}
-                      </Badge>
-                    </Box>
-                    <Box flex={1}>
-                      <Badge fontSize="xs" colorScheme="blue">
-                        {ticket.status?.name}
-                      </Badge>
-                    </Box>
-                  </Flex>
-                </Box>
-                <Divider />
-              </Box>
-            ))}
-          </Flex>
+          <Issues
+            tickets={tickets}
+            isLoadingInitialData={isLoadingInitialData}
+            isLoadingMore={isLoadingMore}
+            isReachingEnd={isReachingEnd}
+            isRefreshing={isRefreshing}
+            fetchMore={fetchMore}
+            isEmpty={isEmpty}
+            size={size}
+          />
         )}
       </Box>
     </Layout>

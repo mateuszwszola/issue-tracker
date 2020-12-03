@@ -58,6 +58,21 @@ class Ticket extends Model {
     };
   }
 
+  static get modifiers() {
+    return {
+      search(query, name) {
+        query.where((query) => {
+          for (const column of ['name', 'key']) {
+            query.orWhereRaw('lower(??) like ?', [
+              column,
+              name.toLowerCase() + '%',
+            ]);
+          }
+        });
+      },
+    };
+  }
+
   static get relationMappings() {
     const { User } = require('../user/user.model');
     const { Project } = require('../project/project.model');

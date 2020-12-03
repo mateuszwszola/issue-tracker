@@ -3,13 +3,12 @@ import PropTypes from 'prop-types';
 
 const styles = {
   table: {
-    // tableLayout: 'fixed',
     borderCollapse: 'collapse'
   }
 };
 
 const childrenPropTypes = {
-  children: PropTypes.node.isRequired
+  children: PropTypes.node
 };
 
 export const Table = ({ children, ...props }) => (

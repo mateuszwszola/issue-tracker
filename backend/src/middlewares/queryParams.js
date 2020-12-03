@@ -1,39 +1,19 @@
 import { ErrorHandler } from '../utils/error';
 
-const parsePageQueryParam = (pageSize = 20) => (req, res, next) => {
-  let { page } = req.query;
+const parsePageQueryParam = (defaultPageSize = 20) => (req, res, next) => {
+  let { page, limit } = req.query;
 
-  page = page ? parseInt(page) : 1;
+  page = page ? parseInt(page) : 0;
+  limit = limit ? parseInt(limit) : defaultPageSize;
 
-  if (Number.isNaN(page)) {
-    return next(new ErrorHandler(400, 'Invalid page query param'));
+  if (Number.isNaN(page) || Number.isNaN(limit) || page < 0 || limit < 1) {
+    return next(new ErrorHandler(400, 'Invalid page query params'));
   }
 
-  if (page < 1) {
-    return next(new ErrorHandler(400, 'Invalid page number'));
-  }
-
-  const skip = (page - 1) * pageSize;
-
-  req.query.limit = pageSize;
-  req.query.skip = skip;
+  req.query.skip = page * limit;
+  req.query.limit = limit;
 
   next();
-};
-
-const parsePaginationQueryParams = (defaultLimit = 100) => (req, res, next) => {
-  let { cursor, limit } = req.query;
-
-  cursor = cursor ? Number(cursor) : 0;
-  limit = cursor ? Number(limit) : defaultLimit;
-
-  if (Number.isNaN(cursor) || Number.isNaN(limit)) {
-    next(new ErrorHandler(400, 'Invalid pagination query params'));
-  } else {
-    req.query.cursor = cursor;
-    req.query.limit = limit;
-    next();
-  }
 };
 
 const validateOrderByParam = (
@@ -74,8 +54,4 @@ const validateOrderByParam = (
   next();
 };
 
-export {
-  parsePaginationQueryParams,
-  validateOrderByParam,
-  parsePageQueryParam,
-};
+export { validateOrderByParam, parsePageQueryParam };

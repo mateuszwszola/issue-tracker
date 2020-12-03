@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   Button,
@@ -8,39 +8,62 @@ import {
   MenuList,
   MenuOptionGroup,
   MenuItemOption,
-  Flex
+  Flex,
+  Text,
+  SkeletonText
 } from '@chakra-ui/react';
 import { GoChevronDown } from 'react-icons/go';
+import useSWR from 'swr';
+import fetcher from '@/utils/api-client';
 
-export const FilterMenu = ({ label, options }) => {
-  const [numberOfFilters, setNumberOfFilters] = React.useState(0);
+const resourceNames = {
+  type: 'types',
+  status: 'statuses',
+  priority: 'priorities'
+};
 
-  const handleChange = (newValues) => {
-    setNumberOfFilters(newValues.length);
-  };
+export const FilterMenu = ({ filterName, filterValue, handleFilterChange }) => {
+  const [startFetching, setStartFetching] = useState(false);
+  const { data, error } = useSWR(startFetching ? `tickets/${filterName}` : null, fetcher);
+  const resourceName = resourceNames[filterName];
+  const options = data && data[resourceName];
+
+  const selected = options?.find((option) => option.id === filterValue);
 
   return (
-    <Menu closeOnSelect={false}>
+    <Menu isLazy onOpen={() => setStartFetching(true)}>
       <MenuButton as={Button} d="block" w="full" size="sm" variant="ghost">
         <Flex justify="space-between" align="center">
-          {label} {numberOfFilters > 0 ? `(${numberOfFilters})` : ''}
+          <Text textTransform="capitalize">{selected?.name || filterName}</Text>
           <Icon ml={1} as={GoChevronDown} />
         </Flex>
       </MenuButton>
       <MenuList>
-        <MenuOptionGroup type="checkbox" onChange={handleChange}>
-          {options.map((option) => (
-            <MenuItemOption key={option} value={option}>
-              {option}
-            </MenuItemOption>
-          ))}
-        </MenuOptionGroup>
+        {error ? (
+          <Text p={4}>Something went wrong...</Text>
+        ) : !data ? (
+          <SkeletonText p={4} noOfLines={4} spacing="4" />
+        ) : (
+          <MenuOptionGroup type="radio" onChange={handleFilterChange}>
+            <MenuItemOption value={-1}>All</MenuItemOption>
+            {options?.map((option) => (
+              <MenuItemOption
+                key={option.id}
+                value={option.id}
+                isChecked={filterValue === option.id}
+              >
+                {option.name}
+              </MenuItemOption>
+            ))}
+          </MenuOptionGroup>
+        )}
       </MenuList>
     </Menu>
   );
 };
 
 FilterMenu.propTypes = {
-  label: PropTypes.string.isRequired,
-  options: PropTypes.array.isRequired
+  filterName: PropTypes.string.isRequired,
+  filterValue: PropTypes.number,
+  handleFilterChange: PropTypes.func.isRequired
 };

@@ -49,10 +49,12 @@ describe('Test the users endpoints', () => {
         .get(BASE_PATH + '?orderBy=name')
         .set('Authorization', `Bearer ${token}`);
 
-      expect(response.statusCode).toBe(200);
-      expect(response.body).toHaveProperty('users');
-      expect(response.body.users.length).toBe(1);
-      expect(response.body.users[0].id).toBe(user.id);
+      const { statusCode, body } = response;
+
+      expect(statusCode).toBe(200);
+      expect(body).toHaveProperty('users');
+      expect(body.users.length).toBe(1);
+      expect(body.users[0].id).toBe(user.id);
     });
   });
 
@@ -106,11 +108,13 @@ describe('Test the users endpoints', () => {
         .set('Authorization', `Bearer ${token}`)
         .send({ name, email, is_admin: true });
 
-      expect(response.statusCode).toBe(201);
-      expect(response.body).toHaveProperty('user');
-      expect(response.body.user.name).toBe(name);
-      expect(response.body.user.email).toBe(email);
-      expect(response.body.user.is_admin).toBe(true);
+      const { body, statusCode } = response;
+
+      expect(statusCode).toBe(201);
+      expect(body).toHaveProperty('user');
+      expect(body.user.name).toBe(name);
+      expect(body.user.email).toBe(email);
+      expect(body.user.is_admin).toBe(true);
     });
   });
 

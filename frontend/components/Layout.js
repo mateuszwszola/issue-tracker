@@ -9,7 +9,7 @@ export const Layout = ({ title, withOverlay, children }) => {
   return (
     <>
       <Head>
-        <title>{title ? `${title} | ` : ''}Issue Tracker</title>
+        <title>{title ? `${title} | ` : ''}MW_Issue_Tracker</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
@@ -30,5 +30,5 @@ Layout.defaultProps = {
 Layout.propTypes = {
   title: PropTypes.string.isRequired,
   withOverlay: PropTypes.bool,
-  children: PropTypes.element
+  children: PropTypes.node
 };

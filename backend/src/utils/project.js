@@ -1,4 +1,4 @@
-import { createBuilder } from './objection';
+import { createDefaultSelectsBuilder } from './objection';
 import Joi from 'joi';
 import { validateRequest } from './validateRequest';
 
@@ -16,15 +16,21 @@ function createProjectKey(projectName, projectId) {
 }
 
 function getProjectGraphQuery(query, withGraph) {
-  const userDefaultSelect = ['id', 'sub', 'name', 'email', 'picture'];
+  const allowedGraphs = [
+    'type',
+    'createdBy',
+    'manager',
+    'engineers',
+    'tickets',
+  ];
 
-  return query
-    .allowGraph('[type, createdBy, manager, engineers, tickets]')
-    .withGraphFetched(withGraph)
-    .modifyGraph('type', createBuilder(['id', 'name']))
-    .modifyGraph('createdBy', createBuilder(userDefaultSelect))
-    .modifyGraph('manager', createBuilder(userDefaultSelect))
-    .modifyGraph('engineers', createBuilder(userDefaultSelect));
+  query.allowGraph(`[${allowedGraphs.join(', ')}]`).withGraphFetched(withGraph);
+
+  allowedGraphs.forEach((graph) => {
+    query.modifyGraph(graph, createDefaultSelectsBuilder);
+  });
+
+  return query;
 }
 
 const validProjectOrders = new Set([

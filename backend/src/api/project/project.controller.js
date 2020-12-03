@@ -2,7 +2,7 @@ import { Project } from './project.model';
 import { getProjectGraphQuery } from '../../utils/project';
 
 const getProjects = async (req, res) => {
-  const { skip, limit, orderBy, withGraph } = req.query;
+  const { skip, limit, orderBy, withGraph, search } = req.query;
 
   const query = Project.query()
     .offset(skip)
@@ -12,6 +12,10 @@ const getProjects = async (req, res) => {
 
   if (withGraph) {
     getProjectGraphQuery(query, withGraph);
+  }
+
+  if (search) {
+    query.modify('search', search);
   }
 
   return res.status(200).json({ projects: await query });

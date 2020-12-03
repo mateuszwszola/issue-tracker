@@ -41,25 +41,13 @@ describe('Test a ticket endpoints', () => {
     await UserModel.query().delete();
   });
 
-  describe('GET /api/tickets?projectId=', () => {
-    let ticket;
-
-    beforeEach(async () => {
-      ticket = await TicketModel.query().insert(
-        getTicketData({ projectId: project.id, createdBy: admin.id })
-      );
-    });
-
+  describe('GET /api/tickets', () => {
     it('should respond with an error if invalid query param provided', async () => {
-      const response = await request(app).get(`${BASE_PATH}?orderBy=invalid`);
+      const { statusCode } = await request(app).get(
+        `${BASE_PATH}?orderBy=invalid`
+      );
 
-      expect(response.statusCode).toBe(400);
-    });
-
-    it('should respond with an error if project not found', async () => {
-      const response = await request(app).get(`${BASE_PATH}?projectId=123`);
-
-      expect(response.statusCode).toBe(404);
+      expect(statusCode).toBe(400);
     });
 
     it('should respond with an array of tickets', async () => {
@@ -69,51 +57,39 @@ describe('Test a ticket endpoints', () => {
 
       expect(statusCode).toBe(200);
       expect(body).toHaveProperty('tickets');
-      expect(body.tickets.length).toBe(1);
-
-      const [responseTicket] = body.tickets;
-
-      expect(responseTicket.id).toBe(ticket.id);
-      expect(responseTicket.project_id).toBe(project.id);
-      expect(responseTicket.created_by).toBe(admin.id);
+      expect(Array.isArray(body.tickets)).toBe(true);
     });
 
     it('should respond with an array of project tickets', async () => {
       const response = await request(app).get(
-        `${BASE_PATH}?projectId=${project.id}`
+        `${BASE_PATH}?project_id=${project.id}`
       );
 
       const { statusCode, body } = response;
 
       expect(statusCode).toBe(200);
       expect(body).toHaveProperty('tickets');
-      expect(body.tickets.length).toBe(1);
 
       const [responseTicket] = body.tickets;
 
-      expect(responseTicket.id).toBe(ticket.id);
       expect(responseTicket.project_id).toBe(project.id);
-      expect(responseTicket.created_by).toBe(admin.id);
     });
 
     it('should respond with an array of project tickets withGraphFetched', async () => {
       const response = await request(app).get(
-        `${BASE_PATH}?projectId=${project.id}&withGraph=[project,type,status,priority,createdBy]`
+        `${BASE_PATH}?project_id=${project.id}&withGraph=[project,type,status,priority,createdBy]`
       );
 
       const { statusCode, body } = response;
 
       expect(statusCode).toBe(200);
       expect(body).toHaveProperty('tickets');
-      expect(body.tickets.length).toBe(1);
 
       const [responseTicket] = body.tickets;
 
-      expect(responseTicket.id).toBe(ticket.id);
       expect(responseTicket.project.name).toBe(project.name);
-      expect(responseTicket.createdBy.email).toBe(admin.email);
 
-      ['type', 'status', 'priority'].forEach((property) => {
+      ['type', 'status', 'priority', 'createdBy'].forEach((property) => {
         expect(responseTicket[property]).toHaveProperty('name');
       });
     });

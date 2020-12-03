@@ -50,7 +50,7 @@ router.post('/', [
  */
 router.use('/:projectId', (req, res, next) => {
   const { projectId } = req.params;
-  preloadProject({ projectId, required: true })(req, res, next);
+  preloadProject({ projectId })(req, res, next);
 });
 
 /**

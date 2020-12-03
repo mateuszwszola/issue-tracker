@@ -10,13 +10,15 @@ class User extends Model {
     return {
       defaultSelects(query) {
         const { ref } = User;
-        query.select(
-          ref('id'),
-          ref('sub'),
-          ref('name'),
-          ref('email'),
-          ref('picture')
-        );
+        query.select(ref('id'), ref('sub'), ref('name'), ref('picture'));
+      },
+      searchByName(query, name) {
+        query.where((query) => {
+          query.orWhereRaw('lower(??) like ?', [
+            'name',
+            name.toLowerCase() + '%',
+          ]);
+        });
       },
     };
   }
