@@ -16,6 +16,7 @@ import NextLink from 'next/link';
 import { FaRegCommentAlt } from 'react-icons/fa';
 import { format } from 'date-fns';
 import PropTypes from 'prop-types';
+import { useRouter } from 'next/router';
 
 const ticketStatusColors = {
   Normal: 'gray',
@@ -32,6 +33,8 @@ export const Issues = ({
   isReachingEnd,
   fetchMore
 }) => {
+  const router = useRouter();
+
   return (
     <>
       {isLoadingInitialData ? (
@@ -61,12 +64,22 @@ export const Issues = ({
               <Box as="li" key={ticket.id}>
                 <Flex align="center" justify="space-between" wrap="wrap">
                   <Flex align="center">
-                    <NextLink href={`/issue/${encodeURIComponent(ticket.key)}`} passHref>
+                    <NextLink
+                      href={`/issues/${encodeURIComponent(router.query.projectKey)}?selectedIssue=${
+                        ticket.key
+                      }`}
+                      passHref
+                    >
                       <Link textDecoration={done ? 'line-through' : 'none'} fontSize="sm">
                         {ticket.key}
                       </Link>
                     </NextLink>
-                    <NextLink href={`/issue/${encodeURIComponent(ticket.key)}`} passHref>
+                    <NextLink
+                      href={`/issues/${encodeURIComponent(router.query.projectKey)}?selectedIssue=${
+                        ticket.key
+                      }`}
+                      passHref
+                    >
                       <Button as="a" ml={3} colorScheme="blue" size="sm" variant="link">
                         {ticket.name}
                       </Button>

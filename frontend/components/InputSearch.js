@@ -1,6 +1,6 @@
-import { InputGroup, Input, InputRightElement, Icon, useColorModeValue } from '@chakra-ui/react';
-import { BsSearch } from 'react-icons/bs';
+import { Icon, Input, InputGroup, InputRightElement, useColorModeValue } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
+import { BsSearch } from 'react-icons/bs';
 
 export const InputSearch = ({ value, handleChange, ...props }) => {
   const inputBgColor = useColorModeValue('gray.50', 'gray.700');
