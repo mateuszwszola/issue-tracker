@@ -42,7 +42,7 @@ router.post(
 router.use('/:userId', [
   (req, res, next) => {
     const { userId } = req.params;
-    preloadUser({ userId, required: true })(req, res, next);
+    preloadUser({ userId })(req, res, next);
   },
   (req, res, next) => {
     const { api_user, preloaded_user } = req;

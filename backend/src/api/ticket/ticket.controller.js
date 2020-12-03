@@ -1,18 +1,30 @@
 import { getTicketGraphQuery } from '../../utils/ticket';
 import { Ticket } from './ticket.model';
+import { TicketPriority } from './ticketPriority/ticketPriority.model';
+import { TicketType } from './ticketType/ticketType.model';
+import { TicketStatus } from './ticketStatus/ticketStatus.model';
+import { pick, forEach } from 'lodash';
+import { validTicketState, ticketSearchProps } from '../../constants/ticket';
 
 const getTickets = async (req, res) => {
-  const { skip, limit, orderBy, withGraph, search } = req.query;
-  const { project } = req;
+  const { skip, limit, orderBy, withGraph, search, state } = req.query;
 
-  const query = Ticket.query()
-    .where('archived_at', null)
-    .offset(skip)
-    .limit(limit)
-    .orderBy(orderBy);
+  if (state && !validTicketState.has(state)) {
+    return res.status(400).json({ message: `Invalid ticket state: ${state}` });
+  }
 
-  if (project) {
-    query.where('project_id', project.id);
+  const query = Ticket.query().offset(skip).limit(limit).orderBy(orderBy);
+
+  const whereProps = pick(req.query, ticketSearchProps);
+
+  forEach(whereProps, (value, key) => {
+    query.where(key, value);
+  });
+
+  if (state === 'archived') {
+    query.whereNotNull('archived_at');
+  } else if (state === 'active') {
+    query.whereNull('archived_at');
   }
 
   if (withGraph) {
@@ -84,4 +96,31 @@ const deleteTicket = async (req, res) => {
   return res.status(200).json({ ticket });
 };
 
-export { getTickets, getTicket, createTicket, updateTicket, deleteTicket };
+const getTicketTypes = async (req, res) => {
+  const types = await TicketType.query().modify('defaultSelects');
+
+  return res.status(200).json({ types });
+};
+
+const getTicketStatuses = async (req, res) => {
+  const statuses = await TicketStatus.query().modify('defaultSelects');
+
+  return res.status(200).json({ statuses });
+};
+
+const getTicketPriorities = async (req, res) => {
+  const priorities = await TicketPriority.query().modify('defaultSelects');
+
+  return res.status(200).json({ priorities });
+};
+
+export {
+  getTickets,
+  getTicket,
+  createTicket,
+  updateTicket,
+  deleteTicket,
+  getTicketTypes,
+  getTicketStatuses,
+  getTicketPriorities,
+};

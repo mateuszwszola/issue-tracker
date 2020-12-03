@@ -19,7 +19,7 @@ export default (router) => {
     ...authenticate(),
     (req, res, next) => {
       const { projectId } = req.params;
-      preloadProject({ projectId, required: true })(req, res, next);
+      preloadProject({ projectId })(req, res, next);
     },
   ]);
 
@@ -41,7 +41,7 @@ export default (router) => {
   router.use('/:projectId/engineers/:userId', [
     (req, res, next) => {
       const { userId } = req.params;
-      preloadUser({ userId, required: true })(req, res, next);
+      preloadUser({ userId })(req, res, next);
     },
     checkProjectManager(),
     checkAdmin(),

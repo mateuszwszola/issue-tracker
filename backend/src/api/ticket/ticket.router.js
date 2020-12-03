@@ -19,22 +19,37 @@ import { ROLES } from '../../constants/roles';
 const router = Router();
 
 /**
- * @route GET /api/v1/tickets?projectId=
+ * @route GET /api/tickets/type
+ * @desc Get ticket types
+ */
+router.get('/type', controllers.getTicketTypes);
+
+/**
+ * @route GET /api/tickets/status
+ * @desc Get ticket statuses
+ */
+router.get('/status', controllers.getTicketStatuses);
+
+/**
+ * @route GET /api/tickets/priority
+ * @desc Get ticket priorities
+ */
+router.get('/priority', controllers.getTicketPriorities);
+
+/**
+ * @route GET /api/tickets
  * @desc Get tickets
  * @access Public
  */
-router.get('/', [
+router.get(
+  '/',
   parsePageQueryParam(),
   validateOrderByParam(validTicketOrders),
-  (req, res, next) => {
-    const { projectId } = req.query;
-    preloadProject({ projectId, required: false })(req, res, next);
-  },
-  controllers.getTickets,
-]);
+  controllers.getTickets
+);
 
 /**
- * @route POST /api/v1/tickets
+ * @route POST /api/tickets
  * @desc Create project ticket
  * @access Admin, Project Manager, Project Engineer
  */
@@ -42,7 +57,7 @@ router.post('/', [
   ...authenticate(),
   (req, res, next) => {
     const { project_id: projectId } = req.body;
-    preloadProject({ projectId, required: true })(req, res, next);
+    preloadProject({ projectId })(req, res, next);
   },
   checkProjectEngineer(),
   checkProjectManager(),
@@ -53,28 +68,28 @@ router.post('/', [
 ]);
 
 /**
- * @route /api/v1/tickets/:ticketId
+ * @route /api/tickets/:ticketId
  */
 router.use('/:ticketId', (req, res, next) => {
   const { ticketId } = req.params;
-  preloadTicket({ ticketId, required: true })(req, res, next);
+  preloadTicket({ ticketId })(req, res, next);
 });
 
 /**
- * @route GET /api/v1/tickets/:ticketId
+ * @route GET /api/tickets/:ticketId
  * @desc Get ticket
  * @access Public
  */
 router.get('/:ticketId', controllers.getTicket);
 
 /**
- * @route PATCH / DELETE /api/v1/tickets/:ticketId
+ * @route PATCH / DELETE /api/tickets/:ticketId
  */
 router.use('/:ticketId', [
   ...authenticate(),
   (req, res, next) => {
     const { project_id: projectId } = req.ticket;
-    preloadProject({ projectId, required: true })(req, res, next);
+    preloadProject({ projectId })(req, res, next);
   },
   checkProjectEngineer(),
   checkProjectManager(),
@@ -82,7 +97,7 @@ router.use('/:ticketId', [
 ]);
 
 /**
- * @route PATCH /api/v1/tickets/:ticketId
+ * @route PATCH /api/tickets/:ticketId
  * @desc Update ticket
  * @access Admin, Project Manager, Project Engineer
  */
