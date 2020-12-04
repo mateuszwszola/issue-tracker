@@ -12,7 +12,6 @@ import { useInfiniteScroll } from '../../../hooks/use-infinite-scroll';
 import { Issues } from '@/components/issues/Issues';
 import { useDebouncedSearchKey } from '../../../hooks/use-search';
 import { reduceArrToObj } from '@/utils/helpers';
-import { IssueDrawer } from '@/components/issues/IssueDrawer';
 
 const PAGE_SIZE = 10;
 
@@ -75,8 +74,6 @@ function ProjectIssuesPage() {
           Issues for: {projectKey}
         </Heading>
       </Box>
-
-      <IssueDrawer />
 
       <Flex mt={4} direction={['column', null, 'row']} align={{ sm: 'center' }}>
         <Box w="full" maxW={['100%', 'xs']}>

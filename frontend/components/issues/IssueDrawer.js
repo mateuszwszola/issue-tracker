@@ -22,7 +22,7 @@ export const IssueDrawer = () => {
   };
 
   return (
-    <Drawer isOpen={isOpen} placement="right" onClose={handleClose} size="md">
+    <Drawer isOpen={isOpen} placement="right" onClose={handleClose}>
       <DrawerOverlay>
         <DrawerContent>
           <DrawerCloseButton />
