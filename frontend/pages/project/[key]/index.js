@@ -1,23 +1,23 @@
-import { useRouter } from 'next/router';
-import Link from 'next/link';
-import useSWR from 'swr';
-import { format } from 'date-fns';
-import {
-  Box,
-  Heading,
-  Button,
-  Text,
-  Skeleton,
-  Tag,
-  Flex,
-  Wrap,
-  WrapItem,
-  Avatar
-} from '@chakra-ui/react';
+import { BackButton } from '@/components/BackButton';
 import { Layout } from '@/components/Layout';
+import fetcher from '@/utils/api-client';
 import { getProjectIdFromProjectKey } from '@/utils/projects-client';
 import { objToQueryString } from '@/utils/query-string';
-import fetcher from '@/utils/api-client';
+import {
+  Avatar,
+  AvatarGroup,
+  Box,
+  Button,
+  Flex,
+  Heading,
+  Skeleton,
+  Tag,
+  Text
+} from '@chakra-ui/react';
+import { format } from 'date-fns';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import useSWR from 'swr';
 
 const queryString = objToQueryString({
   withGraph: '[type, createdBy, manager, engineers]'
@@ -32,24 +32,29 @@ function ProjectPage() {
     fetcher
   );
 
+  const project = data?.project || null;
+
   return (
     <Layout>
-      <Box mt={8}>
+      <Box>
+        <BackButton disabled={!error && !data}>Go back</BackButton>
         {error ? (
-          <Text textAlign="center" mt={4}>
-            Something went wrong... Please try reload the page
-          </Text>
+          <Text textAlign="center">Something went wrong... Please try reload the page</Text>
+        ) : !project ? (
+          <>
+            <Skeleton height="50px" />
+          </>
         ) : (
-          <Skeleton isLoaded={!!data}>
+          <Box mt={8}>
             <Flex direction={['column', 'row']}>
-              <Box width={['100%', '50%']} px={1}>
+              <Box flex={['100%', '50%']} pr={{ base: 2 }}>
                 <Heading as="h2" display="flex" flexWrap="wrap" alignItems="center" size="lg">
                   <Text as="span" mr={3}>
-                    Project: {data?.project?.name}
+                    Project: {project.name}
                   </Text>
-                  {data?.project?.type?.name && <Tag>{data.project.type.name}</Tag>}
+                  {project.type?.name && <Tag>{project.type.name}</Tag>}
                 </Heading>
-                {data?.project?.description && <Text mt={2}>{data.project.description}</Text>}
+                {project.description && <Text mt={2}>{project.description}</Text>}
               </Box>
               <Box width={['100%', '50%']} mt={[4, 0]} px={1}>
                 <Link href={`/issues/${encodeURIComponent(projectKey)}`} passHref>
@@ -67,45 +72,40 @@ function ProjectPage() {
                 </Heading>
                 <Text mt={4} display="flex" alignItems="center">
                   Created by
-                  <Link
-                    href={`/users/${encodeURIComponent(data?.project?.createdBy?.sub)}`}
-                    passHref
-                  >
+                  <Link href={`/users/${encodeURIComponent(project.createdBy?.sub)}`} passHref>
                     <Button ml={1} as="a" variant="link" colorScheme="blue">
-                      {data?.project?.createdBy?.name}
+                      {project.createdBy?.name}
                     </Button>
                   </Link>
                 </Text>
-                {data?.project?.manager && (
+                {project.manager && (
                   <Text mt={4} display="flex" alignItems="center">
                     Manager
-                    <Link href={`/users/${encodeURIComponent(data.project.manager.sub)}`} passHref>
+                    <Link href={`/users/${encodeURIComponent(project.manager?.sub)}`} passHref>
                       <Button ml={1} as="a" variant="link" colorScheme="blue">
-                        {data.project.manager.name}
+                        {project.manager?.name}
                       </Button>
                     </Link>
                   </Text>
                 )}
-                {data?.project?.created_at && (
+                {project.created_at && (
                   <Text mt={4}>
-                    Created at {format(new Date(data.project.created_at), 'MMM M, yyyy')}
+                    Created at {format(new Date(project.created_at), 'MMM M, yyyy')}
                   </Text>
                 )}
               </Box>
               <Box width={['100%', '50%']} mt={[12, 0]}>
-                <Wrap>
-                  <Heading as="h3" size="md">
-                    Project engineers:
-                  </Heading>
-                  {data?.project?.engineers?.map((engineer) => (
-                    <WrapItem key={engineer.id}>
-                      <Avatar name={engineer.name} src={engineer.picture} />
-                    </WrapItem>
+                <Heading as="h3" size="md">
+                  Project engineers:
+                </Heading>
+                <AvatarGroup mt={2} size="md" max={3}>
+                  {project.engineers?.map((engineer) => (
+                    <Avatar key={engineer.id} name={engineer.name} src={engineer.picture} />
                   ))}
-                </Wrap>
+                </AvatarGroup>
               </Box>
             </Flex>
-          </Skeleton>
+          </Box>
         )}
       </Box>
     </Layout>
