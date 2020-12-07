@@ -8,7 +8,7 @@ export const Hero = (props) => {
 
   const headingText = 'Manage your project work';
   const heroText = `Welcome to the ${projectName}. The software for managing
-  project work. Keep track of the tasks, bugs and feature requests. Collaborate with your team, and see what needs to be done. It will help with keeping the project up to date.`;
+  project work. Keep track of the tasks, bugs, and feature requests. Collaborate with your team, and see what needs to be done. It will help with keeping the project up to date.`;
 
   return (
     <Flex

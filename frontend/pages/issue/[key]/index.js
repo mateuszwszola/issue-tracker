@@ -46,9 +46,9 @@ function Issue() {
         <BackButton disabled={isLoading}>Go back</BackButton>
       </Box>
 
-      <Box mt={8}>
+      <Box mt={{ base: 8, md: 16 }}>
         {error ? (
-          <Text textAlign="center">Something went wrong...</Text>
+          <Text textAlign="center">Something went wrong... Sorry</Text>
         ) : (
           <Flex direction={{ base: 'column', md: 'row-reverse' }} justify={{ md: 'space-between' }}>
             <Box w="full" maxW={{ md: '400px' }}>
