@@ -11,6 +11,7 @@ const getUserData = (ctx = {}) => ({
 
 const getProjectData = (ctx = {}) => ({
   name: ctx.name || faker.company.companyName(),
+  description: ctx.description || faker.lorem.sentences(3),
   type_id: ctx.typeId || 1,
   manager_id: ctx.managerId || null,
   created_by: ctx.createdBy || 1,
