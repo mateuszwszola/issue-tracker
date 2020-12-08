@@ -83,7 +83,7 @@ function Issue() {
                       <Text>{ticket?.status?.name}</Text>
                       <Text>{ticket?.priority?.name}</Text>
                       <Text>
-                        <NextButtonLink href={`/profile/${ticket?.assignee?.id}`}>
+                        <NextButtonLink href={`/user/${ticket?.assignee?.id}`}>
                           {ticket?.assignee?.name}
                         </NextButtonLink>
                       </Text>
@@ -130,7 +130,7 @@ function Issue() {
                       <Text mr={3} as="span" display="flex" alignItems="center">
                         Created by
                         <NextButtonLink
-                          href={`/profile/${encodeURIComponent(ticket.createdBy.id)}`}
+                          href={`/user/${encodeURIComponent(ticket.createdBy.id)}`}
                           fontSize="sm"
                           mx={1}
                         >
@@ -144,7 +144,7 @@ function Issue() {
                       <Text as="span" display="flex" alignItems="center">
                         Updated by
                         <NextButtonLink
-                          href={`/profile/${encodeURIComponent(ticket.updatedBy.id)}`}
+                          href={`/user/${encodeURIComponent(ticket.updatedBy.id)}`}
                           fontSize="sm"
                           mx={1}
                         >

@@ -90,7 +90,7 @@ export const Projects = ({
                   <Td p={1}>
                     {project.manager && (
                       <Flex align="center">
-                        <TableLink href={`/profile/${encodeURIComponent(project.manager?.id)}`}>
+                        <TableLink href={`/user/${encodeURIComponent(project.manager?.id)}`}>
                           {project.manager?.picture && (
                             <Avatar
                               name={project.manager?.name}

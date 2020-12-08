@@ -83,7 +83,7 @@ function ProjectPage() {
                     <Text display="flex" alignItems="center">
                       Created by
                       <NextLink
-                        href={`/profile/${encodeURIComponent(project?.createdBy?.id)}`}
+                        href={`/user/${encodeURIComponent(project?.createdBy?.id)}`}
                         passHref
                       >
                         <Button ml={1} as="a" variant="link" colorScheme="blue">
@@ -95,7 +95,7 @@ function ProjectPage() {
                       <Text display="flex" alignItems="center">
                         Manager
                         <NextLink
-                          href={`/profile/${encodeURIComponent(project.manager?.id)}`}
+                          href={`/user/${encodeURIComponent(project.manager?.id)}`}
                           passHref
                         >
                           <Button ml={1} as="a" variant="link" colorScheme="blue">
@@ -117,7 +117,7 @@ function ProjectPage() {
                   <Wrap mt={4}>
                     {project?.engineers?.map((engineer) => (
                       <WrapItem key={engineer.id}>
-                        <NextLink href={`/profile/${encodeURIComponent(engineer.id)}`} passHref>
+                        <NextLink href={`/user/${encodeURIComponent(engineer.id)}`} passHref>
                           <Avatar as="a" name={engineer.name} src={engineer.picture} />
                         </NextLink>
                       </WrapItem>
