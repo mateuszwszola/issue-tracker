@@ -9,6 +9,7 @@ import {
   Button,
   Flex,
   Heading,
+  Skeleton,
   Stack,
   Tag,
   Text,
@@ -44,85 +45,87 @@ function ProjectPage() {
       <Box mt={{ base: 8, md: 16 }}>
         {error ? (
           <Text textAlign="center">Something went wrong... Sorry</Text>
-        ) : isLoading ? (
-          <Box>Loading...</Box>
         ) : (
           <>
-            <Flex direction={{ base: 'column', md: 'row' }} justify={{ md: 'space-between' }}>
-              <Box w="full" maxW="640px" pr={{ md: 8 }}>
-                <Heading as="h2" display="flex" flexWrap="wrap" alignItems="center" size="lg">
-                  <Text as="span" mr={3}>
-                    Project: {project.name}
-                  </Text>
-                  {project.type?.name && <Tag my={1}>{project.type.name}</Tag>}
-                </Heading>
-                {project.description && <Text mt={2}>{project.description}</Text>}
-              </Box>
-              <Box w="full" maxW="400px" mt={{ base: 4, md: 0 }}>
-                <NextLink href={`/issues/${encodeURIComponent(projectKey)}`} passHref>
-                  <Button as="a" variant="outline" colorScheme="blue">
-                    Issues
-                  </Button>
-                </NextLink>
-              </Box>
-            </Flex>
+            <Skeleton isLoaded={!isLoading}>
+              <Flex direction={{ base: 'column', md: 'row' }} justify={{ md: 'space-between' }}>
+                <Box w="full" maxW="640px" pr={{ md: 8 }}>
+                  <Heading as="h2" display="flex" flexWrap="wrap" alignItems="center" size="lg">
+                    <Text as="span" mr={3}>
+                      Project: {project?.name}
+                    </Text>
+                    {project?.type?.name && <Tag my={1}>{project.type.name}</Tag>}
+                  </Heading>
+                  {project?.description && <Text mt={2}>{project.description}</Text>}
+                </Box>
+                <Box w="full" maxW="400px" mt={{ base: 4, md: 0 }}>
+                  <NextLink href={`/issues/${encodeURIComponent(projectKey)}`} passHref>
+                    <Button as="a" variant="outline" colorScheme="blue">
+                      Issues
+                    </Button>
+                  </NextLink>
+                </Box>
+              </Flex>
+            </Skeleton>
 
-            <Flex
-              mt={12}
-              direction={{ base: 'column', md: 'row' }}
-              justify={{ md: 'space-between' }}
-            >
-              <Box w="full" maxW="640px">
-                <Heading as="h3" size="md">
-                  About
-                </Heading>
+            <Skeleton isLoaded={!isLoading}>
+              <Flex
+                mt={12}
+                direction={{ base: 'column', md: 'row' }}
+                justify={{ md: 'space-between' }}
+              >
+                <Box w="full" maxW="640px">
+                  <Heading as="h3" size="md">
+                    About
+                  </Heading>
 
-                <Stack mt={4} spacing={3}>
-                  <Text display="flex" alignItems="center">
-                    Created by
-                    <NextLink
-                      href={`/profile/${encodeURIComponent(project.createdBy?.id)}`}
-                      passHref
-                    >
-                      <Button ml={1} as="a" variant="link" colorScheme="blue">
-                        {project.createdBy?.name}
-                      </Button>
-                    </NextLink>
-                  </Text>
-                  {project.manager && (
+                  <Stack mt={4} spacing={3}>
                     <Text display="flex" alignItems="center">
-                      Manager
+                      Created by
                       <NextLink
-                        href={`/profile/${encodeURIComponent(project.manager?.id)}`}
+                        href={`/profile/${encodeURIComponent(project?.createdBy?.id)}`}
                         passHref
                       >
                         <Button ml={1} as="a" variant="link" colorScheme="blue">
-                          {project.manager?.name}
+                          {project?.createdBy?.name}
                         </Button>
                       </NextLink>
                     </Text>
-                  )}
-                  {project.created_at && (
-                    <Text>Created at {format(new Date(project.created_at), 'MMM M, yyyy')}</Text>
-                  )}
-                </Stack>
-              </Box>
+                    {project?.manager && (
+                      <Text display="flex" alignItems="center">
+                        Manager
+                        <NextLink
+                          href={`/profile/${encodeURIComponent(project.manager?.id)}`}
+                          passHref
+                        >
+                          <Button ml={1} as="a" variant="link" colorScheme="blue">
+                            {project.manager?.name}
+                          </Button>
+                        </NextLink>
+                      </Text>
+                    )}
+                    {project?.created_at && (
+                      <Text>Created at {format(new Date(project.created_at), 'MMM M, yyyy')}</Text>
+                    )}
+                  </Stack>
+                </Box>
 
-              <Box w="full" maxW="400px" mt={{ base: 12, md: 0 }}>
-                <Heading as="h3" size="md">
-                  Project engineers:
-                </Heading>
-                <Wrap mt={4}>
-                  {project.engineers?.map((engineer) => (
-                    <WrapItem key={engineer.id}>
-                      <NextLink href={`/profile/${encodeURIComponent(engineer.id)}`} passHref>
-                        <Avatar as="a" name={engineer.name} src={engineer.picture} />
-                      </NextLink>
-                    </WrapItem>
-                  ))}
-                </Wrap>
-              </Box>
-            </Flex>
+                <Box w="full" maxW="400px" mt={{ base: 12, md: 0 }}>
+                  <Heading as="h3" size="md">
+                    Project engineers:
+                  </Heading>
+                  <Wrap mt={4}>
+                    {project?.engineers?.map((engineer) => (
+                      <WrapItem key={engineer.id}>
+                        <NextLink href={`/profile/${encodeURIComponent(engineer.id)}`} passHref>
+                          <Avatar as="a" name={engineer.name} src={engineer.picture} />
+                        </NextLink>
+                      </WrapItem>
+                    ))}
+                  </Wrap>
+                </Box>
+              </Flex>
+            </Skeleton>
           </>
         )}
       </Box>
