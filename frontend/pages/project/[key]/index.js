@@ -5,12 +5,10 @@ import { getProjectIdFromProjectKey } from '@/utils/projects-client';
 import { objToQueryString } from '@/utils/query-string';
 import {
   Avatar,
-  AvatarGroup,
   Box,
   Button,
   Flex,
   Heading,
-  Skeleton,
   Stack,
   Tag,
   Text,
@@ -83,7 +81,7 @@ function ProjectPage() {
                   <Text display="flex" alignItems="center">
                     Created by
                     <NextLink
-                      href={`/users/${encodeURIComponent(project.createdBy?.sub)}`}
+                      href={`/profile/${encodeURIComponent(project.createdBy?.id)}`}
                       passHref
                     >
                       <Button ml={1} as="a" variant="link" colorScheme="blue">
@@ -95,7 +93,7 @@ function ProjectPage() {
                     <Text display="flex" alignItems="center">
                       Manager
                       <NextLink
-                        href={`/users/${encodeURIComponent(project.manager?.sub)}`}
+                        href={`/profile/${encodeURIComponent(project.manager?.id)}`}
                         passHref
                       >
                         <Button ml={1} as="a" variant="link" colorScheme="blue">
@@ -117,7 +115,7 @@ function ProjectPage() {
                 <Wrap mt={4}>
                   {project.engineers?.map((engineer) => (
                     <WrapItem key={engineer.id}>
-                      <NextLink href={`/users/${encodeURIComponent(engineer.sub)}`} passHref>
+                      <NextLink href={`/profile/${encodeURIComponent(engineer.id)}`} passHref>
                         <Avatar as="a" name={engineer.name} src={engineer.picture} />
                       </NextLink>
                     </WrapItem>

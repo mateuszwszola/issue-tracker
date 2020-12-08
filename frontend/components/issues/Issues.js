@@ -17,10 +17,24 @@ import { FaRegCommentAlt } from 'react-icons/fa';
 import { format } from 'date-fns';
 import PropTypes from 'prop-types';
 
-const ticketStatusColors = {
-  Normal: 'gray',
+const ticketPriorityColor = {
+  Normal: null,
   Major: 'orange',
   Critical: 'red'
+};
+
+const ticketTypeColors = {
+  Task: 'blue',
+  Feature: 'green',
+  Bug: 'red'
+};
+
+const ticketStatusColors = {
+  Submitted: null,
+  Open: 'blue',
+  'In Progress': 'orange',
+  Fixed: 'green',
+  Closed: null
 };
 
 export const Issues = ({
@@ -85,7 +99,7 @@ export const Issues = ({
                 <Flex mt={4} align="center" wrap="wrap">
                   <Box flex={1} minWidth="100px">
                     <Tooltip label="Priority">
-                      <Badge fontSize="xs" colorScheme={ticketStatusColors[ticket.priority?.name]}>
+                      <Badge fontSize="xs" colorScheme={ticketPriorityColor[ticket.priority?.name]}>
                         {ticket.priority?.name}
                       </Badge>
                     </Tooltip>
@@ -99,14 +113,14 @@ export const Issues = ({
                   </Box>
                   <Box flex={1} minWidth="100px">
                     <Tooltip label="Type">
-                      <Badge fontSize="xs" colorScheme="green">
+                      <Badge fontSize="xs" colorScheme={ticketTypeColors[ticket.type?.name]}>
                         {ticket.type?.name}
                       </Badge>
                     </Tooltip>
                   </Box>
                   <Box flex={1} minWidth="100px">
                     <Tooltip label="State">
-                      <Badge fontSize="xs" colorScheme="blue">
+                      <Badge fontSize="xs" colorScheme={ticketStatusColors[ticket.status?.name]}>
                         {ticket.status?.name}
                       </Badge>
                     </Tooltip>

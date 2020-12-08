@@ -6,7 +6,6 @@ import {
   Box,
   Flex,
   Heading,
-  Link,
   Skeleton,
   SkeletonText,
   Stack,
@@ -14,9 +13,9 @@ import {
   useColorModeValue
 } from '@chakra-ui/react';
 import { format, formatDistanceToNow } from 'date-fns';
-import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
+import { NextButtonLink } from '@/components/Link';
 
 function getIssueIdFromKey(issueKey) {
   return issueKey.split('-').slice(-1)[0];
@@ -75,11 +74,19 @@ function Issue() {
                     </Stack>
 
                     <Stack flex={1 / 2} spacing={4}>
-                      <Text>{ticket?.project?.name}</Text>
+                      <Text>
+                        <NextButtonLink href={`/project/${ticket?.project?.key}`}>
+                          {ticket?.project?.name}
+                        </NextButtonLink>
+                      </Text>
                       <Text>{ticket?.type?.name}</Text>
                       <Text>{ticket?.status?.name}</Text>
                       <Text>{ticket?.priority?.name}</Text>
-                      <Text>{ticket?.assignee?.name}</Text>
+                      <Text>
+                        <NextButtonLink href={`/profile/${ticket?.assignee?.id}`}>
+                          {ticket?.assignee?.name}
+                        </NextButtonLink>
+                      </Text>
                     </Stack>
                   </Flex>
 
@@ -109,11 +116,9 @@ function Issue() {
 
             <Box mt={{ base: 6, md: 0 }} pr={{ md: 8 }} w="full" maxW={{ md: '640px' }}>
               {isLoading ? (
-                <>
-                  <Box py={4}>
-                    <SkeletonText noOfLines={3} />
-                  </Box>
-                </>
+                <Box py={4}>
+                  <SkeletonText noOfLines={3} />
+                </Box>
               ) : (
                 <>
                   <Flex wrap="wrap" align="baseline" color={secondaryColor} fontSize="sm">
@@ -122,31 +127,29 @@ function Issue() {
                     </Text>
 
                     {ticket.createdBy && (
-                      <Text mr={3} as="span">
-                        Created by{' '}
-                        <NextLink
-                          href={`/user/${encodeURIComponent(ticket.createdBy.sub)}`}
-                          passHref
+                      <Text mr={3} as="span" display="flex" alignItems="center">
+                        Created by
+                        <NextButtonLink
+                          href={`/profile/${encodeURIComponent(ticket.createdBy.id)}`}
+                          fontSize="sm"
+                          mx={1}
                         >
-                          <Link color="blue.500" fontWeight="semibold">
-                            {ticket.createdBy.name}
-                          </Link>
-                        </NextLink>{' '}
+                          {ticket.createdBy.name}
+                        </NextButtonLink>
                         {formatDistanceToNow(new Date(ticket.created_at))} ago
                       </Text>
                     )}
 
                     {ticket.updatedBy && (
-                      <Text as="span">
-                        Updated by{' '}
-                        <NextLink
-                          href={`/user/${encodeURIComponent(ticket.updatedBy.sub)}`}
-                          passHref
+                      <Text as="span" display="flex" alignItems="center">
+                        Updated by
+                        <NextButtonLink
+                          href={`/profile/${encodeURIComponent(ticket.updatedBy.id)}`}
+                          fontSize="sm"
+                          mx={1}
                         >
-                          <Link color="blue.500" fontWeight="semibold">
-                            {ticket.updatedBy.name}
-                          </Link>
-                        </NextLink>{' '}
+                          {ticket.updatedBy.name}
+                        </NextButtonLink>
                         {formatDistanceToNow(new Date(ticket.updated_at))} ago
                       </Text>
                     )}
