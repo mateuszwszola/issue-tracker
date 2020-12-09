@@ -4,7 +4,7 @@ const router = Router();
 
 /**
  * @route /api/profiles/:userId
- * @desc Get a user profile information
+ * @desc Get a user profile
  */
 router.get('/:userId', controllers.getUserProfile);
 

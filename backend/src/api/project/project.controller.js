@@ -1,5 +1,6 @@
 import { Project } from './project.model';
 import { getProjectGraphQuery } from '../../utils/project';
+import { ProjectType } from './projectType/projectType.model';
 
 const getProjects = async (req, res) => {
   const { skip, limit, orderBy, withGraph, search } = req.query;
@@ -70,4 +71,17 @@ const deleteProject = async (req, res) => {
   return res.status(200).json({ project });
 };
 
-export { getProjects, getProject, createProject, updateProject, deleteProject };
+const getProjectTypes = async (req, res) => {
+  const types = await ProjectType.query().modify('defaultSelects');
+
+  return res.status(200).json({ types });
+};
+
+export {
+  getProjects,
+  getProject,
+  createProject,
+  updateProject,
+  deleteProject,
+  getProjectTypes,
+};

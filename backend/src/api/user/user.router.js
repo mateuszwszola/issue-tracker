@@ -81,8 +81,12 @@ router.patch(
 /**
  * @route DELETE /api/v1/users/:userId
  * @desc Delete a user
- * @access Admin
+ * @access Admin, Profile Owner
  */
-router.delete('/:userId', authorize(ROLES.admin), controllers.deleteUser);
+router.delete(
+  '/:userId',
+  authorize(ROLES.admin, ROLES.owner),
+  controllers.deleteUser
+);
 
 export default router;

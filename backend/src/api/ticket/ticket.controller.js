@@ -7,7 +7,14 @@ import { pick, forEach } from 'lodash';
 import { validTicketState, ticketSearchProps } from '../../constants/ticket';
 
 const getTickets = async (req, res) => {
-  const { skip, limit, orderBy, withGraph, search, state } = req.query;
+  const {
+    skip,
+    limit,
+    orderBy,
+    withGraph,
+    search,
+    state = 'active',
+  } = req.query;
 
   if (state && !validTicketState.has(state)) {
     return res.status(400).json({ message: `Invalid ticket state: ${state}` });

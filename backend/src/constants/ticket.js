@@ -41,9 +41,11 @@ const validTicketOrders = new Set([
   'created_by',
   'updated_by',
   'assignee_id',
+  'updated_at',
+  'created_at',
 ]);
 
-const validTicketState = new Set(['archived', 'active']);
+const validTicketState = new Set(['archived', 'active', 'all']);
 
 const ticketSearchProps = [
   'id',
