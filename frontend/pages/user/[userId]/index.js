@@ -22,7 +22,7 @@ const queryString = objToQueryString({
   withGraph: '[managedProjects, engineeredProjects]'
 });
 
-function ProfilePage() {
+function UserPage() {
   const router = useRouter();
   const { userId } = router.query;
   const { data, error } = useSWR(userId ? `profiles/${userId}?${queryString}` : null, fetcher);
@@ -31,7 +31,7 @@ function ProfilePage() {
   const isLoading = !error && !profile;
 
   return (
-    <Layout>
+    <Layout title={`User ${userId}`}>
       <Box>
         <BackButton disabled={isLoading}>Go back</BackButton>
       </Box>
@@ -112,4 +112,4 @@ function ProfilePage() {
   );
 }
 
-export default ProfilePage;
+export default UserPage;

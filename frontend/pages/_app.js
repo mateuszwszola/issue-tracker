@@ -26,13 +26,13 @@ function MyApp({ Component, pageProps }) {
       redirectUri={typeof window !== 'undefined' && window.location.origin}
       onRedirectCallback={onRedirectCallback}
     >
-      <ChakraProvider theme={theme}>
-        <SWRConfig value={swrGlobalConfig}>
-          <ApiUserProvider>
+      <SWRConfig value={swrGlobalConfig}>
+        <ApiUserProvider>
+          <ChakraProvider theme={theme}>
             <Component {...pageProps} />
-          </ApiUserProvider>
-        </SWRConfig>
-      </ChakraProvider>
+          </ChakraProvider>
+        </ApiUserProvider>
+      </SWRConfig>
     </Auth0Provider>
   );
 }

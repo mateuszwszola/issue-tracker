@@ -2,8 +2,7 @@ import NextLink from 'next/link';
 import {
   Box,
   Flex,
-  Link as ChakraLink,
-  Icon,
+  Link,
   IconButton,
   useColorMode,
   Button,
@@ -11,33 +10,25 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
-  MenuGroup,
   Avatar,
   HStack
 } from '@chakra-ui/react';
-import { GoRocket } from 'react-icons/go';
 import { FiMoon, FiSun } from 'react-icons/fi';
 import { useAuth0 } from '@auth0/auth0-react';
+import { useApiUser } from 'contexts/api-user-context';
 
 export const Header = () => {
   const { colorMode, toggleColorMode } = useColorMode();
   const { loginWithRedirect, logout, isAuthenticated } = useAuth0();
+  const { user } = useApiUser();
 
   return (
     <Box as="header" w="full">
-      <Flex
-        w="full"
-        direction="row"
-        justify="space-between"
-        align="center"
-        maxW="6xl"
-        mx="auto"
-        p={[2, 4]}
-      >
+      <Flex w="full" justify="space-between" align="center" maxW="6xl" mx="auto" p={[2, 4]}>
         <NextLink href="/" passHref>
-          <ChakraLink fontSize="xl">
-            <Icon as={GoRocket} />
-          </ChakraLink>
+          <Link fontSize="lg" fontWeight="bold" letterSpacing="wide">
+            MW_IT
+          </Link>
         </NextLink>
 
         <HStack spacing={4}>
@@ -59,16 +50,24 @@ export const Header = () => {
                 <Menu>
                   <Avatar as={MenuButton} size="sm" variant="ghost" />
                   <MenuList>
-                    <MenuGroup title="Profile">
-                      <MenuItem>
-                        <NextLink href="/profile" passHref>
-                          <a>Profile</a>
-                        </NextLink>
-                      </MenuItem>
-                      <MenuItem onClick={() => logout({ returnTo: window.location.origin })}>
-                        Sign Out
-                      </MenuItem>
-                    </MenuGroup>
+                    <MenuItem>
+                      <NextLink href={`/user/${user?.id}`} passHref>
+                        <a>Profile</a>
+                      </NextLink>
+                    </MenuItem>
+                    <MenuItem>
+                      <NextLink href="/dashboard" passHref>
+                        <a>Dashboard</a>
+                      </NextLink>
+                    </MenuItem>
+                    <MenuItem>
+                      <NextLink href="/settings" passHref>
+                        <a>Settings</a>
+                      </NextLink>
+                    </MenuItem>
+                    <MenuItem onClick={() => logout({ returnTo: window.location.origin })}>
+                      Sign Out
+                    </MenuItem>
                   </MenuList>
                 </Menu>
               </>

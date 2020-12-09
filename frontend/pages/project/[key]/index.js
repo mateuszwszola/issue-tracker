@@ -38,7 +38,7 @@ function ProjectPage() {
   const isLoading = !error && !project;
 
   return (
-    <Layout>
+    <Layout title={`Project ${projectKey}`}>
       <Box>
         <BackButton disabled={isLoading}>Go back</BackButton>
       </Box>

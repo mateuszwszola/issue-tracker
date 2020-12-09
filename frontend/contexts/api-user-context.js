@@ -2,7 +2,7 @@ import { createContext, useContext } from 'react';
 import useApi from 'hooks/use-api';
 import { Spinner } from '@chakra-ui/react';
 
-const ApiUserContext = createContext();
+const apiUserContext = createContext();
 
 const options = {
   method: 'POST'
@@ -19,11 +19,11 @@ function ApiUserProvider(props) {
     user: data?.user || null
   };
 
-  return <ApiUserContext.Provider value={value} {...props} />;
+  return <apiUserContext.Provider value={value} {...props} />;
 }
 
 function useApiUser() {
-  const context = useContext(ApiUserContext);
+  const context = useContext(apiUserContext);
   if (context === undefined) {
     throw new Error('useUser must be used within UserProvider');
   }

@@ -56,7 +56,7 @@ function ProjectIssuesPage() {
   } = useInfiniteScroll(getKey, fetcher, 'tickets', PAGE_SIZE);
 
   return (
-    <Layout>
+    <Layout title={`Issues for ${projectKey}`}>
       <Box>
         <BackButton>Go back</BackButton>
         <Heading as="h2" fontSize="lg" mt={6}>

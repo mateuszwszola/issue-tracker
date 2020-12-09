@@ -40,7 +40,7 @@ function Issue() {
   const secondaryColor = useColorModeValue('gray.500', 'gray.500');
 
   return (
-    <Layout>
+    <Layout title={`Issue ${issueKey}`}>
       <Box>
         <BackButton disabled={isLoading}>Go back</BackButton>
       </Box>
