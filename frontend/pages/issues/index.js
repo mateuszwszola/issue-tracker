@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { Layout } from '@/components/Layout';
 import { BackButton } from '@/components/BackButton';
 import { Box, Flex, Heading, SimpleGrid, Text } from '@chakra-ui/react';
@@ -9,22 +9,15 @@ import fetcher from '@/utils/api-client';
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 import { Issues } from '@/components/issues/Issues';
 import { useDebouncedSearchKey } from '@/hooks/use-search';
-import { reduceArrToObj } from '@/utils/helpers';
+import { useQueryFilter } from '@/hooks/use-query-filter';
 
 const PAGE_SIZE = 10;
 
-const filterNames = ['type_id', 'status_id', 'priority_id', 'assignee_id'];
+const filterNames = ['type_id', 'status_id', 'priority_id'];
 
 function IssuesPage() {
   const { inputValue, handleInputValueChange, searchKey } = useDebouncedSearchKey('');
-  const [filters, setFilters] = useState(() => reduceArrToObj(filterNames, -1));
-
-  const handleFilterChange = (name) => (value) => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      [name]: value
-    }));
-  };
+  const { filters, handleFilterChange, getFilters } = useQueryFilter(filterNames);
 
   const getKey = useCallback(
     (pageIndex) => {
@@ -32,20 +25,16 @@ function IssuesPage() {
         page: pageIndex,
         limit: PAGE_SIZE,
         search: searchKey,
-        withGraph: '[type, status, priority, assignee, createdBy, updatedBy, comments]'
+        withGraph: '[type, status, priority, assignee, createdBy, updatedBy, comments]',
+        orderBy: 'updated_at:desc',
+        ...getFilters()
       };
-
-      filterNames.forEach((filterName) => {
-        if (filters[filterName] > -1) {
-          queryStringObj[filterName] = filters[filterName];
-        }
-      });
 
       const queryString = objToQueryString(queryStringObj);
 
       return `tickets?${queryString}`;
     },
-    [searchKey, filters]
+    [searchKey, getFilters]
   );
 
   const {

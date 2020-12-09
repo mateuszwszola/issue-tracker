@@ -3,7 +3,7 @@ import { Box, Heading, Text } from '@chakra-ui/react';
 import { Projects } from '@/components/projects/Projects';
 import { Layout } from '@/components/Layout';
 import { getProjects } from 'utils/projects-client';
-import { useOrderBy } from '../../hooks/use-order-by';
+import { useQueryOrder } from '../../hooks/use-query-order';
 import { useInfiniteScroll } from '../../hooks/use-infinite-scroll';
 import { useDebouncedSearchKey } from '../../hooks/use-search';
 import { objToQueryString } from '@/utils/query-string';
@@ -13,7 +13,7 @@ import { InputSearch } from '@/components/InputSearch';
 const PAGE_SIZE = 10;
 
 function ProjectsPage() {
-  const { orderBy, handleOrderByButtonClick, getOrderByQueryValue } = useOrderBy([
+  const { orderBy, handleOrderByButtonClick, getOrderByQueryValue } = useQueryOrder([
     'name',
     'key',
     'manager_id'

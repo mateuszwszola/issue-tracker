@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { Layout } from '@/components/Layout';
 import { BackButton } from '@/components/BackButton';
@@ -11,25 +11,18 @@ import fetcher from '@/utils/api-client';
 import { useInfiniteScroll } from '../../../hooks/use-infinite-scroll';
 import { Issues } from '@/components/issues/Issues';
 import { useDebouncedSearchKey } from '../../../hooks/use-search';
-import { reduceArrToObj } from '@/utils/helpers';
+import { useQueryFilter } from '@/hooks/use-query-filter';
 
 const PAGE_SIZE = 10;
 
-const filterNames = ['type_id', 'status_id', 'priority_id', 'assignee_id'];
+const filterNames = ['type_id', 'status_id', 'priority_id'];
 
 function ProjectIssuesPage() {
   const router = useRouter();
   const { projectKey } = router.query;
   const projectId = projectKey && getProjectIdFromProjectKey(projectKey);
   const { inputValue, handleInputValueChange, searchKey } = useDebouncedSearchKey('');
-  const [filters, setFilters] = useState(() => reduceArrToObj(filterNames, -1));
-
-  const handleFilterChange = (name) => (value) => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      [name]: value
-    }));
-  };
+  const { filters, handleFilterChange, getFilters } = useQueryFilter(filterNames);
 
   const getKey = useCallback(
     (pageIndex) => {
@@ -38,20 +31,16 @@ function ProjectIssuesPage() {
         limit: PAGE_SIZE,
         project_id: projectId,
         search: searchKey,
-        withGraph: '[type, status, priority, assignee, createdBy, updatedBy, comments]'
+        withGraph: '[type, status, priority, assignee, createdBy, updatedBy, comments]',
+        orderBy: 'updated_at:desc',
+        ...getFilters()
       };
-
-      filterNames.forEach((filterName) => {
-        if (filters[filterName] > -1) {
-          queryStringObj[filterName] = filters[filterName];
-        }
-      });
 
       const queryString = objToQueryString(queryStringObj);
 
       return projectId ? `tickets?${queryString}` : null;
     },
-    [projectId, searchKey, filters]
+    [projectId, searchKey, getFilters]
   );
 
   const {
@@ -107,7 +96,7 @@ function ProjectIssuesPage() {
 
       <Box my={12}>
         {error ? (
-          <Text>Something went wrong... Try reload the page</Text>
+          <Text textAlign="center">Something went wrong... Try reload the page</Text>
         ) : (
           <Issues
             tickets={tickets}

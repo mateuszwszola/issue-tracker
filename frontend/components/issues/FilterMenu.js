@@ -28,7 +28,7 @@ export const FilterMenu = ({ filterName, filterValue, handleFilterChange }) => {
   const resourceName = resourceNames[filterName];
   const options = data && data[resourceName];
 
-  const selected = options?.find((option) => option.id === filterValue);
+  const selected = options?.find((option) => String(option.id) === filterValue);
 
   return (
     <Menu isLazy onOpen={() => setStartFetching(true)}>
@@ -40,17 +40,19 @@ export const FilterMenu = ({ filterName, filterValue, handleFilterChange }) => {
       </MenuButton>
       <MenuList>
         {error ? (
-          <Text p={4}>Something went wrong...</Text>
+          <Text textAlign="center" p={4}>
+            Something went wrong...
+          </Text>
         ) : !data ? (
           <SkeletonText p={4} noOfLines={4} spacing="4" />
         ) : (
           <MenuOptionGroup type="radio" onChange={handleFilterChange}>
-            <MenuItemOption value={-1}>All</MenuItemOption>
+            <MenuItemOption>All</MenuItemOption>
             {options?.map((option) => (
               <MenuItemOption
                 key={option.id}
-                value={option.id}
-                isChecked={filterValue === option.id}
+                value={String(option.id)}
+                isChecked={filterValue === String(option.id)}
               >
                 {option.name}
               </MenuItemOption>
@@ -64,6 +66,6 @@ export const FilterMenu = ({ filterName, filterValue, handleFilterChange }) => {
 
 FilterMenu.propTypes = {
   filterName: PropTypes.string.isRequired,
-  filterValue: PropTypes.number,
+  filterValue: PropTypes.string,
   handleFilterChange: PropTypes.func.isRequired
 };
