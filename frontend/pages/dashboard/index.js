@@ -33,14 +33,14 @@ function AdminDashboard({ user }) {
   }
 
   return (
-    <Flex justify="space-between">
-      <Flex>
+    <Flex justify="space-between" wrap="wrap">
+      <Flex wrap="wrap">
         <Avatar size="lg" name={user.name} src={user.picture} />
         <Heading ml={4} as="h2" fontSize="3xl" fontWeight="semibold">
           {user.name}
         </Heading>
       </Flex>
-      <Button leftIcon={<FaPlus />} onClick={openCreateProjectModal}>
+      <Button size="sm" colorScheme="blue" leftIcon={<FaPlus />} onClick={openCreateProjectModal}>
         Create project
       </Button>
       <CreateProjectModal />
@@ -75,8 +75,8 @@ function Dashboard() {
             {isAdmin ? (
               <AdminDashboard user={user} />
             ) : (
-              <Flex justify="space-between">
-                <Flex>
+              <Flex justify="space-between" wrap="wrap">
+                <Flex wrap="wrap">
                   <Avatar size="lg" name={user.name} src={user.picture} />
                   <Heading ml={4} as="h2" fontSize="3xl" fontWeight="semibold">
                     {user.name}

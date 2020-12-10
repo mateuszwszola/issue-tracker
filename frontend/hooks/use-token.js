@@ -5,8 +5,11 @@ function useAccessToken() {
   const { getAccessTokenSilently } = useAuth0();
   const [accessToken, setAccessToken] = useState(null);
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    setIsLoading(true);
+
     (async () => {
       try {
         const token = await getAccessTokenSilently();
@@ -15,13 +18,16 @@ function useAccessToken() {
         }
       } catch (error) {
         setError(error);
+      } finally {
+        setIsLoading(false);
       }
     })();
   }, [getAccessTokenSilently]);
 
   return {
     accessToken,
-    error
+    error,
+    isLoading
   };
 }
 
