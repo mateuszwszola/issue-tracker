@@ -11,7 +11,8 @@ import {
   MenuList,
   MenuItem,
   Avatar,
-  HStack
+  HStack,
+  useColorModeValue
 } from '@chakra-ui/react';
 import { FiMoon, FiSun } from 'react-icons/fi';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -22,8 +23,10 @@ export const Header = () => {
   const { loginWithRedirect, logout, isAuthenticated } = useAuth0();
   const { user } = useApiUser();
 
+  const borderColor = useColorModeValue('gray.200', 'gray.700');
+
   return (
-    <Box as="header" w="full">
+    <Box as="header" w="full" borderBottom="1px" borderColor={borderColor}>
       <Flex w="full" justify="space-between" align="center" maxW="6xl" mx="auto" p={[2, 4]}>
         <NextLink href="/" passHref>
           <Link fontSize="lg" fontWeight="bold" letterSpacing="wide">
@@ -50,21 +53,15 @@ export const Header = () => {
                 <Menu>
                   <Avatar as={MenuButton} size="sm" variant="ghost" />
                   <MenuList>
-                    <MenuItem>
-                      <NextLink href={`/user/${user?.id}`} passHref>
-                        <a>Profile</a>
-                      </NextLink>
-                    </MenuItem>
-                    <MenuItem>
-                      <NextLink href="/dashboard" passHref>
-                        <a>Dashboard</a>
-                      </NextLink>
-                    </MenuItem>
-                    <MenuItem>
-                      <NextLink href="/settings" passHref>
-                        <a>Settings</a>
-                      </NextLink>
-                    </MenuItem>
+                    <NextLink href={`/user/${user?.id}`} passHref>
+                      <MenuItem as="a">Profile</MenuItem>
+                    </NextLink>
+                    <NextLink href="/dashboard" passHref>
+                      <MenuItem as="a">Dashboard</MenuItem>
+                    </NextLink>
+                    <NextLink href="/settings" passHref>
+                      <MenuItem as="a">Settings</MenuItem>
+                    </NextLink>
                     <MenuItem onClick={() => logout({ returnTo: window.location.origin })}>
                       Sign Out
                     </MenuItem>

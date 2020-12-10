@@ -1,11 +1,26 @@
-import { Flex, Heading, Text, Box, SkeletonCircle, SkeletonText, Avatar } from '@chakra-ui/react';
+import {
+  Flex,
+  Heading,
+  Text,
+  Box,
+  SkeletonCircle,
+  SkeletonText,
+  Avatar,
+  Button
+} from '@chakra-ui/react';
 import { Layout } from '@/components/Layout';
 import { useAuth0, withAuthenticationRequired } from '@auth0/auth0-react';
 import { useApiUser } from 'contexts/api-user-context';
+import { FaPlus } from 'react-icons/fa';
+import { useCreateProjectModal } from '@/components/dashboard/CreateProject';
 
 function Dashboard() {
   const { error } = useAuth0();
   const { user } = useApiUser();
+  const {
+    createProjectModal: CreateProjectModal,
+    onOpen: openCreateProjectModal
+  } = useCreateProjectModal();
 
   return (
     <Layout title="Dashboard">
@@ -19,13 +34,18 @@ function Dashboard() {
           </>
         ) : (
           <>
-            <Flex>
-              <Avatar size="lg" name={user.name} src={user.picture} />
-              <Box ml={4}>
-                <Heading as="h2" fontSize="3xl" fontWeight="semibold">
+            <Flex justify="space-between">
+              <Flex>
+                <Avatar size="lg" name={user.name} src={user.picture} />
+                <Heading ml={4} as="h2" fontSize="3xl" fontWeight="semibold">
                   {user.name}
                 </Heading>
-              </Box>
+              </Flex>
+              <Button leftIcon={<FaPlus />} onClick={openCreateProjectModal}>
+                Create project
+              </Button>
+
+              <CreateProjectModal />
             </Flex>
           </>
         )}
