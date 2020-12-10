@@ -1,29 +1,34 @@
-import PropTypes from 'prop-types';
+import { useSWRWithToken } from '@/hooks/use-swr-w-token';
+import fetcher from '@/utils/api-client';
 import {
   Box,
+  Button,
   FormControl,
   FormLabel,
+  Heading,
   Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
   Select,
   Text,
-  Button,
   useColorModeValue,
-  useDisclosure,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalCloseButton,
-  ModalBody,
-  ModalHeader,
-  Heading
+  useDisclosure
 } from '@chakra-ui/react';
+import PropTypes from 'prop-types';
 import useSWR from 'swr';
-import fetcher from '@/utils/api-client';
 
 const CreateProjectForm = ({ ...props }) => {
-  const { data, error: typesError } = useSWR('projects/type', fetcher);
+  const { data: dataTypes, error: typesError } = useSWR('projects/type', fetcher);
+  const { data: dataUsers, error: usersError } = useSWRWithToken('users');
 
-  const projectTypes = data?.types;
+  const projectTypes = dataTypes?.types || null;
+  const users = dataUsers?.users || null;
+  const isLoadingUsers = !usersError && !users;
+  const isLoadingProjectTypes = !typesError && !projectTypes;
 
   const inputBgColor = useColorModeValue('white', 'transparent');
 
@@ -43,18 +48,41 @@ const CreateProjectForm = ({ ...props }) => {
         <FormLabel>Type</FormLabel>
         <Select bgColor={inputBgColor}>
           {typesError ? (
-            <Text as="option" selected disabled>
-              Something went wrong...
+            <Text as="option" disabled>
+              Unable to load types
             </Text>
-          ) : !projectTypes ? (
-            <Text as="option" selected disabled>
-              Loading...
+          ) : isLoadingProjectTypes ? (
+            <Text as="option" disabled>
+              Loading types...
             </Text>
           ) : (
             <>
               {projectTypes.map((type) => (
                 <option key={type.id} value={type.id}>
                   {type.name}
+                </option>
+              ))}
+            </>
+          )}
+        </Select>
+      </FormControl>
+
+      <FormControl mt={3} id="manager" isRequired>
+        <FormLabel>Manager</FormLabel>
+        <Select bgColor={inputBgColor}>
+          {usersError ? (
+            <Text as="option" disabled>
+              Unable to load users
+            </Text>
+          ) : isLoadingUsers ? (
+            <Text as="option" disabled>
+              Loading users...
+            </Text>
+          ) : (
+            <>
+              {users.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.name}
                 </option>
               ))}
             </>
