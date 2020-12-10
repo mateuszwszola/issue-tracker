@@ -1,8 +1,6 @@
 import { BackButton } from '@/components/BackButton';
-import { useCreateProjectModal } from '@/components/dashboard/CreateProject';
+import CreateProject, { CreateProjectModal } from '@/components/dashboard/CreateProject';
 import { Layout } from '@/components/Layout';
-import { useIsAdmin } from '@/hooks/use-is-admin';
-import { useSWRWithToken } from '@/hooks/use-swr-w-token';
 import { useAuth0, withAuthenticationRequired } from '@auth0/auth0-react';
 import {
   Avatar,
@@ -12,25 +10,19 @@ import {
   Heading,
   SkeletonCircle,
   SkeletonText,
-  Text
+  Text,
+  useDisclosure
 } from '@chakra-ui/react';
 import { useApiUser } from 'contexts/api-user-context';
 import PropTypes from 'prop-types';
 import { FaPlus } from 'react-icons/fa';
 
 function AdminDashboard({ user }) {
-  const { data, error } = useSWRWithToken('users');
   const {
-    createProjectModal: CreateProjectModal,
-    onOpen: openCreateProjectModal
-  } = useCreateProjectModal();
-
-  const users = data?.users || null;
-  const isLoading = !error && !users;
-
-  if (isLoading) {
-    return <Box>Loading users...</Box>;
-  }
+    isOpen: isCreateProjectModalOpen,
+    onOpen: openCreateProjectModal,
+    onClose: closeCreateProjectModal
+  } = useDisclosure();
 
   return (
     <Flex justify="space-between" wrap="wrap">
@@ -40,10 +32,20 @@ function AdminDashboard({ user }) {
           {user.name}
         </Heading>
       </Flex>
-      <Button size="sm" colorScheme="blue" leftIcon={<FaPlus />} onClick={openCreateProjectModal}>
+
+      <Button
+        my={1}
+        size="sm"
+        colorScheme="blue"
+        leftIcon={<FaPlus />}
+        onClick={openCreateProjectModal}
+      >
         Create project
       </Button>
-      <CreateProjectModal />
+
+      <CreateProjectModal isOpen={isCreateProjectModalOpen} onClose={closeCreateProjectModal}>
+        <CreateProject />
+      </CreateProjectModal>
     </Flex>
   );
 }
@@ -55,7 +57,8 @@ AdminDashboard.propTypes = {
 function Dashboard() {
   const { error } = useAuth0();
   const { user } = useApiUser();
-  const { isAdmin } = useIsAdmin();
+
+  const isAdmin = user?.is_admin;
 
   return (
     <Layout title="Dashboard">
