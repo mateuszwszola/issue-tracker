@@ -44,7 +44,7 @@ function AdminDashboard({ user }) {
       </Button>
 
       <CreateProjectModal isOpen={isCreateProjectModalOpen} onClose={closeCreateProjectModal}>
-        <CreateProject />
+        <CreateProject onClose={closeCreateProjectModal} />
       </CreateProjectModal>
     </Flex>
   );

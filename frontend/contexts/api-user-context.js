@@ -1,6 +1,6 @@
 import { useAccessToken } from '@/hooks/use-token';
-import { fetcherWithToken } from '@/utils/api-client';
-import { Spinner } from '@chakra-ui/react';
+import client from '@/utils/api-client';
+import { Spinner, Flex } from '@chakra-ui/react';
 import { createContext, useContext } from 'react';
 import useSWR from 'swr';
 
@@ -14,7 +14,7 @@ function ApiUserProvider(props) {
   const { accessToken, isLoading: isLoadingToken } = useAccessToken();
   const { data, error } = useSWR(
     accessToken ? ['auth/login', accessToken] : null,
-    (url, token) => fetcherWithToken(url, token, options),
+    (url, token) => client(url, { token, ...options }),
     {
       revalidateOnFocus: false
     }
@@ -23,7 +23,11 @@ function ApiUserProvider(props) {
   const isLoading = isLoadingToken || (accessToken && !error && !data);
 
   if (isLoading) {
-    return <Spinner />;
+    return (
+      <Flex w="100%" h="100vh" justify="center" align="center">
+        <Spinner size="xl" />
+      </Flex>
+    );
   }
 
   const value = {

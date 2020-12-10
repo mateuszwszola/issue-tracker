@@ -35,8 +35,4 @@ async function client(url, { body, token, ...customConfig } = {}) {
   });
 }
 
-export const fetcherWithToken = (url, token, options = {}) => {
-  return client(url, { token, ...options });
-};
-
 export default client;

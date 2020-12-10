@@ -13,16 +13,19 @@ import { InputSearch } from '@/components/InputSearch';
 const PAGE_SIZE = 10;
 
 function ProjectsPage() {
-  const { orderBy, handleOrderByButtonClick, getOrderByQueryValue } = useQueryOrder([
-    'name',
-    'key',
-    'manager_id'
-  ]);
+  const { orderBy, handleOrderByButtonClick, getOrderByQueryValue } = useQueryOrder({
+    name: '',
+    key: '',
+    manager_id: '',
+    updated_at: 'desc'
+  });
 
   const { inputValue, handleInputValueChange, searchKey } = useDebouncedSearchKey('');
 
   const getKey = useCallback(
-    (pageIndex) => {
+    (pageIndex, previousPageData) => {
+      if (previousPageData && !previousPageData.projects.length) return null;
+
       const queryString = objToQueryString({
         page: pageIndex,
         limit: PAGE_SIZE,
@@ -31,7 +34,7 @@ function ProjectsPage() {
         withGraph: '[manager, engineers]'
       });
 
-      return `projects?${queryString}`;
+      return ['projects', queryString];
     },
     [getOrderByQueryValue, searchKey]
   );

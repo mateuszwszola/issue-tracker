@@ -1,7 +1,9 @@
 import { useSWRInfinite } from 'swr';
 
 function useInfiniteScroll(getKey, fetcher, resourceName, PAGE_SIZE) {
-  const { data, isValidating, size, setSize, error } = useSWRInfinite(getKey, fetcher);
+  const { data, isValidating, size, setSize, error } = useSWRInfinite(getKey, fetcher, {
+    revalidateAll: true
+  });
 
   const fetchMore = () => setSize(size + 1);
 

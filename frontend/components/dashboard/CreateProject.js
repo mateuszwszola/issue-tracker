@@ -1,4 +1,4 @@
-import { useSWRWithToken } from '@/hooks/use-swr-w-token';
+import { useAccessToken } from '@/hooks/use-token';
 import fetcher from '@/utils/api-client';
 import {
   Box,
@@ -16,16 +16,25 @@ import {
   ModalOverlay,
   Select,
   Text,
-  useColorModeValue
+  useColorModeValue,
+  useToast
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
-import useSWR from 'swr';
+import useSWR, { mutate } from 'swr';
+import { useState } from 'react';
 
-const CreateProject = () => {
+const CreateProject = ({ onClose }) => {
   const { data: dataTypes, error: typesError } = useSWR('projects/type', fetcher);
-  const { data: dataUsers, error: usersError } = useSWRWithToken('users');
+  const { accessToken: token } = useAccessToken();
+  const { data: dataUsers, error: usersError } = useSWR(
+    token ? ['users', token] : null,
+    (url, token) => fetcher(url, { token })
+  );
+  const toast = useToast();
+  const inputBgColor = useColorModeValue('white', 'transparent');
   const { register, handleSubmit, errors } = useForm();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const projectTypes = dataTypes?.types || null;
   const isLoadingProjectTypes = !typesError && !projectTypes;
@@ -34,9 +43,32 @@ const CreateProject = () => {
 
   const onSubmit = (data) => {
     console.log({ data });
-  };
+    setIsSubmitting(true);
 
-  const inputBgColor = useColorModeValue('white', 'transparent');
+    fetcher('projects', { token, body: data })
+      .then(() => {
+        toast({
+          title: 'Project created.',
+          description: "We've created your project for you.",
+          status: 'success',
+          duration: 9000,
+          isClosable: true
+        });
+
+        mutate(['projects']);
+        onClose();
+      })
+      .catch((err) => {
+        toast({
+          title: 'An error occurred.',
+          description: err.message || 'Unable to create a project',
+          status: 'error',
+          duration: 9000,
+          isClosable: true
+        });
+        setIsSubmitting(false);
+      });
+  };
 
   return (
     <Box as="form" onSubmit={handleSubmit(onSubmit)}>
@@ -61,9 +93,9 @@ const CreateProject = () => {
         />
       </FormControl>
 
-      <FormControl mt={3} id="type" isInvalid={errors.type}>
+      <FormControl mt={3} id="type_id" isInvalid={errors.type_id}>
         <FormLabel>Type</FormLabel>
-        <Select name="type" ref={register({ required: true })} bgColor={inputBgColor}>
+        <Select name="type_id" ref={register({ required: true })} bgColor={inputBgColor}>
           {typesError ? (
             <Text as="option" disabled>
               Unable to load types
@@ -75,21 +107,21 @@ const CreateProject = () => {
           ) : (
             <>
               {projectTypes.map((type) => (
-                <option key={type.id} value={type.id}>
+                <option key={type.id} value={Number(type.id)}>
                   {type.name}
                 </option>
               ))}
             </>
           )}
         </Select>
-        {errors.type && <FormErrorMessage>This field is required</FormErrorMessage>}
+        {errors.type_id && <FormErrorMessage>This field is required</FormErrorMessage>}
       </FormControl>
 
-      <FormControl mt={3} id="manager" isInvalid={errors.manager}>
+      <FormControl mt={3} id="manager_id" isInvalid={errors.manager_id}>
         <FormLabel>Manager</FormLabel>
         <Select
           ref={register({ required: true })}
-          name="manager"
+          name="manager_id"
           bgColor={inputBgColor}
           placeholder="Select a project manager"
         >
@@ -104,26 +136,30 @@ const CreateProject = () => {
           ) : (
             <>
               {users.map((user) => (
-                <option key={user.id} value={user.id}>
+                <option key={user.id} value={Number(user.id)}>
                   {user.name}
                 </option>
               ))}
             </>
           )}
         </Select>
-        {errors.manager && <FormErrorMessage>This field is required</FormErrorMessage>}
+        {errors.manager_id && <FormErrorMessage>This field is required</FormErrorMessage>}
       </FormControl>
 
-      <Button mt={8} w="full" type="submit" colorScheme="green">
+      <Button isLoading={isSubmitting} mt={8} w="full" type="submit" colorScheme="green">
         Submit
       </Button>
     </Box>
   );
 };
 
+CreateProject.propTypes = {
+  onClose: PropTypes.func.isRequired
+};
+
 export const CreateProjectModal = ({ isOpen, onClose, children }) => {
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="sm">
+    <Modal isOpen={isOpen} onClose={onClose} size="md">
       <ModalOverlay />
 
       <ModalContent mx={2} px={2} py={6}>

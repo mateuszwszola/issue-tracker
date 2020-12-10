@@ -1,7 +1,7 @@
 import client from './api-client';
 
-function getProjects(key) {
-  return client(key);
+function getProjects(key, query) {
+  return client(`${key}?${query}`);
 }
 
 function getProject(key) {

@@ -27,11 +27,11 @@ function MyApp({ Component, pageProps }) {
       onRedirectCallback={onRedirectCallback}
     >
       <SWRConfig value={swrGlobalConfig}>
-        <ApiUserProvider>
-          <ChakraProvider theme={theme}>
+        <ChakraProvider theme={theme}>
+          <ApiUserProvider>
             <Component {...pageProps} />
-          </ChakraProvider>
-        </ApiUserProvider>
+          </ApiUserProvider>
+        </ChakraProvider>
       </SWRConfig>
     </Auth0Provider>
   );

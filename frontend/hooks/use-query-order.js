@@ -1,4 +1,3 @@
-import { reduceArrToObj } from '@/utils/helpers';
 import { useState, useCallback } from 'react';
 
 function parseOrderByQueryObjToStr(orderByObj) {
@@ -9,14 +8,17 @@ function parseOrderByQueryObjToStr(orderByObj) {
 }
 
 function useQueryOrder(columns) {
-  const [orderBy, setOrderBy] = useState(() => reduceArrToObj(columns, ''));
+  const [orderBy, setOrderBy] = useState(columns);
 
-  const handleOrderByButtonClick = (column) => () => {
-    setOrderBy((prev) => ({
-      ...prev,
-      [column]: prev[column] === '' ? 'asc' : prev[column] === 'asc' ? 'desc' : ''
-    }));
-  };
+  const handleOrderByButtonClick = useCallback(
+    (column) => () => {
+      setOrderBy((prev) => ({
+        ...prev,
+        [column]: prev[column] === '' ? 'asc' : prev[column] === 'asc' ? 'desc' : ''
+      }));
+    },
+    [setOrderBy]
+  );
 
   const getOrderByQueryValue = useCallback(() => parseOrderByQueryObjToStr(orderBy), [orderBy]);
 
