@@ -42,7 +42,6 @@ const CreateProject = ({ onClose }) => {
   const isLoadingUsers = !usersError && !users;
 
   const onSubmit = (data) => {
-    console.log({ data });
     setIsSubmitting(true);
 
     fetcher('projects', { token, body: data })

@@ -2,32 +2,19 @@ import { useState, useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import client from '../utils/api-client';
 
-export const API_AUDIENCE = process.env.NEXT_PUBLIC_AUTH0_AUDIENCE;
-
-const initialState = {
-  error: null,
-  loading: false,
-  data: null
-};
-
-function useApi(url, isTokenRequired, options = {}) {
-  const { getAccessTokenSilently, isLoading, isAuthenticated } = useAuth0();
-  const [state, setState] = useState(initialState);
-  const [refreshIndex, setRefreshIndex] = useState(0);
+function useApi(url, options = {}) {
+  const { getAccessTokenSilently } = useAuth0();
+  const [state, setState] = useState({
+    error: null,
+    loading: true,
+    data: null
+  });
 
   useEffect(() => {
-    if (isTokenRequired && (isLoading || !isAuthenticated)) return;
-
     (async () => {
       try {
-        const { audience = API_AUDIENCE, ...clientOptions } = options;
-        setState((s) => ({ ...s, loading: true }));
-        let token;
-        if (isTokenRequired) {
-          token = await getAccessTokenSilently({ audience });
-        }
-
-        const data = await client(url, { token, ...clientOptions });
+        const token = await getAccessTokenSilently();
+        const data = await client(url, { token, ...options });
 
         setState((s) => ({
           ...s,
@@ -39,18 +26,13 @@ function useApi(url, isTokenRequired, options = {}) {
         setState((s) => ({
           ...s,
           error,
-          data: null,
           loading: false
         }));
       }
     })();
-    // eslint-disable-next-line
-  }, [isTokenRequired, url, refreshIndex, isLoading, isAuthenticated]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  return {
-    ...state,
-    refresh: () => setRefreshIndex((i) => i + 1)
-  };
+  return state;
 }
 
 export default useApi;

@@ -47,7 +47,7 @@ const validProjectOrders = new Set([
 function createProjectSchema(req, res, next) {
   const schema = Joi.object({
     name: Joi.string().required(),
-    description: Joi.string(),
+    description: Joi.string().empty(''),
     type_id: Joi.number().required(),
     manager_id: Joi.number(),
   });

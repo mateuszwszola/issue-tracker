@@ -5,7 +5,7 @@ function useAccessToken() {
   const { getAccessTokenSilently } = useAuth0();
   const [accessToken, setAccessToken] = useState(null);
   const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setIsLoading(true);

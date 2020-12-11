@@ -30,8 +30,8 @@ function ProjectPage() {
   const { key: projectKey } = router.query;
   const projectId = projectKey && getProjectIdFromProjectKey(projectKey);
   const { data, error } = useSWR(
-    projectId ? `projects/${projectId}?${queryString}` : null,
-    fetcher
+    projectId ? [`projects/${projectId}`, queryString] : null,
+    (url, qs) => fetcher(`${url}?${qs}`)
   );
 
   const project = data?.project;
