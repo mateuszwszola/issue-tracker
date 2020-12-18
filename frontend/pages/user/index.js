@@ -3,7 +3,7 @@ import { Layout } from '@/components/Layout';
 import { withAuthenticationRequired } from '@auth0/auth0-react';
 import { useUser } from '@/hooks/use-user';
 
-function Settings() {
+function Profile() {
   const { user, loading, error } = useUser();
 
   return (
@@ -19,7 +19,7 @@ function Settings() {
         ) : (
           <>
             <Heading as="h2" fontSize="3xl" fontWeight="semibold">
-              Settings {user.name}
+              Profile {user.name}
             </Heading>
           </>
         )}
@@ -28,4 +28,4 @@ function Settings() {
   );
 }
 
-export default withAuthenticationRequired(Settings);
+export default withAuthenticationRequired(Profile);

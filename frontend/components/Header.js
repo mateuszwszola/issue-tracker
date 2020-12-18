@@ -16,12 +16,10 @@ import {
 } from '@chakra-ui/react';
 import { FiMoon, FiSun } from 'react-icons/fi';
 import { useAuth0 } from '@auth0/auth0-react';
-import { useApiUser } from 'contexts/api-user-context';
 
 export const Header = () => {
   const { colorMode, toggleColorMode } = useColorMode();
-  const { loginWithRedirect, logout, isAuthenticated } = useAuth0();
-  const { user } = useApiUser();
+  const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0();
 
   const borderColor = useColorModeValue('gray.200', 'gray.700');
 
@@ -53,7 +51,7 @@ export const Header = () => {
                 <Menu>
                   <Avatar as={MenuButton} size="sm" variant="ghost" />
                   <MenuList>
-                    <NextLink href={`/user/${user?.id}`} passHref>
+                    <NextLink href="/user" passHref>
                       <MenuItem as="a">Profile</MenuItem>
                     </NextLink>
                     <NextLink href="/dashboard" passHref>

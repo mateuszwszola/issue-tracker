@@ -3,7 +3,6 @@ import { ChakraProvider } from '@chakra-ui/react';
 import { Auth0Provider } from '@auth0/auth0-react';
 import { SWRConfig } from 'swr';
 import theme from '../styles/theme';
-import { ApiUserProvider } from 'contexts/api-user-context';
 
 const onRedirectCallback = (appState) => {
   Router.replace(appState?.returnTo || '/');
@@ -26,13 +25,11 @@ function MyApp({ Component, pageProps }) {
       redirectUri={typeof window !== 'undefined' && window.location.origin}
       onRedirectCallback={onRedirectCallback}
     >
-      <SWRConfig value={swrGlobalConfig}>
-        <ChakraProvider theme={theme}>
-          <ApiUserProvider>
-            <Component {...pageProps} />
-          </ApiUserProvider>
-        </ChakraProvider>
-      </SWRConfig>
+      <ChakraProvider theme={theme}>
+        <SWRConfig value={swrGlobalConfig}>
+          <Component {...pageProps} />
+        </SWRConfig>
+      </ChakraProvider>
     </Auth0Provider>
   );
 }

@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import client from '../utils/api-client';
+import client from '@/utils/api-client';
 
-function useApi(url, options = {}) {
+export const useApi = (url, options) => {
   const { getAccessTokenSilently } = useAuth0();
   const [state, setState] = useState({
     error: null,
@@ -13,26 +13,27 @@ function useApi(url, options = {}) {
   useEffect(() => {
     (async () => {
       try {
-        const token = await getAccessTokenSilently();
-        const data = await client(url, { token, ...options });
+        const accessToken = await getAccessTokenSilently();
+        const data = await client(url, {
+          token: accessToken,
+          ...options
+        });
 
-        setState((s) => ({
-          ...s,
+        setState({
+          ...state,
           data,
           error: null,
           loading: false
-        }));
+        });
       } catch (error) {
-        setState((s) => ({
-          ...s,
+        setState({
+          ...state,
           error,
           loading: false
-        }));
+        });
       }
     })();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return state;
-}
-
-export default useApi;
+};

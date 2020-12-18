@@ -1,7 +1,8 @@
 import { BackButton } from '@/components/BackButton';
 import CreateProject, { CreateProjectModal } from '@/components/dashboard/CreateProject';
 import { Layout } from '@/components/Layout';
-import { useAuth0, withAuthenticationRequired } from '@auth0/auth0-react';
+import { useUser } from '@/hooks/use-user';
+import { withAuthenticationRequired } from '@auth0/auth0-react';
 import {
   Avatar,
   Box,
@@ -13,7 +14,6 @@ import {
   Text,
   useDisclosure
 } from '@chakra-ui/react';
-import { useApiUser } from 'contexts/api-user-context';
 import PropTypes from 'prop-types';
 import { FaPlus } from 'react-icons/fa';
 
@@ -55,8 +55,7 @@ AdminDashboard.propTypes = {
 };
 
 function Dashboard() {
-  const { error } = useAuth0();
-  const { user } = useApiUser();
+  const { user, loading, error } = useUser();
 
   const isAdmin = user?.is_admin;
 
@@ -68,7 +67,7 @@ function Dashboard() {
       <Box mt={{ base: 8, md: 16 }}>
         {error ? (
           <Text textAlign="center">Something went wrong... Sorry</Text>
-        ) : !user ? (
+        ) : loading ? (
           <>
             <SkeletonCircle size="12" />
             <SkeletonText mt="4" noOfLines={4} spacing="4" />

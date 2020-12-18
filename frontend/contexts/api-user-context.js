@@ -1,22 +1,18 @@
-import { createContext, useContext } from 'react';
-import useApi from '@/hooks/use-api';
 import { FullPageSpinner } from '@/components/Loading';
+import { useUser } from '@/hooks/use-user';
+import { createContext, useContext } from 'react';
 
 const apiUserContext = createContext();
 
-const options = {
-  method: 'POST'
-};
-
 function ApiUserProvider(props) {
-  const { loading, data } = useApi('auth/login', options);
+  const { loading, user } = useUser();
 
   if (loading) {
     return <FullPageSpinner />;
   }
 
   const value = {
-    user: data?.user || null
+    user
   };
 
   return <apiUserContext.Provider value={value} {...props} />;

@@ -1,4 +1,3 @@
-import { useAccessToken } from '@/hooks/use-token';
 import fetcher from '@/utils/api-client';
 import {
   Box,
@@ -23,28 +22,23 @@ import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
 import useSWR, { mutate } from 'swr';
 import { useState } from 'react';
+import { useWithTokenFetcher } from '@/hooks/use-fetcher';
 
 const CreateProject = ({ onClose }) => {
-  const { data: dataTypes, error: typesError } = useSWR('projects/type', fetcher);
-  const { accessToken: token } = useAccessToken();
-  const { data: dataUsers, error: usersError } = useSWR(
-    token ? ['users', token] : null,
-    (url, token) => fetcher(url, { token })
-  );
+  const withTokenFetcher = useWithTokenFetcher();
+
+  const { data: projectTypesData, error: projectTypesError } = useSWR('projects/type', fetcher);
+  const { data: usersData, error: usersError } = useSWR('users', withTokenFetcher);
+
   const toast = useToast();
   const inputBgColor = useColorModeValue('white', 'transparent');
   const { register, handleSubmit, errors } = useForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const projectTypes = dataTypes?.types || null;
-  const isLoadingProjectTypes = !typesError && !projectTypes;
-  const users = dataUsers?.users || null;
-  const isLoadingUsers = !usersError && !users;
-
   const onSubmit = (data) => {
     setIsSubmitting(true);
 
-    fetcher('projects', { token, body: data })
+    withTokenFetcher('projects', { body: data })
       .then(() => {
         toast({
           title: 'Project created.',
@@ -95,17 +89,17 @@ const CreateProject = ({ onClose }) => {
       <FormControl mt={3} id="type_id" isInvalid={errors.type_id}>
         <FormLabel>Type</FormLabel>
         <Select name="type_id" ref={register({ required: true })} bgColor={inputBgColor}>
-          {typesError ? (
+          {projectTypesError ? (
             <Text as="option" disabled>
               Unable to load types
             </Text>
-          ) : isLoadingProjectTypes ? (
+          ) : !projectTypesData ? (
             <Text as="option" disabled>
               Loading types...
             </Text>
           ) : (
             <>
-              {projectTypes.map((type) => (
+              {projectTypesData.types.map((type) => (
                 <option key={type.id} value={Number(type.id)}>
                   {type.name}
                 </option>
@@ -128,13 +122,13 @@ const CreateProject = ({ onClose }) => {
             <Text as="option" disabled>
               Unable to load users
             </Text>
-          ) : isLoadingUsers ? (
+          ) : !usersData ? (
             <Text as="option" disabled>
               Loading users...
             </Text>
           ) : (
             <>
-              {users.map((user) => (
+              {usersData.users.map((user) => (
                 <option key={user.id} value={Number(user.id)}>
                   {user.name}
                 </option>
