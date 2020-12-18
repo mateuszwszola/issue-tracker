@@ -41,10 +41,6 @@ function Issue() {
 
   return (
     <Layout title={`Issue ${issueKey}`}>
-      <Box>
-        <BackButton disabled={isLoading}>Go back</BackButton>
-      </Box>
-
       <Box mt={{ base: 8, md: 16 }}>
         {error ? (
           <Text textAlign="center">Something went wrong... Sorry</Text>

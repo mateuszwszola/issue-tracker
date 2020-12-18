@@ -4,7 +4,6 @@ import { useWithTokenFetcher } from './use-fetcher';
 export function useUser() {
   const fetcher = useWithTokenFetcher();
   const { data, mutate, error } = useSWR('auth/login', (url) => fetcher(url, { method: 'POST' }), {
-    revalidateOnFocus: false,
     shouldRetryOnError: false
   });
 

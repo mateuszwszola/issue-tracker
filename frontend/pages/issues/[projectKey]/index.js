@@ -1,7 +1,6 @@
 import { useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { Layout } from '@/components/Layout';
-import { BackButton } from '@/components/BackButton';
 import { Box, Flex, Heading, SimpleGrid, Text } from '@chakra-ui/react';
 import { InputSearch } from '@/components/InputSearch';
 import { objToQueryString } from '@/utils/query-string';
@@ -58,7 +57,6 @@ function ProjectIssuesPage() {
   return (
     <Layout title={`Issues for ${projectKey}`}>
       <Box>
-        <BackButton>Go back</BackButton>
         <Heading as="h2" fontSize="lg" mt={6}>
           Issues for: {projectKey}
         </Heading>

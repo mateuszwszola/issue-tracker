@@ -1,17 +1,15 @@
-import { Heading, Text, Box, SkeletonCircle, SkeletonText } from '@chakra-ui/react';
+import { Heading, Box, SkeletonCircle, SkeletonText } from '@chakra-ui/react';
 import { Layout } from '@/components/Layout';
 import { withAuthenticationRequired } from '@auth0/auth0-react';
-import { useUser } from '@/hooks/use-user';
+import { useApiUser } from 'contexts/api-user-context';
 
 function Settings() {
-  const { user, loading, error } = useUser();
+  const { user } = useApiUser();
 
   return (
     <Layout title="Settings">
       <Box mt={{ base: 8, md: 16 }}>
-        {error ? (
-          <Text textAlign="center">Something went wrong... Sorry</Text>
-        ) : loading ? (
+        {!user ? (
           <>
             <SkeletonCircle size="12" />
             <SkeletonText mt="4" noOfLines={4} spacing="4" />

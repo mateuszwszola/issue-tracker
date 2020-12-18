@@ -1,4 +1,3 @@
-import { BackButton } from '@/components/BackButton';
 import { Layout } from '@/components/Layout';
 import { NextButtonLink } from '@/components/Link';
 import fetcher from '@/utils/api-client';
@@ -32,9 +31,7 @@ function UserPage() {
 
   return (
     <Layout title={`User ${userId}`}>
-      <Box>
-        <BackButton disabled={isLoading}>Go back</BackButton>
-      </Box>
+      <Box></Box>
       <Box mt={{ base: 8, md: 16 }}>
         {error ? (
           <Text textAlign="center">Something went wrong... Sorry</Text>

@@ -1,4 +1,3 @@
-import { BackButton } from '@/components/BackButton';
 import { Layout } from '@/components/Layout';
 import fetcher from '@/utils/api-client';
 import { getProjectIdFromProjectKey } from '@/utils/projects-client';
@@ -34,14 +33,11 @@ function ProjectPage() {
     (url, qs) => fetcher(`${url}?${qs}`)
   );
 
+  const isLoading = !error && !data;
   const project = data?.project;
-  const isLoading = !error && !project;
 
   return (
     <Layout title={`Project ${projectKey}`}>
-      <Box>
-        <BackButton disabled={isLoading}>Go back</BackButton>
-      </Box>
       <Box mt={{ base: 8, md: 16 }}>
         {error ? (
           <Text textAlign="center">Something went wrong... Sorry</Text>
