@@ -29,8 +29,8 @@ function ProjectPage() {
   const { key: projectKey } = router.query;
   const projectId = projectKey && getProjectIdFromProjectKey(projectKey);
   const { data, error } = useSWR(
-    projectId ? [`projects/${projectId}`, queryString] : null,
-    (url, qs) => fetcher(`${url}?${qs}`)
+    projectId ? ['projects', projectId, queryString] : null,
+    (baseKey, projectId, qs) => fetcher(`${baseKey}/${projectId}?${qs}`)
   );
 
   const isLoading = !error && !data;

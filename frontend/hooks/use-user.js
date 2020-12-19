@@ -7,12 +7,23 @@ export function useUser() {
     shouldRetryOnError: false
   });
 
-  const loading = !data && !error;
-
   return {
-    loading,
+    loading: !data && !error,
     error,
     user: data?.user,
     mutate
+  };
+}
+
+export function useUsers() {
+  const withTokenFetcher = useWithTokenFetcher();
+
+  const { data, error, ...swrData } = useSWR('users', withTokenFetcher);
+
+  return {
+    users: data?.users,
+    isLoading: !data && !error,
+    error,
+    ...swrData
   };
 }

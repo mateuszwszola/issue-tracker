@@ -5,7 +5,7 @@ import { useCallback } from 'react';
 export function useWithTokenFetcher() {
   const { getAccessTokenSilently } = useAuth0();
 
-  const withTokenFetcher = useCallback(
+  return useCallback(
     async (url, { ...clientProps }) => {
       const token = await getAccessTokenSilently();
 
@@ -13,6 +13,4 @@ export function useWithTokenFetcher() {
     },
     [getAccessTokenSilently]
   );
-
-  return withTokenFetcher;
 }

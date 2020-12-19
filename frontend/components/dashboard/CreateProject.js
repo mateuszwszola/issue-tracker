@@ -1,4 +1,6 @@
-import fetcher from '@/utils/api-client';
+import useMutation from '@/hooks/use-mutation';
+import { useProjectTypes } from '@/hooks/use-project';
+import { useUsers } from '@/hooks/use-user';
 import {
   Box,
   Button,
@@ -20,47 +22,45 @@ import {
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
-import useSWR, { mutate } from 'swr';
-import { useState } from 'react';
-import { useWithTokenFetcher } from '@/hooks/use-fetcher';
 
 const CreateProject = ({ onClose }) => {
-  const withTokenFetcher = useWithTokenFetcher();
-
-  const { data: projectTypesData, error: projectTypesError } = useSWR('projects/type', fetcher);
-  const { data: usersData, error: usersError } = useSWR('users', withTokenFetcher);
+  const {
+    projectTypes,
+    isLoading: isLoadingProjectTypes,
+    error: projectTypesError
+  } = useProjectTypes();
+  const { users, isLoading: isLoadingUsers, error: usersError } = useUsers();
 
   const toast = useToast();
   const inputBgColor = useColorModeValue('white', 'transparent');
+
   const { register, handleSubmit, errors } = useForm();
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const onSubmit = (data) => {
-    setIsSubmitting(true);
-
-    withTokenFetcher('projects', { body: data })
-      .then(() => {
-        toast({
-          title: 'Project created.',
-          description: "We've created your project for you.",
-          status: 'success',
-          duration: 9000,
-          isClosable: true
-        });
-
-        mutate(['projects']);
-        onClose();
-      })
-      .catch((err) => {
-        toast({
-          title: 'An error occurred.',
-          description: err.message || 'Unable to create a project',
-          status: 'error',
-          duration: 9000,
-          isClosable: true
-        });
-        setIsSubmitting(false);
+  const [createProject, createProjectStatus] = useMutation('projects', {
+    onSuccess: () => {
+      toast({
+        title: 'Project created.',
+        description: "We've created your project for you.",
+        status: 'success',
+        duration: 9000,
+        isClosable: true
       });
+
+      onClose();
+    },
+    onError: (err) => {
+      toast({
+        title: 'An error occurred.',
+        description: err.message || 'Unable to create a project',
+        status: 'error',
+        duration: 9000,
+        isClosable: true
+      });
+    }
+  });
+
+  const onSubmit = async (data) => {
+    await createProject('projects', { body: data });
   };
 
   return (
@@ -93,13 +93,13 @@ const CreateProject = ({ onClose }) => {
             <Text as="option" disabled>
               Unable to load types
             </Text>
-          ) : !projectTypesData ? (
+          ) : isLoadingProjectTypes ? (
             <Text as="option" disabled>
               Loading types...
             </Text>
           ) : (
             <>
-              {projectTypesData.types.map((type) => (
+              {projectTypes.map((type) => (
                 <option key={type.id} value={Number(type.id)}>
                   {type.name}
                 </option>
@@ -122,13 +122,13 @@ const CreateProject = ({ onClose }) => {
             <Text as="option" disabled>
               Unable to load users
             </Text>
-          ) : !usersData ? (
+          ) : isLoadingUsers ? (
             <Text as="option" disabled>
               Loading users...
             </Text>
           ) : (
             <>
-              {usersData.users.map((user) => (
+              {users.map((user) => (
                 <option key={user.id} value={Number(user.id)}>
                   {user.name}
                 </option>
@@ -139,7 +139,13 @@ const CreateProject = ({ onClose }) => {
         {errors.manager_id && <FormErrorMessage>This field is required</FormErrorMessage>}
       </FormControl>
 
-      <Button isLoading={isSubmitting} mt={8} w="full" type="submit" colorScheme="green">
+      <Button
+        isLoading={createProjectStatus === 'loading'}
+        mt={8}
+        w="full"
+        type="submit"
+        colorScheme="green"
+      >
         Submit
       </Button>
     </Box>
