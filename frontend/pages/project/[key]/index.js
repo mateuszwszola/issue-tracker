@@ -1,4 +1,5 @@
 import { Layout } from '@/components/Layout';
+import ManageProject from '@/components/project/ManageProject';
 import fetcher from '@/utils/api-client';
 import { getProjectIdFromProjectKey } from '@/utils/projects-client';
 import { objToQueryString } from '@/utils/query-string';
@@ -15,6 +16,7 @@ import {
   Wrap,
   WrapItem
 } from '@chakra-ui/react';
+import { useApiUser } from 'contexts/api-user-context';
 import { format } from 'date-fns';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
@@ -32,99 +34,98 @@ function ProjectPage() {
     projectId ? ['projects', projectId, queryString] : null,
     (baseKey, projectId, qs) => fetcher(`${baseKey}/${projectId}?${qs}`)
   );
-
   const isLoading = !error && !data;
   const project = data?.project;
 
+  const { user } = useApiUser();
+  const isAdmin = user?.is_admin;
+
   return (
     <Layout title={`Project ${projectKey}`}>
-      <Box mt={{ base: 8, md: 16 }}>
-        {error ? (
-          <Text textAlign="center">Something went wrong... Sorry</Text>
-        ) : (
-          <>
-            <Skeleton isLoaded={!isLoading}>
-              <Flex direction={{ base: 'column', md: 'row' }} justify={{ md: 'space-between' }}>
-                <Box w="full" maxW="640px" pr={{ md: 8 }}>
-                  <Heading as="h2" display="flex" flexWrap="wrap" alignItems="center" size="lg">
-                    <Text as="span" mr={3}>
-                      Project: {project?.name}
-                    </Text>
-                    {project?.type?.name && <Tag my={1}>{project.type.name}</Tag>}
-                  </Heading>
-                  {project?.description && <Text mt={2}>{project.description}</Text>}
-                </Box>
-                <Box w="full" maxW="400px" mt={{ base: 4, md: 0 }}>
-                  <NextLink href={`/issues/${encodeURIComponent(projectKey)}`} passHref>
-                    <Button as="a" variant="outline" colorScheme="blue">
-                      Issues
-                    </Button>
-                  </NextLink>
-                </Box>
-              </Flex>
-            </Skeleton>
+      {error ? (
+        <Text textAlign="center">Something went wrong... Sorry</Text>
+      ) : (
+        <Box>
+          <Skeleton isLoaded={!isLoading}>
+            {isAdmin && <ManageProject projectId={projectId} />}
+            <Flex
+              mt={{ base: 8, md: 16 }}
+              direction={{ base: 'column', md: 'row' }}
+              justify={{ md: 'space-between' }}
+            >
+              <Box w="full" maxW="640px" pr={{ md: 8 }}>
+                <Heading as="h2" display="flex" flexWrap="wrap" alignItems="center" size="lg">
+                  <Text as="span" mr={3}>
+                    Project: {project?.name}
+                  </Text>
+                  {project?.type?.name && <Tag my={1}>{project.type.name}</Tag>}
+                </Heading>
+                {project?.description && <Text mt={2}>{project.description}</Text>}
+              </Box>
+              <Box w="full" maxW="400px" mt={{ base: 4, md: 0 }}>
+                <NextLink href={`/issues/${encodeURIComponent(projectKey)}`} passHref>
+                  <Button as="a" variant="outline" colorScheme="blue">
+                    Issues
+                  </Button>
+                </NextLink>
+              </Box>
+            </Flex>
+          </Skeleton>
 
-            <Skeleton isLoaded={!isLoading}>
-              <Flex
-                mt={12}
-                direction={{ base: 'column', md: 'row' }}
-                justify={{ md: 'space-between' }}
-              >
-                <Box w="full" maxW="640px">
-                  <Heading as="h3" size="md">
-                    About
-                  </Heading>
+          <Skeleton isLoaded={!isLoading}>
+            <Flex
+              mt={12}
+              direction={{ base: 'column', md: 'row' }}
+              justify={{ md: 'space-between' }}
+            >
+              <Box w="full" maxW="640px">
+                <Heading as="h3" size="md">
+                  About
+                </Heading>
 
-                  <Stack mt={4} spacing={3}>
+                <Stack mt={4} spacing={3}>
+                  <Text display="flex" alignItems="center">
+                    Created by
+                    <NextLink href={`/user/${encodeURIComponent(project?.createdBy?.id)}`} passHref>
+                      <Button ml={1} as="a" variant="link" colorScheme="blue">
+                        {project?.createdBy?.name}
+                      </Button>
+                    </NextLink>
+                  </Text>
+                  {project?.manager && (
                     <Text display="flex" alignItems="center">
-                      Created by
-                      <NextLink
-                        href={`/user/${encodeURIComponent(project?.createdBy?.id)}`}
-                        passHref
-                      >
+                      Manager
+                      <NextLink href={`/user/${encodeURIComponent(project.manager?.id)}`} passHref>
                         <Button ml={1} as="a" variant="link" colorScheme="blue">
-                          {project?.createdBy?.name}
+                          {project.manager?.name}
                         </Button>
                       </NextLink>
                     </Text>
-                    {project?.manager && (
-                      <Text display="flex" alignItems="center">
-                        Manager
-                        <NextLink
-                          href={`/user/${encodeURIComponent(project.manager?.id)}`}
-                          passHref
-                        >
-                          <Button ml={1} as="a" variant="link" colorScheme="blue">
-                            {project.manager?.name}
-                          </Button>
-                        </NextLink>
-                      </Text>
-                    )}
-                    {project?.created_at && (
-                      <Text>Created at {format(new Date(project.created_at), 'MMM M, yyyy')}</Text>
-                    )}
-                  </Stack>
-                </Box>
+                  )}
+                  {project?.created_at && (
+                    <Text>Created at {format(new Date(project.created_at), 'MMM M, yyyy')}</Text>
+                  )}
+                </Stack>
+              </Box>
 
-                <Box w="full" maxW="400px" mt={{ base: 12, md: 0 }}>
-                  <Heading as="h3" size="md">
-                    Project engineers:
-                  </Heading>
-                  <Wrap mt={4}>
-                    {project?.engineers?.map((engineer) => (
-                      <WrapItem key={engineer.id}>
-                        <NextLink href={`/user/${encodeURIComponent(engineer.id)}`} passHref>
-                          <Avatar as="a" name={engineer.name} src={engineer.picture} />
-                        </NextLink>
-                      </WrapItem>
-                    ))}
-                  </Wrap>
-                </Box>
-              </Flex>
-            </Skeleton>
-          </>
-        )}
-      </Box>
+              <Box w="full" maxW="400px" mt={{ base: 12, md: 0 }}>
+                <Heading as="h3" size="md">
+                  Project engineers:
+                </Heading>
+                <Wrap mt={4}>
+                  {project?.engineers?.map((engineer) => (
+                    <WrapItem key={engineer.id}>
+                      <NextLink href={`/user/${encodeURIComponent(engineer.id)}`} passHref>
+                        <Avatar as="a" name={engineer.name} src={engineer.picture} />
+                      </NextLink>
+                    </WrapItem>
+                  ))}
+                </Wrap>
+              </Box>
+            </Flex>
+          </Skeleton>
+        </Box>
+      )}
     </Layout>
   );
 }

@@ -30,11 +30,6 @@ export const Projects = ({
 
   return (
     <>
-      {isEmpty && (
-        <Text textAlign="center" my={4}>
-          No projects found
-        </Text>
-      )}
       <Table w="full" border="2px" borderColor="transparent">
         <THead borderBottom="2px" borderColor={borderColor[colorMode]}>
           <Tr>
@@ -69,6 +64,10 @@ export const Projects = ({
         <TBody fontSize={['sm', 'md']}>
           {isLoadingInitialData ? (
             <>{loadingRows}</>
+          ) : isEmpty ? (
+            <Text textAlign="center" my={4}>
+              No projects found
+            </Text>
           ) : (
             <>
               {projects.map((project, idx) => (
