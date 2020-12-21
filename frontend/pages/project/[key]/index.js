@@ -1,8 +1,8 @@
 import { Layout } from '@/components/Layout';
 import ManageProject from '@/components/project/ManageProject';
-import fetcher from '@/utils/api-client';
+import { useProject } from '@/hooks/use-project';
+import useRouterKey from '@/hooks/use-router-key';
 import { getProjectIdFromProjectKey } from '@/utils/projects-client';
-import { objToQueryString } from '@/utils/query-string';
 import {
   Avatar,
   Box,
@@ -19,23 +19,12 @@ import {
 import { useApiUser } from 'contexts/api-user-context';
 import { format } from 'date-fns';
 import NextLink from 'next/link';
-import { useRouter } from 'next/router';
-import useSWR from 'swr';
-
-const queryString = objToQueryString({
-  withGraph: '[type, createdBy, manager, engineers]'
-});
 
 function ProjectPage() {
-  const router = useRouter();
-  const { key: projectKey } = router.query;
+  const projectKey = useRouterKey();
   const projectId = projectKey && getProjectIdFromProjectKey(projectKey);
-  const { data, error } = useSWR(
-    projectId ? ['projects', projectId, queryString] : null,
-    (baseKey, projectId, qs) => fetcher(`${baseKey}/${projectId}?${qs}`)
-  );
-  const isLoading = !error && !data;
-  const project = data?.project;
+
+  const { isLoading, project, error } = useProject(projectId);
 
   const { user } = useApiUser();
   const isAdmin = user?.is_admin;
@@ -43,7 +32,7 @@ function ProjectPage() {
   return (
     <Layout title={`Project ${projectKey}`}>
       {error ? (
-        <Text textAlign="center">Something went wrong... Sorry</Text>
+        <Text textAlign="center">{error.message || 'Something went wrong... Sorry'}</Text>
       ) : (
         <Box>
           <Skeleton isLoaded={!isLoading}>

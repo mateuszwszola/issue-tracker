@@ -1,8 +1,10 @@
 import useMutation from '@/hooks/use-mutation';
-import { Button, ButtonGroup, Flex, Text, useToast } from '@chakra-ui/react';
+import { Button, ButtonGroup, Flex, Text, useToast, useDisclosure } from '@chakra-ui/react';
 import Router from 'next/router';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
+import ProjectModal from '@/components/project/ProjectModal';
+import UpdateProject from '@/components/project/UpdateProject';
 
 function ManageProject({ projectId }) {
   const toast = useToast();
@@ -21,6 +23,11 @@ function ManageProject({ projectId }) {
       });
     }
   });
+  const {
+    isOpen: isUpdateProjectModalOpen,
+    onOpen: openUpdateProjectModal,
+    onClose: closeUpdateProjectModal
+  } = useDisclosure();
 
   const handleSubmit = () => {
     setIsSubmitting(true);
@@ -42,31 +49,45 @@ function ManageProject({ projectId }) {
         {isSubmitting ? (
           <Flex direction="column" align="center">
             <Text mb={2}>Are you sure you want to delete this project?</Text>
-            <ButtonGroup spacing="6">
+            <ButtonGroup spacing="4" size="sm" variant="outline">
               <Button
                 isLoading={deleteStatus === 'loading'}
                 onClick={handleDelete}
-                colorScheme="red"
+                colorScheme="pink"
               >
                 Delete
               </Button>
-              <Button isLoading={deleteStatus === 'loading'} onClick={handleCancel}>
+              <Button
+                isLoading={deleteStatus === 'loading'}
+                onClick={handleCancel}
+                colorScheme="teal"
+              >
                 Cancel
               </Button>
             </ButtonGroup>
           </Flex>
         ) : (
-          <Button onClick={handleSubmit} colorScheme="red">
-            Delete
-          </Button>
+          <ButtonGroup spacing="4" size="sm" variant="outline">
+            <Button onClick={openUpdateProjectModal} colorScheme="teal">
+              Edit
+            </Button>
+
+            <Button onClick={handleSubmit} colorScheme="pink">
+              Delete
+            </Button>
+          </ButtonGroup>
         )}
+
+        <ProjectModal isOpen={isUpdateProjectModalOpen} onClose={closeUpdateProjectModal}>
+          <UpdateProject onClose={closeUpdateProjectModal} projectId={projectId} />
+        </ProjectModal>
       </>
     </Flex>
   );
 }
 
 ManageProject.propTypes = {
-  projectId: PropTypes.string.isRequired
+  projectId: PropTypes.string
 };
 
 export default ManageProject;

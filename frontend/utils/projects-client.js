@@ -1,11 +1,16 @@
 import client from './api-client';
+import { objToQueryString } from './query-string';
 
 function getProjects(key, query) {
   return client(`${key}?${query}`);
 }
 
-function getProject(key) {
-  return client(key);
+function getProject(projectId) {
+  const qs = objToQueryString({
+    withGraph: '[type, createdBy, manager, engineers]'
+  });
+
+  return client(`projects/${projectId}?${qs}`);
 }
 
 function getProjectIdFromProjectKey(key) {

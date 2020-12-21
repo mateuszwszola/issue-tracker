@@ -1,29 +1,27 @@
-import useMutation from '@/hooks/use-mutation';
+import PropTypes from 'prop-types';
 import { useProjectTypes } from '@/hooks/use-project';
 import { useUsers } from '@/hooks/use-user';
 import {
   Box,
-  Button,
   FormControl,
-  FormErrorMessage,
+  useColorModeValue,
   FormLabel,
-  Heading,
+  FormErrorMessage,
   Input,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
   Select,
   Text,
-  useColorModeValue,
-  useToast
+  Button
 } from '@chakra-ui/react';
-import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
 
-const CreateProject = ({ onClose }) => {
+const ProjectForm = ({
+  onSubmit,
+  status,
+  initialNameValue,
+  initialDescValue,
+  initialTypeId,
+  initialManagerId
+}) => {
   const {
     projectTypes,
     isLoading: isLoadingProjectTypes,
@@ -31,43 +29,16 @@ const CreateProject = ({ onClose }) => {
   } = useProjectTypes();
   const { users, isLoading: isLoadingUsers, error: usersError } = useUsers();
 
-  const toast = useToast();
-  const inputBgColor = useColorModeValue('white', 'transparent');
-
   const { register, handleSubmit, errors } = useForm();
 
-  const [createProject, createProjectStatus] = useMutation('projects', {
-    onSuccess: () => {
-      toast({
-        title: 'Project created.',
-        description: "We've created your project for you.",
-        status: 'success',
-        duration: 9000,
-        isClosable: true
-      });
-
-      onClose();
-    },
-    onError: (err) => {
-      toast({
-        title: 'An error occurred.',
-        description: err.message || 'Unable to create a project',
-        status: 'error',
-        duration: 9000,
-        isClosable: true
-      });
-    }
-  });
-
-  const onSubmit = async (data) => {
-    await createProject('projects', { body: data });
-  };
+  const inputBgColor = useColorModeValue('white', 'transparent');
 
   return (
     <Box as="form" onSubmit={handleSubmit(onSubmit)}>
       <FormControl id="name" isInvalid={errors.name}>
         <FormLabel>Name</FormLabel>
         <Input
+          defaultValue={initialNameValue || ''}
           ref={register({ required: true })}
           name="name"
           bgColor={inputBgColor}
@@ -79,6 +50,7 @@ const CreateProject = ({ onClose }) => {
       <FormControl mt={3} id="description">
         <FormLabel>Description</FormLabel>
         <Input
+          defaultValue={initialDescValue || ''}
           ref={register}
           name="description"
           bgColor={inputBgColor}
@@ -88,7 +60,12 @@ const CreateProject = ({ onClose }) => {
 
       <FormControl mt={3} id="type_id" isInvalid={errors.type_id}>
         <FormLabel>Type</FormLabel>
-        <Select name="type_id" ref={register({ required: true })} bgColor={inputBgColor}>
+        <Select
+          defaultValue={initialTypeId || null}
+          name="type_id"
+          ref={register({ required: true })}
+          bgColor={inputBgColor}
+        >
           {projectTypesError ? (
             <Text as="option" disabled>
               Unable to load types
@@ -113,6 +90,7 @@ const CreateProject = ({ onClose }) => {
       <FormControl mt={3} id="manager_id" isInvalid={errors.manager_id}>
         <FormLabel>Manager</FormLabel>
         <Select
+          defaultValue={Number(initialManagerId) || null}
           ref={register({ required: true })}
           name="manager_id"
           bgColor={inputBgColor}
@@ -139,47 +117,20 @@ const CreateProject = ({ onClose }) => {
         {errors.manager_id && <FormErrorMessage>This field is required</FormErrorMessage>}
       </FormControl>
 
-      <Button
-        isLoading={createProjectStatus === 'loading'}
-        mt={8}
-        w="full"
-        type="submit"
-        colorScheme="green"
-      >
+      <Button isLoading={status === 'loading'} mt={8} w="full" type="submit" colorScheme="green">
         Submit
       </Button>
     </Box>
   );
 };
 
-CreateProject.propTypes = {
-  onClose: PropTypes.func.isRequired
+ProjectForm.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+  status: PropTypes.string.isRequired,
+  initialNameValue: PropTypes.string,
+  initialDescValue: PropTypes.string,
+  initialTypeId: PropTypes.number,
+  initialManagerId: PropTypes.number
 };
 
-export const CreateProjectModal = ({ isOpen, onClose, children }) => {
-  return (
-    <Modal isOpen={isOpen} onClose={onClose} size="md">
-      <ModalOverlay />
-
-      <ModalContent mx={2} px={2} py={6}>
-        <ModalCloseButton />
-
-        <ModalHeader>
-          <Heading as="h3" textAlign="center" fontSize="2xl">
-            Create a new project
-          </Heading>
-        </ModalHeader>
-
-        <ModalBody>{children}</ModalBody>
-      </ModalContent>
-    </Modal>
-  );
-};
-
-CreateProjectModal.propTypes = {
-  isOpen: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
-  children: PropTypes.node.isRequired
-};
-
-export default CreateProject;
+export default ProjectForm;

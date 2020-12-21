@@ -1,4 +1,3 @@
-import CreateProject, { CreateProjectModal } from '@/components/dashboard/admin/CreateProject';
 import client from '@/utils/api-client';
 import {
   Avatar,
@@ -17,6 +16,8 @@ import {
 import { useApiUser } from 'contexts/api-user-context';
 import { FaPlus } from 'react-icons/fa';
 import useSWR from 'swr';
+import CreateProject from '@/components/project/CreateProject';
+import ProjectModal from '@/components/project/ProjectModal';
 
 function AdminDashboard() {
   const {
@@ -27,7 +28,7 @@ function AdminDashboard() {
 
   const { user } = useApiUser();
 
-  const { data, error } = useSWR('projects', client);
+  const { data } = useSWR('projects', client);
 
   return (
     <Flex justify="space-between" wrap="wrap">
@@ -48,9 +49,9 @@ function AdminDashboard() {
         Create project
       </Button>
 
-      <CreateProjectModal isOpen={isCreateProjectModalOpen} onClose={closeCreateProjectModal}>
+      <ProjectModal isOpen={isCreateProjectModalOpen} onClose={closeCreateProjectModal}>
         <CreateProject onClose={closeCreateProjectModal} />
-      </CreateProjectModal>
+      </ProjectModal>
 
       <Table mt={4} variant="simple">
         <TableCaption>Projects</TableCaption>

@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { useWithTokenFetcher } from '@/hooks/use-fetcher';
 import { mutate } from 'swr';
 
-function useMutation(baseKey, config = {}) {
+function useMutation(key, config = {}) {
   const [status, setStatus] = useState('idle');
   const fetcher = useWithTokenFetcher();
 
@@ -21,14 +21,14 @@ function useMutation(baseKey, config = {}) {
 
         onSuccess(data);
 
-        await mutate([baseKey]);
+        await mutate(key);
       } catch (err) {
         setStatus('error');
 
         onError(err);
       }
     },
-    [baseKey, config, fetcher]
+    [key, config, fetcher]
   );
 
   return [mutateCallback, status];
