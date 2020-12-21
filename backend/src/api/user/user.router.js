@@ -14,7 +14,7 @@ const router = Router();
 router.use(...authenticate(), checkAdmin());
 
 /**
- * @route GET /api/v1/users
+ * @route GET /api/users
  * @desc Get list of users
  */
 router.get(
@@ -26,7 +26,7 @@ router.get(
 );
 
 /**
- * @route POST /api/v1/users
+ * @route POST /api/users
  * @desc Create a user
  */
 router.post(
@@ -37,7 +37,7 @@ router.post(
 );
 
 /**
- * @route /api/v1/users/:userId
+ * @route /api/users/:userId
  */
 router.use('/:userId', [
   (req, res, next) => {
@@ -56,7 +56,7 @@ router.use('/:userId', [
 ]);
 
 /**
- * @route GET /api/v1/users/:userId
+ * @route GET /api/users/:userId
  * @desc Get a user by Id
  * @access Admin, Profile Owner
  */
@@ -67,7 +67,7 @@ router.get(
 );
 
 /**
- * @route PATCH /api/v1/users/:userId
+ * @route PATCH /api/users/:userId
  * @desc Update a user
  * @access Admin, Profile Owner
  */
@@ -79,7 +79,7 @@ router.patch(
 );
 
 /**
- * @route DELETE /api/v1/users/:userId
+ * @route DELETE /api/users/:userId
  * @desc Delete a user
  * @access Admin, Profile Owner
  */

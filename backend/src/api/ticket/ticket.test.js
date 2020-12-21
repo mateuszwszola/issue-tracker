@@ -61,6 +61,10 @@ describe('Test a ticket endpoints', () => {
     });
 
     it('should respond with an array of project tickets', async () => {
+      await TicketModel.query().insert(
+        getTicketData({ projectId: project.id, createdBy: admin.id })
+      );
+
       const response = await request(app).get(
         `${BASE_PATH}?project_id=${project.id}`
       );
@@ -76,6 +80,10 @@ describe('Test a ticket endpoints', () => {
     });
 
     it('should respond with an array of project tickets withGraphFetched', async () => {
+      await TicketModel.query().insert(
+        getTicketData({ projectId: project.id, createdBy: admin.id })
+      );
+
       const response = await request(app).get(
         `${BASE_PATH}?project_id=${project.id}&withGraph=[project,type,status,priority,createdBy]`
       );

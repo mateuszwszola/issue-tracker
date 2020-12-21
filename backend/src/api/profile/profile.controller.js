@@ -6,6 +6,18 @@ import { Project } from '../project/project.model';
 
 const { ref: projectRef } = Project;
 
+const getUserProfiles = async (req, res, next) => {
+  const { skip, limit, orderBy } = req.query;
+
+  const profiles = await User.query()
+    .modify('defaultSelects')
+    .offset(skip)
+    .limit(limit)
+    .orderBy(orderBy);
+
+  return res.status(200).json({ profiles });
+};
+
 const getUserProfile = async (req, res, next) => {
   const { userId } = req.params;
   const { withGraph } = req.query;
@@ -35,4 +47,4 @@ const getUserProfile = async (req, res, next) => {
   return res.status(200).json({ profile });
 };
 
-export { getUserProfile };
+export { getUserProfiles, getUserProfile };

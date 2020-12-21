@@ -1,10 +1,11 @@
-const validUserOrders = new Set([
+const validProfileOrders = new Set([
   'id',
   'sub',
   'name',
-  'email',
   'created_at',
   'updated_at',
 ]);
 
-export { validUserOrders };
+const validUserOrders = new Set([...validProfileOrders, 'email']);
+
+export { validUserOrders, validProfileOrders };
