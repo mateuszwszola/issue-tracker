@@ -1,5 +1,5 @@
 import client from '@/utils/api-client';
-import { getProject } from '@/utils/projects-client';
+import { getProject, getProjectEngineers } from '@/utils/projects-client';
 import useSWR from 'swr';
 
 export function useProjectTypes() {
@@ -19,6 +19,19 @@ export function useProject(projectId) {
   return {
     isLoading: !data && !error,
     project: data?.project,
+    error,
+    ...swrData
+  };
+}
+
+export function useProjectEngineers(projectId) {
+  const { data, error, ...swrData } = useSWR(['engineers', projectId], () =>
+    getProjectEngineers(projectId)
+  );
+
+  return {
+    isLoading: !error && !data,
+    engineers: data?.engineers,
     error,
     ...swrData
   };

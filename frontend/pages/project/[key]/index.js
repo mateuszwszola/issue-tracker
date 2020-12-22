@@ -1,7 +1,7 @@
 import { Layout } from '@/components/Layout';
 import ManageProject from '@/components/project/ManageProject';
-import { useProject } from '@/hooks/use-project';
-import useRouterKey from '@/hooks/use-router-key';
+import { useProject, useProjectEngineers } from '@/hooks/use-project';
+import useRouterQueryKey from '@/hooks/use-router-query-key';
 import { getProjectIdFromProjectKey } from '@/utils/projects-client';
 import {
   Avatar,
@@ -10,6 +10,7 @@ import {
   Flex,
   Heading,
   Skeleton,
+  Spinner,
   Stack,
   Tag,
   Text,
@@ -21,21 +22,24 @@ import { format } from 'date-fns';
 import NextLink from 'next/link';
 
 function ProjectPage() {
-  const projectKey = useRouterKey();
+  const projectKey = useRouterQueryKey();
   const projectId = projectKey && getProjectIdFromProjectKey(projectKey);
 
-  const { isLoading, project, error } = useProject(projectId);
+  const { isLoading: isLoadingProject, project, error: projectError } = useProject(projectId);
+  const { isLoading: isLoadingEngineers, engineers, error: engineersError } = useProjectEngineers(
+    projectId
+  );
 
   const { user } = useApiUser();
   const isAdmin = user?.is_admin;
 
   return (
     <Layout title={`Project ${projectKey}`}>
-      {error ? (
-        <Text textAlign="center">{error.message || 'Something went wrong... Sorry'}</Text>
+      {projectError ? (
+        <Text textAlign="center">{projectError.message || 'Something went wrong... Sorry'}</Text>
       ) : (
         <Box>
-          <Skeleton isLoaded={!isLoading}>
+          <Skeleton isLoaded={!isLoadingProject}>
             {isAdmin && <ManageProject projectId={projectId} />}
             <Flex
               mt={{ base: 8, md: 16 }}
@@ -61,7 +65,7 @@ function ProjectPage() {
             </Flex>
           </Skeleton>
 
-          <Skeleton isLoaded={!isLoading}>
+          <Skeleton isLoaded={!isLoadingProject}>
             <Flex
               mt={12}
               direction={{ base: 'column', md: 'row' }}
@@ -101,15 +105,22 @@ function ProjectPage() {
                 <Heading as="h3" size="md">
                   Project engineers:
                 </Heading>
-                <Wrap mt={4}>
-                  {project?.engineers?.map((engineer) => (
-                    <WrapItem key={engineer.id}>
-                      <NextLink href={`/user/${encodeURIComponent(engineer.id)}`} passHref>
-                        <Avatar as="a" name={engineer.name} src={engineer.picture} />
-                      </NextLink>
-                    </WrapItem>
-                  ))}
-                </Wrap>
+
+                {engineersError ? (
+                  <Text textAlign="center">Unable to load...</Text>
+                ) : isLoadingEngineers ? (
+                  <Spinner />
+                ) : (
+                  <Wrap mt={4}>
+                    {engineers?.map((engineer) => (
+                      <WrapItem key={engineer.id}>
+                        <NextLink href={`/user/${encodeURIComponent(engineer.id)}`} passHref>
+                          <Avatar as="a" name={engineer.name} src={engineer.picture} />
+                        </NextLink>
+                      </WrapItem>
+                    ))}
+                  </Wrap>
+                )}
               </Box>
             </Flex>
           </Skeleton>

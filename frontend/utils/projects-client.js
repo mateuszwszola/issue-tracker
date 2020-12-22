@@ -7,14 +7,18 @@ function getProjects(key, query) {
 
 function getProject(projectId) {
   const qs = objToQueryString({
-    withGraph: '[type, createdBy, manager, engineers]'
+    withGraph: '[type, createdBy, manager]'
   });
 
   return client(`projects/${projectId}?${qs}`);
+}
+
+function getProjectEngineers(projectId) {
+  return client(`projects/${projectId}/engineers`);
 }
 
 function getProjectIdFromProjectKey(key) {
   return key.split('-').slice(-1)[0];
 }
 
-export { getProjects, getProject, getProjectIdFromProjectKey };
+export { getProjects, getProject, getProjectIdFromProjectKey, getProjectEngineers };

@@ -1,5 +1,5 @@
 import useMutation from '@/hooks/use-mutation';
-import { Button, ButtonGroup, Flex, Text, useToast, useDisclosure } from '@chakra-ui/react';
+import { Button, ButtonGroup, Flex, Text, useDisclosure, useToast } from '@chakra-ui/react';
 import Router from 'next/router';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
@@ -37,10 +37,10 @@ function ManageProject({ projectId }) {
     setIsSubmitting(false);
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!isSubmitting) return;
 
-    deleteProject(`projects/${projectId}`, { method: 'DELETE' });
+    await deleteProject(`projects/${projectId}`, { method: 'DELETE' });
   };
 
   return (
@@ -49,30 +49,24 @@ function ManageProject({ projectId }) {
         {isSubmitting ? (
           <Flex direction="column" align="center">
             <Text mb={2}>Are you sure you want to delete this project?</Text>
-            <ButtonGroup spacing="4" size="sm" variant="outline">
+            <ButtonGroup spacing="4" size="sm" variant="solid">
               <Button
                 isLoading={deleteStatus === 'loading'}
                 onClick={handleDelete}
-                colorScheme="pink"
+                colorScheme="red"
               >
                 Delete
               </Button>
-              <Button
-                isLoading={deleteStatus === 'loading'}
-                onClick={handleCancel}
-                colorScheme="teal"
-              >
+              <Button isLoading={deleteStatus === 'loading'} onClick={handleCancel}>
                 Cancel
               </Button>
             </ButtonGroup>
           </Flex>
         ) : (
-          <ButtonGroup spacing="4" size="sm" variant="outline">
-            <Button onClick={openUpdateProjectModal} colorScheme="teal">
-              Edit
-            </Button>
+          <ButtonGroup spacing="4" size="sm" variant="solid">
+            <Button onClick={openUpdateProjectModal}>Edit</Button>
 
-            <Button onClick={handleSubmit} colorScheme="pink">
+            <Button onClick={handleSubmit} colorScheme="red">
               Delete
             </Button>
           </ButtonGroup>
