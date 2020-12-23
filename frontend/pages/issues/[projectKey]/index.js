@@ -37,7 +37,7 @@ function ProjectIssuesPage() {
 
       const queryString = objToQueryString(queryStringObj);
 
-      return projectId ? ['tickets', projectId, queryString] : null;
+      return projectId ? `tickets?${queryString}` : null;
     },
     [projectId, searchKey, getFilters]
   );

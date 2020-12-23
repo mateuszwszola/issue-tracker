@@ -1,11 +1,13 @@
 import { useSWRInfinite } from 'swr';
+import { useCallback } from 'react';
 
 function useInfiniteScroll(getKey, fetcher, resourceName, PAGE_SIZE) {
   const { data, isValidating, size, setSize, error } = useSWRInfinite(getKey, fetcher, {
-    revalidateAll: true
+    revalidateAll: true,
+    persistSize: true
   });
 
-  const fetchMore = () => setSize(size + 1);
+  const fetchMore = useCallback(() => setSize((s) => s + 1), [setSize]);
 
   const results = data ? [].concat(...data.map((obj) => obj[resourceName])) : [];
 
@@ -20,6 +22,7 @@ function useInfiniteScroll(getKey, fetcher, resourceName, PAGE_SIZE) {
     isEmpty ||
     (data && data[data.length - 1]?.[resourceName]?.length < PAGE_SIZE)
   );
+
   const isRefreshing = !!(isValidating && data && data.length === size);
 
   return {

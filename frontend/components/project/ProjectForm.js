@@ -3,14 +3,14 @@ import { useProjectTypes } from '@/hooks/use-project';
 import { useUsers } from '@/hooks/use-user';
 import {
   Box,
+  Button,
   FormControl,
-  useColorModeValue,
-  FormLabel,
   FormErrorMessage,
+  FormLabel,
   Input,
   Select,
   Text,
-  Button
+  useColorModeValue
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 
@@ -60,60 +60,52 @@ const ProjectForm = ({
 
       <FormControl mt={3} id="type_id" isInvalid={errors.type_id}>
         <FormLabel>Type</FormLabel>
-        <Select
-          defaultValue={initialTypeId || null}
-          name="type_id"
-          ref={register({ required: true })}
-          bgColor={inputBgColor}
-        >
-          {projectTypesError ? (
-            <Text as="option" disabled>
-              Unable to load types
-            </Text>
-          ) : isLoadingProjectTypes ? (
-            <Text as="option" disabled>
-              Loading types...
-            </Text>
-          ) : (
-            <>
-              {projectTypes.map((type) => (
-                <option key={type.id} value={Number(type.id)}>
-                  {type.name}
-                </option>
-              ))}
-            </>
-          )}
-        </Select>
+
+        {projectTypesError ? (
+          <Text as="span">Unable to load types</Text>
+        ) : isLoadingProjectTypes ? (
+          <Text as="span">Loading...</Text>
+        ) : (
+          <Select
+            defaultValue={initialTypeId}
+            name="type_id"
+            ref={register({ required: true })}
+            bgColor={inputBgColor}
+          >
+            {projectTypes.map((type) => (
+              <option key={type.id} value={Number(type.id)}>
+                {type.name}
+              </option>
+            ))}
+          </Select>
+        )}
+
         {errors.type_id && <FormErrorMessage>This field is required</FormErrorMessage>}
       </FormControl>
 
       <FormControl mt={3} id="manager_id" isInvalid={errors.manager_id}>
         <FormLabel>Manager</FormLabel>
-        <Select
-          defaultValue={Number(initialManagerId) || null}
-          ref={register({ required: true })}
-          name="manager_id"
-          bgColor={inputBgColor}
-          placeholder="Select a project manager"
-        >
-          {usersError ? (
-            <Text as="option" disabled>
-              Unable to load users
-            </Text>
-          ) : isLoadingUsers ? (
-            <Text as="option" disabled>
-              Loading users...
-            </Text>
-          ) : (
-            <>
-              {users.map((user) => (
-                <option key={user.id} value={Number(user.id)}>
-                  {user.name}
-                </option>
-              ))}
-            </>
-          )}
-        </Select>
+
+        {usersError ? (
+          <Text as="span">Unable to load users</Text>
+        ) : isLoadingUsers ? (
+          <Text as="span">Loading users...</Text>
+        ) : (
+          <Select
+            defaultValue={initialManagerId}
+            ref={register({ required: true })}
+            name="manager_id"
+            bgColor={inputBgColor}
+            placeholder="Select a project manager"
+          >
+            {users.map((user) => (
+              <option key={user.id} value={user.id}>
+                {user.name}
+              </option>
+            ))}
+          </Select>
+        )}
+
         {errors.manager_id && <FormErrorMessage>This field is required</FormErrorMessage>}
       </FormControl>
 
