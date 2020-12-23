@@ -1,4 +1,3 @@
-import { BackButton } from '@/components/BackButton';
 import { Layout } from '@/components/Layout';
 import fetcher from '@/utils/api-client';
 import { objToQueryString } from '@/utils/query-string';
@@ -13,9 +12,9 @@ import {
   useColorModeValue
 } from '@chakra-ui/react';
 import { format, formatDistanceToNow } from 'date-fns';
-import { useRouter } from 'next/router';
 import useSWR from 'swr';
 import { NextButtonLink } from '@/components/Link';
+import useRouterQueryKey from '@/hooks/use-router-query-key';
 
 function getIssueIdFromKey(issueKey) {
   return issueKey.split('-').slice(-1)[0];
@@ -27,8 +26,7 @@ const queryString = objToQueryString({
 });
 
 function Issue() {
-  const router = useRouter();
-  const { key: issueKey } = router.query;
+  const issueKey = useRouterQueryKey();
   const issueId = issueKey && getIssueIdFromKey(issueKey);
   const { data, error } = useSWR(issueId ? `tickets/${issueId}?${queryString}` : null, fetcher);
 

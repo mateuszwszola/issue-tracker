@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-import { useRouter } from 'next/router';
 import { Layout } from '@/components/Layout';
 import { Box, Flex, Heading, SimpleGrid, Text } from '@chakra-ui/react';
 import { InputSearch } from '@/components/InputSearch';
@@ -7,10 +6,11 @@ import { objToQueryString } from '@/utils/query-string';
 import { FilterMenu } from '@/components/issues/FilterMenu';
 import { getProjectIdFromProjectKey } from '@/utils/projects-client';
 import fetcher from '@/utils/api-client';
-import { useInfiniteScroll } from '../../../hooks/use-infinite-scroll';
+import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 import { Issues } from '@/components/issues/Issues';
-import { useDebouncedSearchKey } from '../../../hooks/use-search';
+import { useDebouncedSearchKey } from '@/hooks/use-search';
 import { useQueryFilter } from '@/hooks/use-query-filter';
+import { useRouter } from 'next/router';
 
 const PAGE_SIZE = 10;
 
@@ -37,7 +37,7 @@ function ProjectIssuesPage() {
 
       const queryString = objToQueryString(queryStringObj);
 
-      return projectId ? `tickets?${queryString}` : null;
+      return projectId ? ['tickets', projectId, queryString] : null;
     },
     [projectId, searchKey, getFilters]
   );

@@ -1,9 +1,9 @@
 import * as controllers from './projectEngineer.controller';
 import {
-  checkProjectManager,
-  authorize,
   authenticate,
+  authorize,
   checkAdmin,
+  checkProjectManager,
 } from '../../../middlewares/auth';
 import {
   parsePageQueryParam,
@@ -15,13 +15,10 @@ import { preloadUser } from '../../../middlewares/user';
 import { ROLES } from '../../../constants/roles';
 
 export default (router) => {
-  router.use('/:projectId/engineers', [
-    ...authenticate(),
-    (req, res, next) => {
-      const { projectId } = req.params;
-      preloadProject({ projectId })(req, res, next);
-    },
-  ]);
+  router.use('/:projectId/engineers', (req, res, next) => {
+    const { projectId } = req.params;
+    preloadProject({ projectId })(req, res, next);
+  });
 
   /**
    * @route   GET /api/projects/:projectId/engineers
@@ -39,6 +36,7 @@ export default (router) => {
    * @access  Admin, Project Manager
    */
   router.use('/:projectId/engineers/:userId', [
+    ...authenticate(),
     (req, res, next) => {
       const { userId } = req.params;
       preloadUser({ userId })(req, res, next);

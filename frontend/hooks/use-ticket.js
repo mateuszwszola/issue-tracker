@@ -43,7 +43,7 @@ export function useCreateIssue(config) {
     onSuccess: () => {
       toast({
         title: 'Issue created.',
-        description: "We've created new issue for you.",
+        description: "We've created issue for you.",
         status: 'success',
         duration: 9000,
         isClosable: true
