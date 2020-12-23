@@ -1,7 +1,6 @@
 import { Layout } from '@/components/Layout';
 import ManageProject from '@/components/project/ManageProject';
 import { useProject, useProjectEngineers } from '@/hooks/use-project';
-import useRouterQueryKey from '@/hooks/use-router-query-key';
 import { getProjectIdFromProjectKey } from '@/utils/projects-client';
 import {
   Avatar,
@@ -20,9 +19,12 @@ import {
 import { useApiUser } from 'contexts/api-user-context';
 import { format } from 'date-fns';
 import NextLink from 'next/link';
+import { useRouter } from 'next/router';
+import AddProjectEngineer from '@/components/project/AddProjectEngineer';
 
 function ProjectPage() {
-  const projectKey = useRouterQueryKey();
+  const router = useRouter();
+  const { key: projectKey } = router.query;
   const projectId = projectKey && getProjectIdFromProjectKey(projectKey);
 
   const { isLoading: isLoadingProject, project, error: projectError } = useProject(projectId);
@@ -32,6 +34,7 @@ function ProjectPage() {
 
   const { user } = useApiUser();
   const isAdmin = user?.is_admin;
+  const isProjectManager = user && project && project.manager_id === user.id;
 
   return (
     <Layout title={`Project ${projectKey}`}>
@@ -105,6 +108,10 @@ function ProjectPage() {
                 <Heading as="h3" size="md">
                   Project engineers:
                 </Heading>
+
+                {(isAdmin || isProjectManager) && (
+                  <AddProjectEngineer mt={3} projectId={projectId} />
+                )}
 
                 {engineersError ? (
                   <Text textAlign="center">Unable to load...</Text>

@@ -1,5 +1,5 @@
-import { useState, useCallback } from 'react';
-import { useWithTokenFetcher } from '@/hooks/use-fetcher';
+import { useCallback, useState } from 'react';
+import { useWithTokenFetcher } from '@/hooks/use-token-fetcher';
 import { mutate } from 'swr';
 
 function useMutation(key, config = {}) {

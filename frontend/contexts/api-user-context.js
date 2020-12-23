@@ -1,5 +1,5 @@
 import { FullPageSpinner } from '@/components/Loading';
-import { useWithTokenFetcher } from '@/hooks/use-fetcher';
+import { useWithTokenFetcher } from '@/hooks/use-token-fetcher';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useToast } from '@chakra-ui/react';
 import { createContext, useContext, useEffect, useState } from 'react';

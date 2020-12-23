@@ -14,7 +14,7 @@ import {
 import { format, formatDistanceToNow } from 'date-fns';
 import useSWR from 'swr';
 import { NextButtonLink } from '@/components/Link';
-import useRouterQueryKey from '@/hooks/use-router-query-key';
+import { useRouter } from 'next/router';
 
 function getIssueIdFromKey(issueKey) {
   return issueKey.split('-').slice(-1)[0];
@@ -26,7 +26,8 @@ const queryString = objToQueryString({
 });
 
 function Issue() {
-  const issueKey = useRouterQueryKey();
+  const router = useRouter();
+  const { key: issueKey } = router.query;
   const issueId = issueKey && getIssueIdFromKey(issueKey);
   const { data, error } = useSWR(issueId ? `tickets/${issueId}?${queryString}` : null, fetcher);
 

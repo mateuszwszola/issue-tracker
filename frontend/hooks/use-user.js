@@ -1,5 +1,5 @@
 import useSWR from 'swr';
-import { useWithTokenFetcher } from './use-fetcher';
+import { useWithTokenFetcher } from './use-token-fetcher';
 
 export function useUser() {
   const fetcher = useWithTokenFetcher();

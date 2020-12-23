@@ -2,7 +2,7 @@ import { Button, ButtonGroup, Flex, Text, useDisclosure } from '@chakra-ui/react
 import Router from 'next/router';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
-import ProjectModal from '@/components/project/ProjectModal';
+import { ProjectModal } from '@/components/project/ProjectForm';
 import UpdateProject from '@/components/project/UpdateProject';
 import { useDeleteProject } from '@/hooks/use-project';
 

@@ -39,7 +39,75 @@ export function useProjectEngineers(projectId) {
   };
 }
 
-export function useCreateProject(config) {
+export function useAddProjectEngineer(projectId, config = {}) {
+  const toast = useToast();
+
+  const [addEngineer, addEngineerStatus] = useMutation(['engineers', projectId], {
+    onSuccess: () => {
+      toast({
+        title: 'Engineer added.',
+        status: 'success',
+        duration: 5000,
+        isClosable: true
+      });
+
+      if (config.onSuccess) config.onSuccess();
+    },
+    onError: (err) => {
+      toast({
+        title: 'An error occurred.',
+        description: err.message || 'Unable to add an engineer',
+        status: 'error',
+        duration: 5000,
+        isClosable: true
+      });
+
+      if (config.onSuccess) config.onSuccess();
+    }
+  });
+
+  const handleAddEngineer = async (userId) => {
+    await addEngineer(`projects/${projectId}/engineers/${userId}`, { method: 'POST' });
+  };
+
+  return [handleAddEngineer, addEngineerStatus];
+}
+
+export function useRemoveProjectEngineer(projectId, config = {}) {
+  const toast = useToast();
+
+  const [removeEngineer, removeEngineerStatus] = useMutation(['engineers', projectId], {
+    onSuccess: () => {
+      toast({
+        title: 'Engineer removed.',
+        status: 'success',
+        duration: 5000,
+        isClosable: true
+      });
+
+      if (config.onSuccess) config.onSuccess();
+    },
+    onError: (err) => {
+      toast({
+        title: 'An error occurred.',
+        description: err.message || 'Unable to remove an engineer',
+        status: 'error',
+        duration: 5000,
+        isClosable: true
+      });
+
+      if (config.onSuccess) config.onSuccess();
+    }
+  });
+
+  const handleRemoveEngineer = async (userId) => {
+    await removeEngineer(`projects/${projectId}/engineers/${userId}`, { method: 'DELETE' });
+  };
+
+  return [handleRemoveEngineer, removeEngineerStatus];
+}
+
+export function useCreateProject(config = {}) {
   const toast = useToast();
 
   const [createProject, createProjectStatus] = useMutation('projects', {
@@ -74,7 +142,7 @@ export function useCreateProject(config) {
   return [onSubmit, createProjectStatus];
 }
 
-export function useUpdateProject(projectId, config) {
+export function useUpdateProject(projectId, config = {}) {
   const toast = useToast();
 
   const [updateProject, updateProjectStatus] = useMutation(['projects', projectId], {
@@ -109,7 +177,7 @@ export function useUpdateProject(projectId, config) {
   return [onSubmit, updateProjectStatus];
 }
 
-export function useDeleteProject(projectId, config) {
+export function useDeleteProject(projectId, config = {}) {
   const toast = useToast();
 
   const [deleteProject, deleteStatus] = useMutation('projects', {

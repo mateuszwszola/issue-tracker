@@ -1,8 +1,7 @@
 import { Button, useDisclosure } from '@chakra-ui/react';
 import { useCreateProject } from '@/hooks/use-project';
 import { FaPlus } from 'react-icons/fa';
-import ProjectModal from '@/components/project/ProjectModal';
-import ProjectForm from '@/components/project/ProjectForm';
+import ProjectForm, { ProjectModal } from '@/components/project/ProjectForm';
 
 function CreateProject() {
   const {
