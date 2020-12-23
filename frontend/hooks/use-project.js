@@ -4,23 +4,23 @@ import useSWR from 'swr';
 import { useToast } from '@chakra-ui/react';
 import useMutation from '@/hooks/use-mutation';
 
-export function useProjectTypes() {
-  const { data, error, ...swrData } = useSWR('projects/type', client);
-
-  return {
-    projectTypes: data?.types,
-    isLoading: !data && !error,
-    error,
-    ...swrData
-  };
-}
-
 export function useProject(projectId) {
   const { data, error, ...swrData } = useSWR(['projects', projectId], () => getProject(projectId));
 
   return {
     isLoading: !data && !error,
     project: data?.project,
+    error,
+    ...swrData
+  };
+}
+
+export function useProjectTypes() {
+  const { data, error, ...swrData } = useSWR('projects/type', client);
+
+  return {
+    projectTypes: data?.types,
+    isLoading: !data && !error,
     error,
     ...swrData
   };
@@ -107,4 +107,39 @@ export function useUpdateProject(projectId, config) {
   };
 
   return [onSubmit, updateProjectStatus];
+}
+
+export function useDeleteProject(projectId, config) {
+  const toast = useToast();
+
+  const [deleteProject, deleteStatus] = useMutation('projects', {
+    onSuccess: () => {
+      toast({
+        title: 'Project deleted.',
+        description: "We've successfully deleted project.",
+        status: 'success',
+        duration: 9000,
+        isClosable: true
+      });
+
+      if (config.onSuccess) config.onSuccess();
+    },
+    onError: (err) => {
+      toast({
+        title: 'An error occurred.',
+        description: err.message || 'Unable to delete a project',
+        status: 'error',
+        duration: 9000,
+        isClosable: true
+      });
+
+      if (config.onError) config.onError();
+    }
+  });
+
+  const onSubmit = async () => {
+    await deleteProject(`projects/${projectId}`, { method: 'DELETE' });
+  };
+
+  return [onSubmit, deleteStatus];
 }
