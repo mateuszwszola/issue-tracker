@@ -42,7 +42,8 @@ function ProjectIssuesPage() {
     isRefreshing,
     isEmpty,
     size,
-    fetchMore
+    fetchMore,
+    mutate
   } = useTickets(getQueryObj, PAGE_SIZE);
 
   const { user } = useApiUser();
@@ -54,7 +55,7 @@ function ProjectIssuesPage() {
           Issues for: {projectKey}
         </Heading>
 
-        {user && projectId && <CreateIssue projectId={projectId} />}
+        {user && <CreateIssue projectId={Number(projectId)} refreshIssues={() => mutate()} />}
       </Flex>
 
       <Flex mt={4} direction={['column', null, 'row']} align={{ sm: 'center' }}>

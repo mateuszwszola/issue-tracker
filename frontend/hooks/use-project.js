@@ -27,7 +27,7 @@ export function useProjectTypes() {
 }
 
 export function useProjectEngineers(projectId) {
-  const { data, error, ...swrData } = useSWR(['engineers', projectId], () =>
+  const { data, error, ...swrData } = useSWR(projectId ? ['engineers', projectId] : null, () =>
     getProjectEngineers(projectId)
   );
 

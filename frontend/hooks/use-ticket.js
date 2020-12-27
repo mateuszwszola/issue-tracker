@@ -27,40 +27,7 @@ export function useTickets(getQueryObj, PAGE_SIZE = 10) {
   return useInfiniteScroll(getKey, client, 'tickets', PAGE_SIZE);
 }
 
-export function useTicketTypes() {
-  const { data, error, ...swrData } = useSWR('tickets/type', client);
-
-  return {
-    ticketTypes: data?.types,
-    isLoading: !data && !error,
-    error,
-    ...swrData
-  };
-}
-
-export function useTicketStatuses() {
-  const { data, error, ...swrData } = useSWR('tickets/status', client);
-
-  return {
-    statuses: data?.statuses,
-    isLoading: !data && !error,
-    error,
-    ...swrData
-  };
-}
-
-export function useTicketPriorities() {
-  const { data, error, ...swrData } = useSWR('tickets/priority', client);
-
-  return {
-    priorities: data?.priorities,
-    isLoading: !data && !error,
-    error,
-    ...swrData
-  };
-}
-
-export function useCreateIssue(config) {
+export function useCreateTicket(config) {
   const toast = useToast();
 
   const [createIssue, createIssueStatus] = useMutation('tickets', {
@@ -93,4 +60,37 @@ export function useCreateIssue(config) {
   };
 
   return [onSubmit, createIssueStatus];
+}
+
+export function useTicketTypes() {
+  const { data, error, ...swrData } = useSWR('tickets/type', client);
+
+  return {
+    ticketTypes: data?.types,
+    isLoading: !data && !error,
+    error,
+    ...swrData
+  };
+}
+
+export function useTicketStatuses() {
+  const { data, error, ...swrData } = useSWR('tickets/status', client);
+
+  return {
+    statuses: data?.statuses,
+    isLoading: !data && !error,
+    error,
+    ...swrData
+  };
+}
+
+export function useTicketPriorities() {
+  const { data, error, ...swrData } = useSWR('tickets/priority', client);
+
+  return {
+    priorities: data?.priorities,
+    isLoading: !data && !error,
+    error,
+    ...swrData
+  };
 }
