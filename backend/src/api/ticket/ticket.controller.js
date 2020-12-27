@@ -3,8 +3,12 @@ import { Ticket } from './ticket.model';
 import { TicketPriority } from './ticketPriority/ticketPriority.model';
 import { TicketType } from './ticketType/ticketType.model';
 import { TicketStatus } from './ticketStatus/ticketStatus.model';
-import { pick, forEach } from 'lodash';
-import { validTicketState, ticketSearchProps } from '../../constants/ticket';
+import { forEach, pick } from 'lodash';
+import {
+  TICKET_STATUSES,
+  ticketSearchProps,
+  validTicketState,
+} from '../../constants/ticket';
 
 const getTickets = async (req, res) => {
   const {
@@ -69,9 +73,16 @@ const createTicket = async (req, res) => {
   const ticketData = req.body;
   const { id: createdById } = req.api_user;
 
+  const { id: submittedStatusId } = await TicketStatus.query()
+    .findOne({
+      name: TICKET_STATUSES.submitted,
+    })
+    .select('id');
+
   const ticket = await Ticket.query()
     .insert({
       ...ticketData,
+      status_id: submittedStatusId,
       created_by: createdById,
     })
     .returning('*');

@@ -23,7 +23,6 @@ function createTicketSchema(req, res, next) {
     description: Joi.string(),
     parent_id: Joi.number(),
     type_id: Joi.number().required(),
-    status_id: Joi.number().required(),
     priority_id: Joi.number().required(),
     assignee_id: Joi.number(),
   });
