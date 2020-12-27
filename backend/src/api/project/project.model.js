@@ -45,7 +45,7 @@ class Project extends Model {
           for (const column of ['name', 'key']) {
             query.orWhereRaw('lower(??) like ?', [
               column,
-              name.toLowerCase() + '%',
+              '%' + name.toLowerCase() + '%',
             ]);
           }
         });

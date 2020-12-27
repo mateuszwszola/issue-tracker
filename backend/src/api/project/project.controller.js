@@ -1,22 +1,36 @@
 import { Project } from './project.model';
 import { getProjectGraphQuery } from '../../utils/project';
-import { ProjectType } from './projectType/projectType.model';
+import { User } from '../user/user.model';
 
 const getProjects = async (req, res) => {
-  const { skip, limit, orderBy, withGraph, search } = req.query;
+  const {
+    skip,
+    limit,
+    orderBy,
+    withGraph,
+    search,
+    engineer_id,
+    manager_id,
+  } = req.query;
 
-  const query = Project.query()
-    .offset(skip)
-    .limit(limit)
-    .where('archived_at', null)
-    .orderBy(orderBy);
+  let query = Project.query();
 
-  if (withGraph) {
-    getProjectGraphQuery(query, withGraph);
+  if (engineer_id) {
+    query = User.relatedQuery('engineeredProjects').for(engineer_id);
   }
+
+  query.offset(skip).limit(limit).where('archived_at', null).orderBy(orderBy);
 
   if (search) {
     query.modify('search', search);
+  }
+
+  if (manager_id) {
+    query.where('manager_id', manager_id);
+  }
+
+  if (withGraph) {
+    getProjectGraphQuery(query, withGraph);
   }
 
   return res.status(200).json({ projects: await query });
@@ -71,17 +85,4 @@ const deleteProject = async (req, res) => {
   return res.status(200).json({ project });
 };
 
-const getProjectTypes = async (req, res) => {
-  const types = await ProjectType.query().modify('defaultSelects');
-
-  return res.status(200).json({ types });
-};
-
-export {
-  getProjects,
-  getProject,
-  createProject,
-  updateProject,
-  deleteProject,
-  getProjectTypes,
-};
+export { getProjects, getProject, createProject, updateProject, deleteProject };

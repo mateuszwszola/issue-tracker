@@ -6,7 +6,7 @@ import { Project } from '../project/project.model';
 
 const { ref: projectRef } = Project;
 
-const getUserProfiles = async (req, res, next) => {
+const getUserProfiles = async (req, res) => {
   const { skip, limit, orderBy } = req.query;
 
   const profiles = await User.query()
@@ -18,7 +18,7 @@ const getUserProfiles = async (req, res, next) => {
   return res.status(200).json({ profiles });
 };
 
-const getUserProfile = async (req, res, next) => {
+const getUserProfile = async (req, res) => {
   const { userId } = req.params;
   const { withGraph } = req.query;
 

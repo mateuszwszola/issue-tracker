@@ -2,6 +2,7 @@ import { Router } from 'express';
 import * as controllers from './project.controller';
 import { authenticate, authorize, checkAdmin } from '../../middlewares/auth';
 import registerProjectEngineerRoutes from './projectEngineer/projectEngineer.routes';
+import registerProjectTypeRoutes from './projectType/projectType.routes';
 import {
   parsePageQueryParam,
   validateOrderByParam,
@@ -13,18 +14,11 @@ import {
 } from '../../utils/project';
 import { preloadProject } from '../../middlewares/project';
 import { ROLES } from '../../constants/roles';
+
 const router = Router();
 
-/**
- * @route GET /api/projects/type
- * @desc Get project types
- */
-router.get('/type', controllers.getProjectTypes);
+registerProjectTypeRoutes(router);
 
-/**
- * @route /api/projects/:projectId/engineers
- * @desc  Get, add and remove engineers from a project
- */
 registerProjectEngineerRoutes(router);
 
 /**

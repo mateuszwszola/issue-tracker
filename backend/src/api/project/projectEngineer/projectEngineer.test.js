@@ -34,14 +34,6 @@ describe('Test project engineers endpoints', () => {
   });
 
   describe('GET /api/projects/:projectId/engineers', () => {
-    it('should respond with an error if user is not authenticated', async () => {
-      const response = await request(app).get(
-        `${BASE_PATH}/${project.id}/engineers`
-      );
-
-      expect(response.statusCode).toBe(401);
-    });
-
     it('should respond with 404 error if project does not exists', async () => {
       const token = getToken({ sub: admin.sub });
 
