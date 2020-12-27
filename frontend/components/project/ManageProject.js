@@ -1,10 +1,11 @@
-import { Button, ButtonGroup, Flex, Text, useDisclosure } from '@chakra-ui/react';
+import { ButtonGroup, Flex, Text, useDisclosure } from '@chakra-ui/react';
 import Router from 'next/router';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { ProjectModal } from '@/components/project/ProjectForm';
 import UpdateProject from '@/components/project/UpdateProject';
 import { useDeleteProject } from '@/hooks/use-project';
+import { ActionButton } from '../Button';
 
 function ManageProject({ projectId }) {
   const [isDeleting, setIsDeleting] = useState(false);
@@ -40,25 +41,25 @@ function ManageProject({ projectId }) {
           <Flex direction="column" align="center">
             <Text mb={2}>Are you sure you want to delete this project?</Text>
             <ButtonGroup spacing="4" size="sm" variant="solid">
-              <Button
+              <ActionButton
                 isLoading={deleteStatus === 'loading'}
                 onClick={handleDelete}
                 colorScheme="red"
               >
                 Delete
-              </Button>
-              <Button isLoading={deleteStatus === 'loading'} onClick={handleDeleteCancel}>
+              </ActionButton>
+              <ActionButton isLoading={deleteStatus === 'loading'} onClick={handleDeleteCancel}>
                 Cancel
-              </Button>
+              </ActionButton>
             </ButtonGroup>
           </Flex>
         ) : (
           <ButtonGroup spacing="4" size="sm" variant="solid">
-            <Button onClick={openUpdateProjectModal}>Edit</Button>
+            <ActionButton onClick={openUpdateProjectModal}>Edit</ActionButton>
 
-            <Button onClick={handleDeleteStart} colorScheme="red">
+            <ActionButton onClick={handleDeleteStart} colorScheme="red">
               Delete
-            </Button>
+            </ActionButton>
           </ButtonGroup>
         )}
 

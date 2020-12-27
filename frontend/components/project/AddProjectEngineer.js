@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import {
-  Button,
   Flex,
   Heading,
   Modal,
@@ -21,8 +20,9 @@ import {
 } from '@/hooks/use-project';
 import { useProfiles } from '@/hooks/use-profile';
 import { FaMinus, FaPlus } from 'react-icons/fa';
+import { ActionButton } from '@/components/Button';
 
-function AddProjectEngineer({ projectId, ...chakraProps }) {
+function AddProjectEngineer({ projectId, authUserId, ...chakraProps }) {
   const { profiles, isLoading: isLoadingProfiles, error: profilesError } = useProfiles();
   const { engineers, isLoading: isLoadingEngineers, error: engineersError } = useProjectEngineers(
     projectId
@@ -37,36 +37,46 @@ function AddProjectEngineer({ projectId, ...chakraProps }) {
 
   return (
     <>
-      <Button onClick={onOpen} size="sm" colorScheme="teal" variant="solid" {...chakraProps}>
+      <ActionButton onClick={onOpen} colorScheme="teal" {...chakraProps}>
         Manage
-      </Button>
+      </ActionButton>
 
       <AddProjectEngineerModal onClose={onClose} isOpen={isOpen}>
-        <Flex px={2} py={4} overflowY="scroll" w="full" maxHeight="500px" align="center">
+        <Flex overflowY="scroll" w="full" maxHeight="500px" align="center">
           {profilesError || engineersError ? (
             <Text>Unable to load users</Text>
           ) : isLoadingProfiles || isLoadingEngineers ? (
             <Spinner />
           ) : (
-            <VStack w="full" spacing={3} align="stretch">
-              {profiles.map((profile) => (
-                <Flex key={profile.id} align="center" justify="space-between">
-                  <Text>{profile.name}</Text>
-                  {isEngineer(profile.id) ? (
-                    <Button
-                      onClick={() => removeEngineer(profile.id)}
-                      size="sm"
-                      leftIcon={<FaMinus />}
-                    >
-                      Remove
-                    </Button>
-                  ) : (
-                    <Button onClick={() => addEngineer(profile.id)} size="sm" leftIcon={<FaPlus />}>
-                      Add
-                    </Button>
-                  )}
-                </Flex>
-              ))}
+            <VStack w="full" spacing={4} align="stretch" p={1}>
+              {profiles.map((profile) => {
+                if (profile.id === authUserId) {
+                  return null;
+                }
+
+                return (
+                  <Flex key={profile.id} align="center" justify="space-between">
+                    <Text>{profile.name}</Text>
+                    {isEngineer(profile.id) ? (
+                      <ActionButton
+                        onClick={() => removeEngineer(profile.id)}
+                        leftIcon={<FaMinus />}
+                        size="xs"
+                      >
+                        Remove
+                      </ActionButton>
+                    ) : (
+                      <ActionButton
+                        onClick={() => addEngineer(profile.id)}
+                        leftIcon={<FaPlus />}
+                        size="xs"
+                      >
+                        Add
+                      </ActionButton>
+                    )}
+                  </Flex>
+                );
+              })}
             </VStack>
           )}
         </Flex>
@@ -76,7 +86,8 @@ function AddProjectEngineer({ projectId, ...chakraProps }) {
 }
 
 AddProjectEngineer.propTypes = {
-  projectId: PropTypes.string.isRequired
+  projectId: PropTypes.string.isRequired,
+  authUserId: PropTypes.number.isRequired
 };
 
 function AddProjectEngineerModal({ isOpen, onClose, children }) {
@@ -84,11 +95,11 @@ function AddProjectEngineerModal({ isOpen, onClose, children }) {
     <Modal isOpen={isOpen} onClose={onClose} size="sm">
       <ModalOverlay />
 
-      <ModalContent mx={2} px={2} py={6}>
+      <ModalContent mx={2} py={6}>
         <ModalCloseButton />
 
         <ModalHeader>
-          <Heading as="h3" textAlign="center" fontSize="2xl">
+          <Heading as="h3" textAlign="center" fontSize="xl">
             Manage project engineers
           </Heading>
         </ModalHeader>

@@ -2,45 +2,36 @@ import { useCallback } from 'react';
 import { Layout } from '@/components/Layout';
 import { Box, Flex, Heading, SimpleGrid, Text } from '@chakra-ui/react';
 import { InputSearch } from '@/components/InputSearch';
-import { objToQueryString } from '@/utils/query-string';
 import { FilterMenu } from '@/components/issues/FilterMenu';
 import { getProjectIdFromProjectKey } from '@/utils/projects-client';
-import fetcher from '@/utils/api-client';
-import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 import { Issues } from '@/components/issues/Issues';
 import { useDebouncedSearchKey } from '@/hooks/use-search';
 import { useQueryFilter } from '@/hooks/use-query-filter';
 import { useRouter } from 'next/router';
+import CreateIssue from '@/components/issue/CreateIssue';
+import { useApiUser } from '@/contexts/api-user-context';
+import { useTickets } from '@/hooks/use-ticket';
 
 const PAGE_SIZE = 10;
 
 const filterNames = ['type_id', 'status_id', 'priority_id'];
 
 function ProjectIssuesPage() {
-  const router = useRouter();
-  const { projectKey } = router.query;
+  const {
+    query: { projectKey }
+  } = useRouter();
   const projectId = projectKey && getProjectIdFromProjectKey(projectKey);
+
   const { inputValue, handleInputValueChange, searchKey } = useDebouncedSearchKey('');
   const { filters, handleFilterChange, getFilters } = useQueryFilter(filterNames);
 
-  const getKey = useCallback(
-    (pageIndex) => {
-      const queryStringObj = {
-        page: pageIndex,
-        limit: PAGE_SIZE,
-        project_id: projectId,
-        search: searchKey,
-        withGraph: '[type, status, priority, assignee, createdBy, updatedBy, comments]',
-        orderBy: 'updated_at:desc',
-        ...getFilters()
-      };
-
-      const queryString = objToQueryString(queryStringObj);
-
-      return projectId ? `tickets?${queryString}` : null;
-    },
-    [projectId, searchKey, getFilters]
-  );
+  const getQueryObj = useCallback(() => {
+    return {
+      project_id: projectId,
+      search: searchKey,
+      ...getFilters()
+    };
+  }, [getFilters, projectId, searchKey]);
 
   const {
     error,
@@ -52,15 +43,19 @@ function ProjectIssuesPage() {
     isEmpty,
     size,
     fetchMore
-  } = useInfiniteScroll(getKey, fetcher, 'tickets', PAGE_SIZE);
+  } = useTickets(getQueryObj, PAGE_SIZE);
+
+  const { user } = useApiUser();
 
   return (
     <Layout title={`Issues for ${projectKey}`}>
-      <Box>
-        <Heading as="h2" fontSize="lg" mt={6}>
+      <Flex mt={6} w="full" justify="space-between" align="center" wrap="wrap">
+        <Heading as="h2" fontSize="lg">
           Issues for: {projectKey}
         </Heading>
-      </Box>
+
+        {user && projectId && <CreateIssue projectId={projectId} />}
+      </Flex>
 
       <Flex mt={4} direction={['column', null, 'row']} align={{ sm: 'center' }}>
         <Box w="full" maxW={['100%', 'xs']}>
@@ -68,27 +63,21 @@ function ProjectIssuesPage() {
         </Box>
 
         <SimpleGrid mt={{ base: 2, md: 0 }} ml={{ md: 4 }} columns={[2, 4]} spacing={1}>
-          <Box>
-            <FilterMenu
-              filterName="type"
-              filterValue={filters['type_id']}
-              handleFilterChange={handleFilterChange('type_id')}
-            />
-          </Box>
-          <Box>
-            <FilterMenu
-              filterName="status"
-              filterValue={filters['status_id']}
-              handleFilterChange={handleFilterChange('status_id')}
-            />
-          </Box>
-          <Box>
-            <FilterMenu
-              filterName="priority"
-              filterValue={filters['priority_id']}
-              handleFilterChange={handleFilterChange('priority_id')}
-            />
-          </Box>
+          <FilterMenu
+            filterName="type"
+            filterValue={filters['type_id']}
+            handleFilterChange={handleFilterChange('type_id')}
+          />
+          <FilterMenu
+            filterName="status"
+            filterValue={filters['status_id']}
+            handleFilterChange={handleFilterChange('status_id')}
+          />
+          <FilterMenu
+            filterName="priority"
+            filterValue={filters['priority_id']}
+            handleFilterChange={handleFilterChange('priority_id')}
+          />
         </SimpleGrid>
       </Flex>
 

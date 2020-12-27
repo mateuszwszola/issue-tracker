@@ -65,9 +65,13 @@ export const Projects = ({
           {isLoadingInitialData ? (
             <>{loadingRows}</>
           ) : isEmpty ? (
-            <Text textAlign="center" my={4}>
-              No projects found
-            </Text>
+            <Tr>
+              <Td colSpan={4}>
+                <Text my={4} textAlign="center">
+                  No projects found
+                </Text>
+              </Td>
+            </Tr>
           ) : (
             <>
               {projects.map((project, idx) => (

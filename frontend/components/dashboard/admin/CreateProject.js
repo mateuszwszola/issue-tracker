@@ -1,7 +1,8 @@
-import { Button, useDisclosure } from '@chakra-ui/react';
+import { useDisclosure } from '@chakra-ui/react';
 import { useCreateProject } from '@/hooks/use-project';
 import { FaPlus } from 'react-icons/fa';
 import ProjectForm, { ProjectModal } from '@/components/project/ProjectForm';
+import { ActionButton } from '@/components/Button';
 
 function CreateProject() {
   const {
@@ -16,7 +17,7 @@ function CreateProject() {
 
   return (
     <>
-      <Button
+      <ActionButton
         my={1}
         size="sm"
         colorScheme="blue"
@@ -24,7 +25,7 @@ function CreateProject() {
         onClick={openCreateProjectModal}
       >
         Create project
-      </Button>
+      </ActionButton>
 
       <ProjectModal isOpen={isCreateProjectModalOpen} onClose={closeCreateProjectModal}>
         <ProjectForm onSubmit={createProject} status={createProjectStatus} />

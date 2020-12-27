@@ -105,13 +105,14 @@ function ProjectPage() {
               </Box>
 
               <Box w="full" maxW="400px" mt={{ base: 12, md: 0 }}>
-                <Heading as="h3" size="md">
-                  Project engineers:
-                </Heading>
-
-                {(isAdmin || isProjectManager) && (
-                  <AddProjectEngineer mt={3} projectId={projectId} />
-                )}
+                <Flex align="center" wrap="wrap">
+                  <Heading as="h3" size="md">
+                    Project engineers:
+                  </Heading>
+                  {(isAdmin || isProjectManager) && (
+                    <AddProjectEngineer ml={3} projectId={projectId} authUserId={user?.id} />
+                  )}
+                </Flex>
 
                 {engineersError ? (
                   <Text textAlign="center">Unable to load...</Text>

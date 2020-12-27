@@ -2,7 +2,6 @@ import { Layout } from '@/components/Layout';
 import { withAuthenticationRequired } from '@auth0/auth0-react';
 import { Avatar, Box, Flex, Heading, SkeletonCircle, SkeletonText } from '@chakra-ui/react';
 import { useApiUser } from 'contexts/api-user-context';
-import Nav from '@/components/dashboard/Nav';
 import CreateProject from '@/components/dashboard/admin/CreateProject';
 
 function Dashboard() {
@@ -11,9 +10,7 @@ function Dashboard() {
   const isAdmin = user?.is_admin;
 
   return (
-    <Layout title="Dashboard | Overview">
-      <Nav active="/" />
-
+    <Layout title="Dashboard">
       <Box mt={{ base: 8 }}>
         {!user ? (
           <>

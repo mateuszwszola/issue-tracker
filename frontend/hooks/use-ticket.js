@@ -2,6 +2,30 @@ import useSWR from 'swr';
 import client from '@/utils/api-client';
 import { useToast } from '@chakra-ui/react';
 import useMutation from '@/hooks/use-mutation';
+import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
+import { objToQueryString } from '@/utils/query-string';
+import { useCallback } from 'react';
+
+export function useTickets(getQueryObj, PAGE_SIZE = 10) {
+  const getKey = useCallback(
+    (pageIndex) => {
+      const queryStringObj = {
+        page: pageIndex,
+        limit: PAGE_SIZE,
+        withGraph: '[type, status, priority, assignee, createdBy, updatedBy, comments]',
+        orderBy: 'updated_at:desc',
+        ...getQueryObj()
+      };
+
+      const queryString = objToQueryString(queryStringObj);
+
+      return () => `tickets?${queryString}`;
+    },
+    [PAGE_SIZE, getQueryObj]
+  );
+
+  return useInfiniteScroll(getKey, client, 'tickets', PAGE_SIZE);
+}
 
 export function useTicketTypes() {
   const { data, error, ...swrData } = useSWR('tickets/type', client);
@@ -68,5 +92,5 @@ export function useCreateIssue(config) {
     await createIssue('tickets', { body: data });
   };
 
-  return [createIssue, createIssueStatus, onSubmit];
+  return [onSubmit, createIssueStatus];
 }
