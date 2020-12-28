@@ -1,7 +1,15 @@
 import client from './api-client';
+import { objToQueryString } from './query-string';
 
-function getTickets(key) {
+export function getTickets(key) {
   return client(key);
 }
 
-export { getTickets };
+const ticketQueryString = objToQueryString({
+  withGraph:
+    '[type, status, priority, assignee, createdBy, updatedBy, comments, project, subTicket]'
+});
+
+export function getTicket(ticketId) {
+  return client(`tickets/${ticketId}?${ticketQueryString}`);
+}

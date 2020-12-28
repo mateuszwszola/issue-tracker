@@ -24,7 +24,17 @@ import client from '@/utils/api-client';
 import { useProjectEngineers } from '@/hooks/use-project';
 import { useApiUser } from '@/contexts/api-user-context';
 
-const IssueForm = ({ onSubmit, submitStatus, projectId }) => {
+const IssueForm = ({
+  onSubmit,
+  submitStatus,
+  projectId,
+  initialNameValue,
+  initialDescValue,
+  initialTypeValue,
+  initialPriorityValue,
+  initialAssigneeValue,
+  ...chakraProps
+}) => {
   const { register, handleSubmit, errors } = useForm();
 
   const inputBgColor = useColorModeValue('white', 'transparent');
@@ -46,10 +56,11 @@ const IssueForm = ({ onSubmit, submitStatus, projectId }) => {
   const { user } = useApiUser();
 
   return (
-    <Box as="form" onSubmit={handleSubmit(onSubmit)}>
+    <Box as="form" onSubmit={handleSubmit(onSubmit)} {...chakraProps}>
       <FormControl id="name" isInvalid={errors.name}>
         <FormLabel>Name</FormLabel>
         <Input
+          defaultValue={initialNameValue}
           ref={register({ required: true })}
           name="name"
           bgColor={inputBgColor}
@@ -61,6 +72,7 @@ const IssueForm = ({ onSubmit, submitStatus, projectId }) => {
       <FormControl mt={3} id="description">
         <FormLabel>Description</FormLabel>
         <Textarea
+          defaultValue={initialDescValue}
           ref={register}
           name="description"
           bgColor={inputBgColor}
@@ -72,6 +84,7 @@ const IssueForm = ({ onSubmit, submitStatus, projectId }) => {
         <FormLabel>Type</FormLabel>
 
         <Select
+          defaultValue={initialTypeValue}
           onClick={() => setLoadTypes(true)}
           name="type_id"
           ref={register({ required: true })}
@@ -100,6 +113,7 @@ const IssueForm = ({ onSubmit, submitStatus, projectId }) => {
         <FormLabel>Priority</FormLabel>
 
         <Select
+          defaultValue={initialPriorityValue}
           onClick={() => setLoadPriorities(true)}
           name="priority_id"
           ref={register({ required: true })}
@@ -128,6 +142,7 @@ const IssueForm = ({ onSubmit, submitStatus, projectId }) => {
         <FormLabel>Assignee</FormLabel>
 
         <Select
+          defaultValue={initialAssigneeValue}
           onClick={() => setLoadEngineers(true)}
           name="assignee_id"
           ref={register({ required: true })}
@@ -170,7 +185,12 @@ const IssueForm = ({ onSubmit, submitStatus, projectId }) => {
 IssueForm.propTypes = {
   onSubmit: PropTypes.func.isRequired,
   submitStatus: PropTypes.string.isRequired,
-  projectId: PropTypes.number.isRequired
+  projectId: PropTypes.number.isRequired,
+  initialNameValue: PropTypes.string,
+  initialDescValue: PropTypes.string,
+  initialTypeValue: PropTypes.number,
+  initialPriorityValue: PropTypes.number,
+  initialAssigneeValue: PropTypes.number
 };
 
 export const IssueFormModal = ({ isOpen, onClose, children }) => {

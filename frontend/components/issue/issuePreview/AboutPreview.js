@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { NextButtonLink } from '@/components/Link';
 import { format } from 'date-fns';
 
-function IssueAboutPreview({ isLoading, ticket }) {
+function IssueAboutPreview({ isLoading, issue }) {
   const cardBorderColor = useColorModeValue('gray.300', 'gray.900');
   const dividerColor = useColorModeValue('gray.200', 'gray.700');
   const secondaryColor = useColorModeValue('gray.500', 'gray.500');
@@ -27,16 +27,16 @@ function IssueAboutPreview({ isLoading, ticket }) {
 
             <Stack flex={1 / 2} spacing={4}>
               <Text>
-                <NextButtonLink href={`/project/${ticket?.project?.key}`}>
-                  {ticket?.project?.name}
+                <NextButtonLink href={`/project/${issue?.project?.key}`}>
+                  {issue?.project?.name}
                 </NextButtonLink>
               </Text>
-              <Text>{ticket?.type?.name}</Text>
-              <Text>{ticket?.status?.name}</Text>
-              <Text>{ticket?.priority?.name}</Text>
+              <Text>{issue?.type?.name}</Text>
+              <Text>{issue?.status?.name}</Text>
+              <Text>{issue?.priority?.name}</Text>
               <Text>
-                <NextButtonLink href={`/user/${ticket?.assignee?.id}`}>
-                  {ticket?.assignee?.name}
+                <NextButtonLink href={`/user/${issue?.assignee?.id}`}>
+                  {issue?.assignee?.name}
                 </NextButtonLink>
               </Text>
             </Stack>
@@ -52,10 +52,10 @@ function IssueAboutPreview({ isLoading, ticket }) {
           >
             {!isLoading && (
               <>
-                <Text>Created {format(new Date(ticket.created_at), 'MMM dd, yyyy')}</Text>
+                <Text>Created {format(new Date(issue.created_at), 'MMM dd, yyyy')}</Text>
 
-                {ticket.updatedBy && (
-                  <Text mt={2}>Updated {format(new Date(ticket.updated_at), 'MMM dd, yyyy')}</Text>
+                {issue.updatedBy && (
+                  <Text mt={2}>Updated {format(new Date(issue.updated_at), 'MMM dd, yyyy')}</Text>
                 )}
               </>
             )}
@@ -68,7 +68,7 @@ function IssueAboutPreview({ isLoading, ticket }) {
 
 IssueAboutPreview.propTypes = {
   isLoading: PropTypes.bool.isRequired,
-  ticket: PropTypes.object.isRequired
+  issue: PropTypes.object
 };
 
 export default IssueAboutPreview;

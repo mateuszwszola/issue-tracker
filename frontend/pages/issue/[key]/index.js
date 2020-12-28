@@ -1,46 +1,39 @@
 import DisplayError from '@/components/DisplayError';
-import IssueAboutPreview from '@/components/issue/AboutPreview';
-import Attachments from '@/components/issue/Attachments';
-import Comments from '@/components/issue/Comments';
 import EditIssueControls from '@/components/issue/EditControls';
-import IssueHeaderPreview from '@/components/issue/HeaderPreview';
+import EditIssue from '@/components/issue/EditIssue';
+import IssuePreview from '@/components/issue/IssuePreview';
 import { Layout } from '@/components/Layout';
 import { useApiUser } from '@/contexts/api-user-context';
-import client from '@/utils/api-client';
+import { useTicket } from '@/hooks/use-ticket';
 import { getIssueIdFromKey } from '@/utils/helpers';
-import { objToQueryString } from '@/utils/query-string';
-import { Box, Flex, SkeletonText } from '@chakra-ui/react';
+import { Box } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import useSWR from 'swr';
-
-const queryString = objToQueryString({
-  withGraph:
-    '[type, status, priority, assignee, createdBy, updatedBy, comments, project, subTicket]'
-});
 
 function Issue() {
+  const router = useRouter();
   const {
     query: { key: issueKey }
-  } = useRouter();
+  } = router;
 
   const issueId = issueKey && getIssueIdFromKey(issueKey);
 
-  const { data, error } = useSWR(issueId ? `tickets/${issueId}?${queryString}` : null, client);
+  const { data, error } = useTicket(issueId);
 
   const isLoading = !error && !data;
-  const ticket = data?.ticket;
-
-  const [isEditing, setIsEditing] = useState(false);
+  const issue = data?.ticket;
 
   const { user } = useApiUser();
 
   const isAdmin = user?.is_admin;
-  const isProjectManager = user && ticket && user.id === ticket.project?.manager_id;
-  const isAssignee = user && ticket && user.id === ticket.assignee_id;
-  const isSubmitter = user && ticket && user.id === ticket.created_by;
+  const isProjectManager = user && issue && user.id === issue.project?.manager_id;
+  const isAssignee = user && issue && user.id === issue.assignee_id;
+  const isSubmitter = user && issue && user.id === issue.created_by;
 
   const canEdit = isAdmin || isProjectManager || isAssignee || isSubmitter;
+  const canDelete = isAdmin || isProjectManager || isSubmitter;
+
+  const [isEditing, setIsEditing] = useState(false);
 
   return (
     <Layout title={`Issue - ${issueKey}`}>
@@ -53,29 +46,23 @@ function Issue() {
           />
         ) : (
           <>
-            {canEdit && <EditIssueControls isEditing={isEditing} setIsEditing={setIsEditing} />}
+            {canEdit && issue && (
+              <EditIssueControls
+                isEditing={isEditing}
+                setIsEditing={setIsEditing}
+                canDelete={canDelete}
+                onDelete={() => router.push(`/issues`)}
+                issueId={issueId}
+              />
+            )}
 
-            <Flex
-              mt={{ base: 8, md: 16 }}
-              direction={{ base: 'column', md: 'row-reverse' }}
-              justify={{ md: 'space-between' }}
-            >
-              <IssueAboutPreview isLoading={isLoading} ticket={ticket} />
-
-              <Box mt={{ base: 6, md: 0 }} pr={{ md: 8 }} w="full" maxW={{ md: '640px' }}>
-                {isLoading ? (
-                  <Box py={4}>
-                    <SkeletonText noOfLines={3} />
-                  </Box>
-                ) : (
-                  <IssueHeaderPreview ticket={ticket} />
-                )}
-
-                <Attachments mt={8} />
-
-                <Comments mt={12} />
-              </Box>
-            </Flex>
+            <Box mt={{ base: 8, md: 16 }}>
+              {isEditing ? (
+                <EditIssue issueId={issueId} issue={issue} onEdit={() => setIsEditing(false)} />
+              ) : (
+                <IssuePreview isLoading={isLoading} issue={issue} />
+              )}
+            </Box>
           </>
         )}
       </Box>

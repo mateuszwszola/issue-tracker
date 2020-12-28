@@ -5,6 +5,11 @@ import useMutation from '@/hooks/use-mutation';
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 import { objToQueryString } from '@/utils/query-string';
 import { useCallback } from 'react';
+import { getTicket } from '@/utils/tickets-client';
+
+export function useTicket(ticketId) {
+  return useSWR(ticketId ? ['tickets', ticketId] : null, () => getTicket(ticketId));
+}
 
 export function useTickets(getQueryObj, PAGE_SIZE = 10) {
   const getKey = useCallback(
@@ -60,6 +65,76 @@ export function useCreateTicket(config) {
   };
 
   return [onSubmit, createIssueStatus];
+}
+
+export function useUpdateTicket(ticketId, config) {
+  const toast = useToast();
+
+  const [updateIssue, updateIssueStatus] = useMutation(['tickets', ticketId], {
+    onSuccess: () => {
+      toast({
+        title: 'Issue updated.',
+        description: "We've updated issue for you.",
+        status: 'success',
+        duration: 9000,
+        isClosable: true
+      });
+
+      if (config.onSuccess) config.onSuccess();
+    },
+    onError: (err) => {
+      toast({
+        title: 'An error occurred.',
+        description: err.message || 'Unable to update issue',
+        status: 'error',
+        duration: 9000,
+        isClosable: true
+      });
+
+      if (config.onError) config.onError();
+    }
+  });
+
+  const onSubmit = async (data) => {
+    await updateIssue(`tickets/${ticketId}`, { body: data, method: 'PATCH' });
+  };
+
+  return [onSubmit, updateIssueStatus];
+}
+
+export function useDeleteTicket(ticketId, config) {
+  const toast = useToast();
+
+  const [deleteIssue, deleteIssueStatus] = useMutation(['tickets', ticketId], {
+    onSuccess: () => {
+      toast({
+        title: 'Issue removed.',
+        description: "We've removed issue for you.",
+        status: 'success',
+        duration: 9000,
+        isClosable: true
+      });
+
+      if (config.onSuccess) config.onSuccess();
+    },
+    onError: (err) => {
+      toast({
+        title: 'An error occurred.',
+        description: err.message || 'Unable to remove issue',
+        status: 'error',
+        duration: 9000,
+        isClosable: true
+      });
+
+      if (config.onError) config.onError();
+    }
+  });
+
+  const onSubmit = async () => {
+    await deleteIssue(`tickets/${ticketId}`, { method: 'DELETE' });
+  };
+
+  return [onSubmit, deleteIssueStatus];
 }
 
 export function useTicketTypes() {
