@@ -59,7 +59,7 @@ function ProjectPage() {
                 {project?.description && <Text mt={2}>{project.description}</Text>}
               </Box>
               <Box w="full" maxW="400px" mt={{ base: 4, md: 0 }}>
-                <NextLink href={`/issues/${encodeURIComponent(projectKey)}`} passHref>
+                <NextLink href={`/issues/${encodeURIComponent(String(projectKey))}`} passHref>
                   <Button as="a" variant="outline" colorScheme="blue">
                     Issues
                   </Button>
@@ -99,7 +99,7 @@ function ProjectPage() {
                     </Text>
                   )}
                   {project?.created_at && (
-                    <Text>Created at {format(new Date(project.created_at), 'MMM M, yyyy')}</Text>
+                    <Text>Created at {format(new Date(project.created_at), 'MMM dd, yyyy')}</Text>
                   )}
                 </Stack>
               </Box>

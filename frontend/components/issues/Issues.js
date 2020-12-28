@@ -14,22 +14,22 @@ import {
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { FaRegCommentAlt } from 'react-icons/fa';
-import { format } from 'date-fns';
+import { format, isToday } from 'date-fns';
 import PropTypes from 'prop-types';
 
-const ticketPriorityColor = {
+export const ticketPriorityColor = {
   Normal: null,
   Major: 'orange',
   Critical: 'red'
 };
 
-const ticketTypeColors = {
+export const ticketTypeColors = {
   Task: 'blue',
   Feature: 'green',
   Bug: 'red'
 };
 
-const ticketStatusColors = {
+export const ticketStatusColors = {
   Submitted: null,
   Open: 'blue',
   'In Progress': 'orange',
@@ -70,6 +70,9 @@ export const Issues = ({
           {tickets.map((ticket) => {
             const done =
               ticket.status && (ticket.status.name === 'Fixed' || ticket.status.name === 'Closed');
+
+            const updatedAt = new Date(ticket.updated_at);
+            const createdAt = new Date(ticket.created_at);
 
             return (
               <Box as="li" key={ticket.id}>
@@ -133,15 +136,37 @@ export const Issues = ({
                     </Tooltip>
                   </Box>
                   <Box flex="none">
-                    <Tooltip
-                      label={`Updated by ${
-                        ticket.updatedBy?.name || ticket.createdBy?.name
-                      } on ${format(new Date(ticket.updated_at), 'M MMM yyyy HH:MM')}`}
-                    >
-                      <Text fontSize="sm" color="gray.500">
-                        {format(new Date(ticket.updated_at), 'HH:MM')}
-                      </Text>
-                    </Tooltip>
+                    {ticket.updatedBy ? (
+                      <Tooltip
+                        label={`Updated by ${ticket.updatedBy?.name} on ${format(
+                          updatedAt,
+                          'MMM dd, yyyy HH:MM'
+                        )}`}
+                      >
+                        <Text fontSize="sm" color="gray.500">
+                          {isToday(updatedAt) ? (
+                            <>{format(updatedAt, 'HH:MM')}</>
+                          ) : (
+                            <>{format(updatedAt, 'MMM dd')}</>
+                          )}
+                        </Text>
+                      </Tooltip>
+                    ) : (
+                      <Tooltip
+                        label={`Created by ${ticket.createdBy?.name} on ${format(
+                          createdAt,
+                          'MMM dd, yyyy HH:MM'
+                        )}`}
+                      >
+                        <Text fontSize="sm" color="gray.500">
+                          {isToday(createdAt) ? (
+                            <>{format(createdAt, 'HH:MM')}</>
+                          ) : (
+                            <>{format(createdAt, 'MMM dd')}</>
+                          )}
+                        </Text>
+                      </Tooltip>
+                    )}
                   </Box>
                 </Flex>
               </Box>

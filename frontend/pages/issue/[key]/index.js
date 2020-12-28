@@ -95,11 +95,11 @@ function Issue() {
                   >
                     {!isLoading && (
                       <>
-                        <Text>Created {format(new Date(ticket.created_at), 'MMMM M, yyyy')}</Text>
+                        <Text>Created {format(new Date(ticket.created_at), 'MMM dd, yyyy')}</Text>
 
                         {ticket.updatedBy && (
                           <Text mt={2}>
-                            Updated {format(new Date(ticket.updated_at), 'MMMM M, yyyy')}
+                            Updated {format(new Date(ticket.updated_at), 'MMM dd, yyyy')}
                           </Text>
                         )}
                       </>
