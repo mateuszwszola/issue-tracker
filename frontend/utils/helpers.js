@@ -4,4 +4,6 @@ const reduceArrToObj = (arr, defaultValue = null) =>
     return obj;
   }, {});
 
-export { reduceArrToObj };
+const getIssueIdFromKey = (issueKey) => issueKey.split('-').slice(-1)[0];
+
+export { reduceArrToObj, getIssueIdFromKey };

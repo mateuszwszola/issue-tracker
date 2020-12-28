@@ -1,24 +1,18 @@
+import DisplayError from '@/components/DisplayError';
+import IssueAboutPreview from '@/components/issue/AboutPreview';
+import Attachments from '@/components/issue/Attachments';
+import Comments from '@/components/issue/Comments';
+import EditIssueControls from '@/components/issue/EditControls';
+import IssueHeaderPreview from '@/components/issue/HeaderPreview';
 import { Layout } from '@/components/Layout';
-import fetcher from '@/utils/api-client';
+import { useApiUser } from '@/contexts/api-user-context';
+import client from '@/utils/api-client';
+import { getIssueIdFromKey } from '@/utils/helpers';
 import { objToQueryString } from '@/utils/query-string';
-import {
-  Box,
-  Flex,
-  Heading,
-  Skeleton,
-  SkeletonText,
-  Stack,
-  Text,
-  useColorModeValue
-} from '@chakra-ui/react';
-import { format, formatDistanceToNow } from 'date-fns';
-import useSWR from 'swr';
-import { NextButtonLink } from '@/components/Link';
+import { Box, Flex, SkeletonText } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
-
-function getIssueIdFromKey(issueKey) {
-  return issueKey.split('-').slice(-1)[0];
-}
+import { useState } from 'react';
+import useSWR from 'swr';
 
 const queryString = objToQueryString({
   withGraph:
@@ -26,151 +20,63 @@ const queryString = objToQueryString({
 });
 
 function Issue() {
-  const router = useRouter();
-  const { key: issueKey } = router.query;
+  const {
+    query: { key: issueKey }
+  } = useRouter();
+
   const issueId = issueKey && getIssueIdFromKey(issueKey);
-  const { data, error } = useSWR(issueId ? `tickets/${issueId}?${queryString}` : null, fetcher);
 
+  const { data, error } = useSWR(issueId ? `tickets/${issueId}?${queryString}` : null, client);
+
+  const isLoading = !error && !data;
   const ticket = data?.ticket;
-  const isLoading = !error && !ticket;
 
-  const cardBorderColor = useColorModeValue('gray.300', 'gray.900');
-  const dividerColor = useColorModeValue('gray.200', 'gray.700');
-  const secondaryColor = useColorModeValue('gray.500', 'gray.500');
+  const [isEditing, setIsEditing] = useState(false);
+
+  const { user } = useApiUser();
+
+  const isAdmin = user?.is_admin;
+  const isProjectManager = user && ticket && user.id === ticket.project?.manager_id;
+  const isAssignee = user && ticket && user.id === ticket.assignee_id;
+  const isSubmitter = user && ticket && user.id === ticket.created_by;
+
+  const canEdit = isAdmin || isProjectManager || isAssignee || isSubmitter;
 
   return (
-    <Layout title={`Issue ${issueKey}`}>
-      <Box mt={{ base: 8, md: 16 }}>
+    <Layout title={`Issue - ${issueKey}`}>
+      <Box>
         {error ? (
-          <Text textAlign="center">Something went wrong... Sorry</Text>
+          <DisplayError
+            mt={{ base: 8, md: 16 }}
+            textAlign="center"
+            message={error.message || 'Something went wrong... Sorry'}
+          />
         ) : (
-          <Flex direction={{ base: 'column', md: 'row-reverse' }} justify={{ md: 'space-between' }}>
-            <Box w="full" maxW={{ md: '400px' }}>
-              <Heading pl={{ md: 4 }} as="h3" fontSize="2xl">
-                About
-              </Heading>
+          <>
+            {canEdit && <EditIssueControls isEditing={isEditing} setIsEditing={setIsEditing} />}
 
-              <Skeleton isLoaded={!isLoading}>
-                <Box
-                  mt={3}
-                  p={[4, 6]}
-                  rounded="md"
-                  shadow="md"
-                  border="1px"
-                  borderColor={cardBorderColor}
-                >
-                  <Flex>
-                    <Stack flex={1 / 2} spacing={4}>
-                      <Text>Project</Text>
-                      <Text>Type</Text>
-                      <Text>State</Text>
-                      <Text>Priority</Text>
-                      <Text>Assignee</Text>
-                    </Stack>
+            <Flex
+              mt={{ base: 8, md: 16 }}
+              direction={{ base: 'column', md: 'row-reverse' }}
+              justify={{ md: 'space-between' }}
+            >
+              <IssueAboutPreview isLoading={isLoading} ticket={ticket} />
 
-                    <Stack flex={1 / 2} spacing={4}>
-                      <Text>
-                        <NextButtonLink href={`/project/${ticket?.project?.key}`}>
-                          {ticket?.project?.name}
-                        </NextButtonLink>
-                      </Text>
-                      <Text>{ticket?.type?.name}</Text>
-                      <Text>{ticket?.status?.name}</Text>
-                      <Text>{ticket?.priority?.name}</Text>
-                      <Text>
-                        <NextButtonLink href={`/user/${ticket?.assignee?.id}`}>
-                          {ticket?.assignee?.name}
-                        </NextButtonLink>
-                      </Text>
-                    </Stack>
-                  </Flex>
-
-                  <Box
-                    mt={6}
-                    pt={[2, 4]}
-                    borderTop="1px"
-                    borderColor={dividerColor}
-                    color={secondaryColor}
-                    fontSize="sm"
-                  >
-                    {!isLoading && (
-                      <>
-                        <Text>Created {format(new Date(ticket.created_at), 'MMM dd, yyyy')}</Text>
-
-                        {ticket.updatedBy && (
-                          <Text mt={2}>
-                            Updated {format(new Date(ticket.updated_at), 'MMM dd, yyyy')}
-                          </Text>
-                        )}
-                      </>
-                    )}
+              <Box mt={{ base: 6, md: 0 }} pr={{ md: 8 }} w="full" maxW={{ md: '640px' }}>
+                {isLoading ? (
+                  <Box py={4}>
+                    <SkeletonText noOfLines={3} />
                   </Box>
-                </Box>
-              </Skeleton>
-            </Box>
+                ) : (
+                  <IssueHeaderPreview ticket={ticket} />
+                )}
 
-            <Box mt={{ base: 6, md: 0 }} pr={{ md: 8 }} w="full" maxW={{ md: '640px' }}>
-              {isLoading ? (
-                <Box py={4}>
-                  <SkeletonText noOfLines={3} />
-                </Box>
-              ) : (
-                <>
-                  <Flex wrap="wrap" align="baseline" color={secondaryColor} fontSize="sm">
-                    <Text mr={3} as="span" fontWeight="semibold">
-                      {issueKey}
-                    </Text>
+                <Attachments mt={8} />
 
-                    {ticket.createdBy && (
-                      <Text mr={3} as="span" display="flex" alignItems="center">
-                        Created by
-                        <NextButtonLink
-                          href={`/user/${encodeURIComponent(ticket.createdBy.id)}`}
-                          fontSize="sm"
-                          mx={1}
-                        >
-                          {ticket.createdBy.name}
-                        </NextButtonLink>
-                        {formatDistanceToNow(new Date(ticket.created_at))} ago
-                      </Text>
-                    )}
-
-                    {ticket.updatedBy && (
-                      <Text as="span" display="flex" alignItems="center">
-                        Updated by
-                        <NextButtonLink
-                          href={`/user/${encodeURIComponent(ticket.updatedBy.id)}`}
-                          fontSize="sm"
-                          mx={1}
-                        >
-                          {ticket.updatedBy.name}
-                        </NextButtonLink>
-                        {formatDistanceToNow(new Date(ticket.updated_at))} ago
-                      </Text>
-                    )}
-                  </Flex>
-
-                  <Heading mt={3} as="h2" fontSize="2xl">
-                    {ticket.name}
-                  </Heading>
-
-                  {ticket.description && <Text mt={2}>{ticket.description}</Text>}
-                </>
-              )}
-
-              <Box mt={8}>
-                <Text fontSize="sm" fontWeight="medium">
-                  Attachments {isLoading ? '...' : 0}
-                </Text>
+                <Comments mt={12} />
               </Box>
-
-              <Box mt={12} borderTop="1px" borderColor={dividerColor}>
-                <Text mt={2} textAlign="right" color={secondaryColor} fontSize="sm">
-                  Comments ({isLoading ? '...' : ticket.comments?.length})
-                </Text>
-              </Box>
-            </Box>
-          </Flex>
+            </Flex>
+          </>
         )}
       </Box>
     </Layout>
