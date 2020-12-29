@@ -4,30 +4,29 @@ import { ActionButton } from '@/components/Button';
 import { useDeleteTicket } from '@/hooks/use-ticket';
 import { useState } from 'react';
 
-function DeleteIssue({ issueId, onDelete }) {
+function DeleteIssue({ issueId, onDelete, isDeleting, setIsDeleting }) {
   const [deleteIssue, deleteStatus] = useDeleteTicket(issueId, {
     onSuccess: () => onDelete()
   });
 
-  const [isDeleting, setIsDeleting] = useState(false);
-
   return (
     <>
       {isDeleting ? (
-        <>
-          <Text>Are you sure?</Text>
+        <Flex align="center">
+          <Text mr={2}>Are you sure?</Text>
+
           <ButtonGroup>
             <ActionButton
               isLoading={deleteStatus === 'loading'}
               onClick={deleteIssue}
               colorScheme="red"
             >
-              Delete
+              Yes, delete
             </ActionButton>
 
-            <ActionButton onClick={() => setIsDeleting(false)}>Cancel</ActionButton>
+            <ActionButton onClick={() => setIsDeleting(false)}>No</ActionButton>
           </ButtonGroup>
-        </>
+        </Flex>
       ) : (
         <ActionButton onClick={() => setIsDeleting(true)} colorScheme="red">
           Delete
@@ -39,21 +38,31 @@ function DeleteIssue({ issueId, onDelete }) {
 
 DeleteIssue.propTypes = {
   issueId: PropTypes.string.isRequired,
-  onDelete: PropTypes.func.isRequired
+  onDelete: PropTypes.func.isRequired,
+  isDeleting: PropTypes.bool.isRequired,
+  setIsDeleting: PropTypes.func.isRequired
 };
 
 function EditIssueControls({ isEditing, setIsEditing, canDelete, issueId, onDelete }) {
+  const [isDeleting, setIsDeleting] = useState(false);
+
   return (
-    <Flex w="full" justify="flex-end">
+    <Flex w="full" justify="flex-end" align="center" wrap="wrap">
       {isEditing ? (
         <ButtonGroup>
-          {canDelete && <DeleteIssue issueId={issueId} onDelete={onDelete} />}
-          <ActionButton onClick={() => setIsEditing(false)}>Cancel</ActionButton>
+          {canDelete && (
+            <DeleteIssue
+              issueId={issueId}
+              onDelete={onDelete}
+              isDeleting={isDeleting}
+              setIsDeleting={setIsDeleting}
+            />
+          )}
+
+          {!isDeleting && <ActionButton onClick={() => setIsEditing(false)}>Cancel</ActionButton>}
         </ButtonGroup>
       ) : (
-        <>
-          <ActionButton onClick={() => setIsEditing(true)}>Edit</ActionButton>
-        </>
+        <ActionButton onClick={() => setIsEditing(true)}>Edit</ActionButton>
       )}
     </Flex>
   );
