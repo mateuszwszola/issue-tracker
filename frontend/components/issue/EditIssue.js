@@ -21,11 +21,13 @@ function EditIssue({ issueId, issue, onEdit }) {
           <IssueForm
             onSubmit={updateTicket}
             submitStatus={updateStatus}
+            isEditing={true}
             projectId={issue.project_id}
             initialNameValue={issue.name || ''}
             initialDescValue={issue.description || ''}
             initialTypeValue={issue.type_id}
             initialPriorityValue={issue.priority_id}
+            initialStatusValue={issue.status_id}
             initialAssigneeValue={issue.assignee_id}
           />
         </Box>
