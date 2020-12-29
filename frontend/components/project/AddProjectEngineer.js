@@ -35,6 +35,8 @@ function AddProjectEngineer({ projectId, authUserId, ...chakraProps }) {
     return !!engineers?.find((engineer) => engineer.id === userId);
   };
 
+  const otherProfiles = profiles?.filter((u) => u.id !== authUserId);
+
   return (
     <>
       <ActionButton onClick={onOpen} colorScheme="teal" {...chakraProps}>
@@ -49,34 +51,30 @@ function AddProjectEngineer({ projectId, authUserId, ...chakraProps }) {
             <Spinner />
           ) : (
             <VStack w="full" spacing={4} align="stretch" p={1}>
-              {profiles.map((profile) => {
-                if (profile.id === authUserId) {
-                  return null;
-                }
+              {otherProfiles?.length === 0 && <Text textAlign="center">No profiles found</Text>}
 
-                return (
-                  <Flex key={profile.id} align="center" justify="space-between">
-                    <Text>{profile.name}</Text>
-                    {isEngineer(profile.id) ? (
-                      <ActionButton
-                        onClick={() => removeEngineer(profile.id)}
-                        leftIcon={<FaMinus />}
-                        size="xs"
-                      >
-                        Remove
-                      </ActionButton>
-                    ) : (
-                      <ActionButton
-                        onClick={() => addEngineer(profile.id)}
-                        leftIcon={<FaPlus />}
-                        size="xs"
-                      >
-                        Add
-                      </ActionButton>
-                    )}
-                  </Flex>
-                );
-              })}
+              {otherProfiles?.map((profile) => (
+                <Flex key={profile.id} align="center" justify="space-between">
+                  <Text>{profile.name}</Text>
+                  {isEngineer(profile.id) ? (
+                    <ActionButton
+                      onClick={() => removeEngineer(profile.id)}
+                      leftIcon={<FaMinus />}
+                      size="xs"
+                    >
+                      Remove
+                    </ActionButton>
+                  ) : (
+                    <ActionButton
+                      onClick={() => addEngineer(profile.id)}
+                      leftIcon={<FaPlus />}
+                      size="xs"
+                    >
+                      Add
+                    </ActionButton>
+                  )}
+                </Flex>
+              ))}
             </VStack>
           )}
         </Flex>

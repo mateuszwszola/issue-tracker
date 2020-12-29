@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { Layout } from '@/components/Layout';
-import { Box, Flex, Heading, SimpleGrid, Text } from '@chakra-ui/react';
+import { Box, Flex, Heading, SimpleGrid, Text, Link } from '@chakra-ui/react';
 import { InputSearch } from '@/components/InputSearch';
 import { FilterMenu } from '@/components/issues/FilterMenu';
 import { getProjectIdFromProjectKey } from '@/utils/projects-client';
@@ -11,6 +11,7 @@ import { useRouter } from 'next/router';
 import CreateIssue from '@/components/issue/CreateIssue';
 import { useApiUser } from '@/contexts/api-user-context';
 import { useTickets } from '@/hooks/use-ticket';
+import NextLink from 'next/link';
 
 const PAGE_SIZE = 10;
 
@@ -52,7 +53,10 @@ function ProjectIssuesPage() {
     <Layout title={`Issues for ${projectKey}`}>
       <Flex mt={6} w="full" justify="space-between" align="center" wrap="wrap">
         <Heading as="h2" fontSize="lg">
-          Issues for: {projectKey}
+          Issues for:{' '}
+          <NextLink href={`/project/${encodeURIComponent(projectKey)}`} passHref>
+            <Link color="blue.400">{projectKey}</Link>
+          </NextLink>
         </Heading>
 
         {user && <CreateIssue projectId={Number(projectId)} refreshIssues={() => mutate()} />}

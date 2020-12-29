@@ -16,8 +16,9 @@ import NextLink from 'next/link';
 import { FaRegCommentAlt } from 'react-icons/fa';
 import { format, isToday } from 'date-fns';
 import PropTypes from 'prop-types';
+import { getProjectKeyFromTicketKey } from '@/utils/helpers';
 
-export const ticketPriorityColor = {
+export const ticketPriorityColors = {
   Normal: null,
   Major: 'orange',
   Critical: 'red'
@@ -74,11 +75,13 @@ export const Issues = ({
             const updatedAt = new Date(ticket.updated_at);
             const createdAt = new Date(ticket.created_at);
 
+            const projectKey = getProjectKeyFromTicketKey(ticket.key);
+
             return (
               <Box as="li" key={ticket.id}>
                 <Flex align="center" justify="space-between" wrap="wrap">
                   <Flex align="center">
-                    <NextLink href={`/issue/${encodeURIComponent(ticket.key)}`} passHref>
+                    <NextLink href={`/project/${encodeURIComponent(projectKey)}`} passHref>
                       <Link textDecoration={done ? 'line-through' : 'none'} fontSize="sm">
                         {ticket.key}
                       </Link>
@@ -102,7 +105,10 @@ export const Issues = ({
                 <Flex mt={4} align="center" wrap="wrap">
                   <Box flex={1} minWidth="100px">
                     <Tooltip label="Priority">
-                      <Badge fontSize="xs" colorScheme={ticketPriorityColor[ticket.priority?.name]}>
+                      <Badge
+                        fontSize="xs"
+                        colorScheme={ticketPriorityColors[ticket.priority?.name]}
+                      >
                         {ticket.priority?.name}
                       </Badge>
                     </Tooltip>

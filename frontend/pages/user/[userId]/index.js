@@ -31,7 +31,6 @@ function UserPage() {
 
   return (
     <Layout title={`User ${userId}`}>
-      <Box></Box>
       <Box mt={{ base: 8, md: 16 }}>
         {error ? (
           <Text textAlign="center">Something went wrong... Sorry</Text>
@@ -65,7 +64,7 @@ function UserPage() {
                             {profile.managedProjects.map((project) => (
                               <ListItem key={project.key}>
                                 <NextButtonLink href={`/project/${project.key}`}>
-                                  {project.key} - {project.name}
+                                  {project.name}
                                 </NextButtonLink>
                               </ListItem>
                             ))}
@@ -88,7 +87,7 @@ function UserPage() {
                             {profile.engineeredProjects.map((project) => (
                               <ListItem key={project.key}>
                                 <NextButtonLink href={`/project/${project.key}`}>
-                                  {project.key} - {project.name}
+                                  {project.name}
                                 </NextButtonLink>
                               </ListItem>
                             ))}

@@ -6,4 +6,6 @@ const reduceArrToObj = (arr, defaultValue = null) =>
 
 const getIssueIdFromKey = (issueKey) => issueKey.split('-').slice(-1)[0];
 
-export { reduceArrToObj, getIssueIdFromKey };
+const getProjectKeyFromTicketKey = (key) => key.split('-').slice(0, 2).join('-');
+
+export { reduceArrToObj, getIssueIdFromKey, getProjectKeyFromTicketKey };
