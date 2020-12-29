@@ -45,7 +45,7 @@ class Ticket extends Model {
         project_id: { type: 'integer' },
         key: { type: 'string', minLength: 1, maxLength: 255 },
         name: { type: 'string', minLength: 1, maxLength: 255 },
-        description: { type: 'string', minLength: 1, maxLength: 255 },
+        description: { type: 'string', maxLength: 255 },
         parent_id: { type: ['integer', 'null'] },
         type_id: { type: 'integer' },
         status_id: { type: 'integer' },

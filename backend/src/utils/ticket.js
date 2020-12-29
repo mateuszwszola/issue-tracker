@@ -20,7 +20,7 @@ function createTicketSchema(req, res, next) {
   const schema = Joi.object({
     project_id: Joi.number().required(),
     name: Joi.string().required(),
-    description: Joi.string(),
+    description: Joi.string().allow(''),
     parent_id: Joi.number(),
     type_id: Joi.number().required(),
     priority_id: Joi.number().required(),
@@ -33,7 +33,7 @@ function createTicketSchema(req, res, next) {
 function updateTicketSchema(req, res, next) {
   const schema = Joi.object({
     name: Joi.string().empty(''),
-    description: Joi.string(),
+    description: Joi.string().allow(''),
     parent_id: Joi.number().empty(''),
     type_id: Joi.number().empty(''),
     status_id: Joi.number().empty(''),
