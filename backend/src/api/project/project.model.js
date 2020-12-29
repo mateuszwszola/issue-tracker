@@ -8,6 +8,10 @@ class Project extends Model {
     return tableNames.project;
   }
 
+  $beforeUpdate() {
+    this.updated_at = new Date().toISOString();
+  }
+
   async $afterInsert() {
     await this.$query().patch({ key: createProjectKey(this.name, this.id) });
   }

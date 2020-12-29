@@ -6,6 +6,10 @@ class User extends Model {
     return tableNames.user;
   }
 
+  $beforeUpdate() {
+    this.updated_at = new Date().toISOString();
+  }
+
   static get modifiers() {
     return {
       defaultSelects(query) {

@@ -6,6 +6,10 @@ class Ticket extends Model {
     return tableNames.ticket;
   }
 
+  $beforeUpdate() {
+    this.updated_at = new Date().toISOString();
+  }
+
   async $afterInsert(context) {
     const { key: projectKey } = await Ticket.relatedQuery(
       'project',
