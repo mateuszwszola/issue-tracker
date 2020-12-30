@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import { useProjectTypes } from '@/hooks/use-project';
-import { useUsers } from '@/hooks/use-user';
 import {
   Box,
   Button,
@@ -20,6 +19,7 @@ import {
   useColorModeValue
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
+import { useProfiles } from '@/hooks/use-profile';
 
 const ProjectForm = ({
   onSubmit,
@@ -34,7 +34,8 @@ const ProjectForm = ({
     isLoading: isLoadingProjectTypes,
     error: projectTypesError
   } = useProjectTypes();
-  const { users, isLoading: isLoadingUsers, error: usersError } = useUsers();
+
+  const { profiles, isLoading: isLoadingProfiles, error: profileError } = useProfiles();
 
   const { register, handleSubmit, errors } = useForm();
 
@@ -93,9 +94,9 @@ const ProjectForm = ({
       <FormControl mt={3} id="manager_id" isInvalid={errors.manager_id}>
         <FormLabel>Manager</FormLabel>
 
-        {usersError ? (
+        {profileError ? (
           <Text as="span">Unable to load users</Text>
-        ) : isLoadingUsers ? (
+        ) : isLoadingProfiles ? (
           <Text as="span">Loading users...</Text>
         ) : (
           <Select
@@ -105,7 +106,7 @@ const ProjectForm = ({
             bgColor={inputBgColor}
             placeholder="Select a project manager"
           >
-            {users.map((user) => (
+            {profiles.map((user) => (
               <option key={user.id} value={user.id}>
                 {user.name}
               </option>

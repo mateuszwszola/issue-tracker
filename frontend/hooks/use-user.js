@@ -1,3 +1,6 @@
+import { useApiUser } from '@/contexts/api-user-context';
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import { useWithTokenFetcher } from './use-token-fetcher';
 
@@ -18,12 +21,23 @@ export function useUser() {
 export function useUsers() {
   const withTokenFetcher = useWithTokenFetcher();
 
-  const { data, error, ...swrData } = useSWR('users', withTokenFetcher);
+  return useSWR('users', withTokenFetcher);
+}
 
-  return {
-    users: data?.users,
-    isLoading: !data && !error,
-    error,
-    ...swrData
-  };
+export function useWithAdmin(replaceUrl) {
+  const router = useRouter();
+  const { user } = useApiUser();
+  const [isLoading, setIsLoading] = useState(true);
+
+  const isAdmin = user?.is_admin;
+
+  useEffect(() => {
+    if (!isAdmin) {
+      router.replace(replaceUrl);
+    } else {
+      setIsLoading(false);
+    }
+  }, [isAdmin, replaceUrl, router]);
+
+  return { isLoading };
 }

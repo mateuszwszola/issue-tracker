@@ -3,6 +3,7 @@ import { withAuthenticationRequired } from '@auth0/auth0-react';
 import { Avatar, Box, Flex, Heading, SkeletonCircle, SkeletonText } from '@chakra-ui/react';
 import { useApiUser } from 'contexts/api-user-context';
 import CreateProject from '@/components/dashboard/admin/CreateProject';
+import NextLink from 'next/link';
 
 function Dashboard() {
   const { user } = useApiUser();
@@ -27,7 +28,14 @@ function Dashboard() {
                 </Heading>
               </Flex>
 
-              {isAdmin && <CreateProject />}
+              {isAdmin && (
+                <>
+                  <CreateProject />
+                  <NextLink href="/dashboard/users">
+                    <a>Users</a>
+                  </NextLink>
+                </>
+              )}
             </Flex>
           </Box>
         )}

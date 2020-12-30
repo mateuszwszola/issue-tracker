@@ -146,12 +146,12 @@ export const Issues = ({
                       <Tooltip
                         label={`Updated by ${ticket.updatedBy?.name} on ${format(
                           updatedAt,
-                          'MMM dd, yyyy HH:MM'
+                          'MMM dd, yyyy HH:mm'
                         )}`}
                       >
                         <Text fontSize="sm" color="gray.500">
                           {isToday(updatedAt) ? (
-                            <>{format(updatedAt, 'HH:MM')}</>
+                            <>{format(updatedAt, 'HH:mm')}</>
                           ) : (
                             <>{format(updatedAt, 'MMM dd')}</>
                           )}
@@ -161,12 +161,12 @@ export const Issues = ({
                       <Tooltip
                         label={`Created by ${ticket.createdBy?.name} on ${format(
                           createdAt,
-                          'MMM dd, yyyy HH:MM'
+                          'MMM dd, yyyy HH:mm'
                         )}`}
                       >
                         <Text fontSize="sm" color="gray.500">
                           {isToday(createdAt) ? (
-                            <>{format(createdAt, 'HH:MM')}</>
+                            <>{format(createdAt, 'HH:mm')}</>
                           ) : (
                             <>{format(createdAt, 'MMM dd')}</>
                           )}

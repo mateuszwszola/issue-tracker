@@ -2,7 +2,7 @@ import client from '@/utils/api-client';
 import useSWR from 'swr';
 
 export function useProfiles() {
-  const { data, error, ...swrData } = useSWR('profiles', () => client('profiles'));
+  const { data, error, ...swrData } = useSWR('profiles', client);
 
   return {
     isLoading: !data && !error,
