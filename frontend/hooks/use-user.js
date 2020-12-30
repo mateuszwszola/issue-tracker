@@ -1,7 +1,9 @@
 import { useApiUser } from '@/contexts/api-user-context';
+import { useToast } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import useSWR from 'swr';
+import useMutation from './use-mutation';
 import { useWithTokenFetcher } from './use-token-fetcher';
 
 export function useUser() {
@@ -40,4 +42,74 @@ export function useWithAdmin(replaceUrl) {
   }, [isAdmin, replaceUrl, router]);
 
   return { isLoading };
+}
+
+export function useUpdateUser(config) {
+  const toast = useToast();
+
+  const [updateUser, updateStatus] = useMutation('users', {
+    onSuccess: () => {
+      toast({
+        title: 'User updated.',
+        description: "We've updated a user for you.",
+        status: 'success',
+        duration: 9000,
+        isClosable: true
+      });
+
+      if (config.onSuccess) config.onSuccess();
+    },
+    onError: (err) => {
+      toast({
+        title: 'An error occurred.',
+        description: err.message || 'Unable to update a user',
+        status: 'error',
+        duration: 9000,
+        isClosable: true
+      });
+
+      if (config.onError) config.onError();
+    }
+  });
+
+  const onSubmit = async (userId, data) => {
+    await updateUser(`users/${userId}`, { body: data, method: 'PATCH' });
+  };
+
+  return [onSubmit, updateStatus];
+}
+
+export function useDeleteUser(config) {
+  const toast = useToast();
+
+  const [deleteUser, deleteStatus] = useMutation('users', {
+    onSuccess: () => {
+      toast({
+        title: 'User deleted.',
+        description: "We've deleted a user for you.",
+        status: 'success',
+        duration: 9000,
+        isClosable: true
+      });
+
+      if (config.onSuccess) config.onSuccess();
+    },
+    onError: (err) => {
+      toast({
+        title: 'An error occurred.',
+        description: err.message || 'Unable to delete a user',
+        status: 'error',
+        duration: 9000,
+        isClosable: true
+      });
+
+      if (config.onError) config.onError();
+    }
+  });
+
+  const onSubmit = async (userId) => {
+    await deleteUser(`users/${userId}`, { method: 'DELETE' });
+  };
+
+  return [onSubmit, deleteStatus];
 }

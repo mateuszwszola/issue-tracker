@@ -1,57 +1,31 @@
-import { useState } from 'react';
+import UserRow from '@/components/dashboard/users/UserRow';
 import { Layout } from '@/components/Layout';
 import { NextButtonLink } from '@/components/Link';
 import { FullPageSpinner } from '@/components/Loading';
-import { useWithAdmin } from '@/hooks/use-user';
+import PageControls from '@/components/PageControls';
+import { useWithTokenFetcher } from '@/hooks/use-token-fetcher';
+import { useDeleteUser, useWithAdmin } from '@/hooks/use-user';
 import { withAuthenticationRequired } from '@auth0/auth0-react';
 import {
   Box,
-  Button,
-  ButtonGroup,
   Flex,
   Heading,
   HStack,
-  IconButton,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Text,
-  useColorMode,
   Table,
-  Th,
-  Tr,
-  Td,
-  Thead,
+  TableCaption,
   Tbody,
+  Td,
+  Text,
   Tfoot,
-  TableCaption
+  Th,
+  Thead,
+  Tr,
+  useColorMode
 } from '@chakra-ui/react';
-import { format } from 'date-fns';
-import { FaArrowLeft, FaArrowRight, FaEllipsisV } from 'react-icons/fa';
+import { useState } from 'react';
 import useSWR from 'swr';
-import { useWithTokenFetcher } from '@/hooks/use-token-fetcher';
-
-function ActionsMenu() {
-  return (
-    <Menu>
-      <MenuButton
-        as={IconButton}
-        aria-label="Options"
-        icon={<FaEllipsisV />}
-        bgColor="transparent"
-      />
-      <MenuList>
-        <MenuItem>Block</MenuItem>
-        <MenuItem>Delete</MenuItem>
-      </MenuList>
-    </Menu>
-  );
-}
 
 const borderColor = { light: 'gray.200', dark: 'gray.700' };
-const hoverColor = { light: 'gray.100', dark: 'gray.700' };
-const rowBgColor = { light: 'gray.50', dark: 'gray.900' };
 
 const PAGE_SIZE = 10;
 
@@ -60,11 +34,15 @@ function UsersManagement() {
 
   const { colorMode } = useColorMode();
 
+  const [onDelete] = useDeleteUser({
+    onSuccess: () => mutate()
+  });
+
   const [pageIndex, setPageIndex] = useState(0);
 
   const withTokenFetcher = useWithTokenFetcher();
 
-  const { data: usersData, error: usersError } = useSWR(
+  const { data: usersData, error: usersError, mutate } = useSWR(
     `users?page=${pageIndex}&limit=${PAGE_SIZE}`,
     withTokenFetcher
   );
@@ -83,7 +61,7 @@ function UsersManagement() {
       </HStack>
 
       <Box mt={{ base: 8 }}>
-        <Table border="2px" borderColor="transparent" size="sm">
+        <Table border="2px" borderColor="transparent" size="sm" variant="striped">
           <Heading
             as={TableCaption}
             placement="top"
@@ -129,20 +107,8 @@ function UsersManagement() {
                   </Tr>
                 ) : (
                   <>
-                    {users.map((user, idx) => (
-                      <Tr
-                        _hover={{ background: hoverColor[colorMode] }}
-                        bgColor={idx % 2 === 0 ? 'transparent' : rowBgColor[colorMode]}
-                        key={user.id}
-                      >
-                        <Td>{user.id}</Td>
-                        <Td>{user.email}</Td>
-                        <Td>{user.name}</Td>
-                        <Td>{format(new Date(user.created_at), 'dd MMM, yyyy')}</Td>
-                        <Td>
-                          <ActionsMenu />
-                        </Td>
-                      </Tr>
+                    {users.map((user) => (
+                      <UserRow key={user.id} user={user} onDelete={() => onDelete(user.id)} />
                     ))}
                   </>
                 )}
@@ -164,23 +130,12 @@ function UsersManagement() {
 
       {users && (
         <Flex mt={2} w="full" justify="center">
-          <ButtonGroup as={Flex} size="sm" variant="outline" align="center">
-            <Button
-              leftIcon={<FaArrowLeft />}
-              disabled={pageIndex <= 0}
-              onClick={() => setPageIndex((p) => Math.max(0, p - 1))}
-            >
-              Prev
-            </Button>
-            <Text mx={1}>{pageIndex}</Text>
-            <Button
-              rightIcon={<FaArrowRight />}
-              disabled={!users.length || users.length < PAGE_SIZE}
-              onClick={() => setPageIndex((p) => p + 1)}
-            >
-              Next
-            </Button>
-          </ButtonGroup>
+          <PageControls
+            pageIndex={pageIndex}
+            setPageIndex={setPageIndex}
+            pageData={users}
+            PAGE_SIZE={PAGE_SIZE}
+          />
         </Flex>
       )}
     </Layout>
