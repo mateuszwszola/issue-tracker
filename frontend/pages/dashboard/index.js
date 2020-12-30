@@ -1,9 +1,9 @@
 import { Layout } from '@/components/Layout';
 import { withAuthenticationRequired } from '@auth0/auth0-react';
-import { Avatar, Box, Flex, Heading, SkeletonCircle, SkeletonText } from '@chakra-ui/react';
+import { Avatar, Box, Flex, Heading, HStack, SkeletonCircle, SkeletonText } from '@chakra-ui/react';
 import { useApiUser } from 'contexts/api-user-context';
 import CreateProject from '@/components/dashboard/admin/CreateProject';
-import NextLink from 'next/link';
+import { NextButtonLink } from '@/components/Link';
 
 function Dashboard() {
   const { user } = useApiUser();
@@ -12,6 +12,10 @@ function Dashboard() {
 
   return (
     <Layout title="Dashboard">
+      <HStack as="nav">
+        {isAdmin && <NextButtonLink href="/dashboard/users">Users</NextButtonLink>}
+      </HStack>
+
       <Box mt={{ base: 8 }}>
         {!user ? (
           <>
@@ -28,14 +32,7 @@ function Dashboard() {
                 </Heading>
               </Flex>
 
-              {isAdmin && (
-                <>
-                  <CreateProject />
-                  <NextLink href="/dashboard/users">
-                    <a>Users</a>
-                  </NextLink>
-                </>
-              )}
+              {isAdmin && <CreateProject />}
             </Flex>
           </Box>
         )}
