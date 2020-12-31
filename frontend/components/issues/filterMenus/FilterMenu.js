@@ -15,7 +15,7 @@ import {
 import { GoChevronDown } from 'react-icons/go';
 import useSWR from 'swr';
 import client from '@/utils/api-client';
-import DisplayError from '../DisplayError';
+import DisplayError from '@/components/DisplayError';
 
 const resourceNames = {
   type: 'types',

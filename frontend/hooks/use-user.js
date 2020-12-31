@@ -44,10 +44,10 @@ export function useWithAdmin(replaceUrl) {
   return { isLoading };
 }
 
-export function useUpdateUser(config) {
+export function useUpdateUser(config = {}) {
   const toast = useToast();
 
-  const [updateUser, updateStatus] = useMutation('users', {
+  const [updateUser, updateStatus] = useMutation('auth/login', {
     onSuccess: () => {
       toast({
         title: 'User updated.',
@@ -79,10 +79,10 @@ export function useUpdateUser(config) {
   return [onSubmit, updateStatus];
 }
 
-export function useDeleteUser(config) {
+export function useDeleteUser(config = {}) {
   const toast = useToast();
 
-  const [deleteUser, deleteStatus] = useMutation('users', {
+  const [deleteUser, deleteStatus] = useMutation('auth/login', {
     onSuccess: () => {
       toast({
         title: 'User deleted.',
