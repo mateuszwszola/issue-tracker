@@ -51,8 +51,8 @@ function ProjectIssuesPage() {
 
   return (
     <Layout title={`Issues for ${projectKey}`}>
-      <Flex mt={6} w="full" justify="space-between" align="center" wrap="wrap">
-        <Heading as="h2" fontSize="lg">
+      <Flex mt={2} w="full" justify="space-between" align="center" wrap="wrap">
+        <Heading size="lg">
           Issues for:{' '}
           <NextLink href={`/project/${encodeURIComponent(projectKey)}`} passHref>
             <Link color="blue.400">{projectKey}</Link>

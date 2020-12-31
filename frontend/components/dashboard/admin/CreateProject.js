@@ -4,7 +4,7 @@ import { FaPlus } from 'react-icons/fa';
 import ProjectForm, { ProjectModal } from '@/components/project/ProjectForm';
 import { ActionButton } from '@/components/Button';
 
-function CreateProject() {
+function CreateProject({ ...chakraProps }) {
   const {
     isOpen: isCreateProjectModalOpen,
     onOpen: openCreateProjectModal,
@@ -18,7 +18,7 @@ function CreateProject() {
   return (
     <>
       <ActionButton
-        my={1}
+        {...chakraProps}
         size="sm"
         colorScheme="blue"
         leftIcon={<FaPlus />}

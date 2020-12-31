@@ -3,6 +3,7 @@ import { Layout } from '@/components/Layout';
 import { NextButtonLink } from '@/components/Link';
 import { FullPageSpinner } from '@/components/Loading';
 import PageControls from '@/components/PageControls';
+import { tableBorderColor } from '@/components/Table';
 import { useWithTokenFetcher } from '@/hooks/use-token-fetcher';
 import { useDeleteUser, useWithAdmin } from '@/hooks/use-user';
 import { withAuthenticationRequired } from '@auth0/auth0-react';
@@ -12,11 +13,9 @@ import {
   Heading,
   HStack,
   Table,
-  TableCaption,
   Tbody,
   Td,
   Text,
-  Tfoot,
   Th,
   Thead,
   Tr,
@@ -25,8 +24,6 @@ import {
 import { useState } from 'react';
 import useSWR from 'swr';
 
-const borderColor = { light: 'gray.200', dark: 'gray.700' };
-
 const PAGE_SIZE = 10;
 
 function UsersManagement() {
@@ -34,7 +31,7 @@ function UsersManagement() {
 
   const { colorMode } = useColorMode();
 
-  const [onDelete] = useDeleteUser({
+  const [onDelete, deleteStatus] = useDeleteUser({
     onSuccess: () => mutate()
   });
 
@@ -60,40 +57,30 @@ function UsersManagement() {
         <NextButtonLink href="/dashboard">Overview</NextButtonLink>
       </HStack>
 
-      <Box mt={{ base: 8 }}>
-        <Table border="2px" borderColor="transparent" size="sm" variant="striped">
-          <Heading
-            as={TableCaption}
-            placement="top"
-            mt={2}
-            mb={6}
-            size="md"
-            fontWeight="semibold"
-            textTransform="uppercase"
-            letterSpacing="wide"
-          >
-            Users
-          </Heading>
+      <Heading mt={4} size="lg">
+        Users
+      </Heading>
 
-          <Thead borderBottom="2px" borderColor={borderColor[colorMode]}>
+      <Box mt={{ base: 8 }} w="full" overflow="auto">
+        <Table border="2px" borderColor="transparent" size="sm" variant="striped">
+          <Thead borderBottom="2px" borderColor={tableBorderColor[colorMode]}>
             <Tr>
               <Th>ID</Th>
               <Th>Email</Th>
               <Th>Name</Th>
-              <Th>Created at</Th>
               <Th></Th>
             </Tr>
           </Thead>
           <Tbody>
             {usersError ? (
               <Tr>
-                <Td textAlign="center" colSpan={5}>
+                <Td textAlign="center" colSpan={4}>
                   Unable to fetch users
                 </Td>
               </Tr>
             ) : !users ? (
               <Tr>
-                <Td textAlign="center" colSpan={5}>
+                <Td textAlign="center" colSpan={4}>
                   Loading...
                 </Td>
               </Tr>
@@ -101,42 +88,42 @@ function UsersManagement() {
               <>
                 {!users.length ? (
                   <Tr>
-                    <Td textAlign="center" colSpan={5}>
+                    <Td textAlign="center" colSpan={4}>
                       No users found
                     </Td>
                   </Tr>
                 ) : (
                   <>
                     {users.map((user) => (
-                      <UserRow key={user.id} user={user} onDelete={() => onDelete(user.id)} />
+                      <UserRow
+                        key={user.id}
+                        user={user}
+                        onDelete={() => onDelete(user.id)}
+                        deleteStatus={deleteStatus}
+                      />
                     ))}
                   </>
                 )}
               </>
             )}
           </Tbody>
-
-          <Tfoot borderTop="2px" borderColor={borderColor[colorMode]}>
-            <Tr>
-              <Td colSpan="5">
-                <Text fontSize="sm" textAlign="right" color="gray.500" fontWeight="medium">
-                  Showing {isLoadingUsers ? '...' : users?.length || 0} users
-                </Text>
-              </Td>
-            </Tr>
-          </Tfoot>
         </Table>
       </Box>
 
       {users && (
-        <Flex mt={2} w="full" justify="center">
-          <PageControls
-            pageIndex={pageIndex}
-            setPageIndex={setPageIndex}
-            pageData={users}
-            PAGE_SIZE={PAGE_SIZE}
-          />
-        </Flex>
+        <>
+          <Text p={1} fontSize="sm" textAlign="right" color="gray.500" fontWeight="medium">
+            Showing {isLoadingUsers ? '...' : users?.length || 0} users
+          </Text>
+          <Flex mt={2} w="full" justify="center">
+            <PageControls
+              pageIndex={pageIndex}
+              setPageIndex={setPageIndex}
+              pageData={users}
+              PAGE_SIZE={PAGE_SIZE}
+            />
+          </Flex>
+        </>
       )}
     </Layout>
   );

@@ -16,68 +16,78 @@ import {
 } from '@chakra-ui/react';
 import { FaEllipsisV } from 'react-icons/fa';
 
-function UserDeleteAlert({ onDelete, children }) {
-  const [isOpen, setIsOpen] = useState(false);
+function UserDeleteAlert({ isOpen, setIsOpen, handleDelete }) {
   const cancelRef = useRef();
 
-  const handleDelete = () => {
-    onDelete();
-    setIsOpen(false);
-  };
-
   return (
-    <>
-      {children(setIsOpen)}
+    <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={() => setIsOpen(false)}>
+      <AlertDialogOverlay>
+        <AlertDialogContent>
+          <AlertDialogHeader fontSize="lg" fontWeight="bold">
+            Delete a user
+          </AlertDialogHeader>
 
-      <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={() => setIsOpen(false)}>
-        <AlertDialogOverlay>
-          <AlertDialogContent>
-            <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Delete a user
-            </AlertDialogHeader>
+          <AlertDialogBody>Are you sure? This action cannot be undone.</AlertDialogBody>
 
-            <AlertDialogBody>Are you sure? This action cannot be undone.</AlertDialogBody>
-
-            <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={() => setIsOpen(false)}>
-                Cancel
-              </Button>
-              <Button colorScheme="red" onClick={handleDelete} ml={3}>
-                Delete
-              </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialogOverlay>
-      </AlertDialog>
-    </>
+          <AlertDialogFooter>
+            <Button ref={cancelRef} onClick={() => setIsOpen(false)}>
+              Cancel
+            </Button>
+            <Button colorScheme="red" onClick={handleDelete} ml={3}>
+              Delete
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialogOverlay>
+    </AlertDialog>
   );
 }
 
 UserDeleteAlert.propTypes = {
-  children: PropTypes.func.isRequired,
-  onDelete: PropTypes.func.isRequired
+  isOpen: PropTypes.bool.isRequired,
+  setIsOpen: PropTypes.func.isRequired,
+  handleDelete: PropTypes.func.isRequired
 };
 
-function UserOptionsMenu({ onDelete }) {
+function UserOptionsMenu({ onDelete, deleteStatus }) {
+  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
+
+  const handleDelete = () => {
+    onDelete();
+    setIsDeleteAlertOpen(false);
+  };
+
   return (
-    <Menu>
-      <MenuButton
-        as={IconButton}
-        aria-label="Options"
-        icon={<FaEllipsisV />}
-        bgColor="transparent"
+    <>
+      <Menu fixed>
+        <MenuButton
+          as={IconButton}
+          aria-label="Options"
+          icon={<FaEllipsisV />}
+          bgColor="transparent"
+        />
+        <MenuList>
+          <MenuItem
+            onClick={() => setIsDeleteAlertOpen(true)}
+            isDisabled={deleteStatus === 'loading'}
+          >
+            Delete
+          </MenuItem>
+        </MenuList>
+      </Menu>
+
+      <UserDeleteAlert
+        isOpen={isDeleteAlertOpen}
+        setIsOpen={setIsDeleteAlertOpen}
+        handleDelete={handleDelete}
       />
-      <MenuList>
-        <UserDeleteAlert onDelete={onDelete}>
-          {(setIsOpen) => <MenuItem onClick={() => setIsOpen(true)}>Delete</MenuItem>}
-        </UserDeleteAlert>
-      </MenuList>
-    </Menu>
+    </>
   );
 }
 
 UserOptionsMenu.propTypes = {
-  onDelete: PropTypes.func.isRequired
+  onDelete: PropTypes.func.isRequired,
+  deleteStatus: PropTypes.string.isRequired
 };
 
 export default UserOptionsMenu;

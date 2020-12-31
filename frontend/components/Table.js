@@ -7,6 +7,10 @@ const styles = {
   }
 };
 
+export const tableBorderColor = { light: 'gray.200', dark: 'gray.700' };
+export const tableHoverColor = { light: 'gray.100', dark: 'gray.700' };
+export const tableRowBgColor = { light: 'gray.50', dark: 'gray.900' };
+
 const childrenPropTypes = {
   children: PropTypes.node
 };

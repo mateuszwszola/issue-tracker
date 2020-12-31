@@ -68,7 +68,7 @@ function ProjectsPage() {
           message="Something went wrong... Please try reload the page"
         />
       ) : (
-        <Box mt={8} overflow="auto">
+        <Box mt={8}>
           <Projects
             projects={projects}
             isLoadingInitialData={isLoadingInitialData}

@@ -31,7 +31,7 @@ function UserPage() {
 
   return (
     <Layout title={`User ${userId}`}>
-      <Box mt={{ base: 8, md: 16 }}>
+      <Box my={{ base: 8, md: 16 }}>
         {error ? (
           <Text textAlign="center">Something went wrong... Sorry</Text>
         ) : (
@@ -46,7 +46,7 @@ function UserPage() {
                 <Flex>
                   <Avatar size="lg" name={profile.name} src={profile.picture} />
                   <Box ml={4}>
-                    <Heading as="h2" fontSize="3xl" fontWeight="semibold">
+                    <Heading size="lg" fontWeight="semibold">
                       {profile.name}
                     </Heading>
                   </Box>

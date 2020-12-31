@@ -1,19 +1,18 @@
 import PropTypes from 'prop-types';
-import { Tr, Td } from '@chakra-ui/react';
 import UserOptionsMenu from '@/components/dashboard/users/userRow/OptionsMenu';
-import { format } from 'date-fns';
+import { Tr, Td, Flex } from '@chakra-ui/react';
 
-function UserRow({ user, onDelete }) {
-  const createdAt = format(new Date(user.created_at), 'dd MMM, yyyy');
-
+function UserRow({ user, onDelete, deleteStatus, ...chakraProps }) {
   return (
-    <Tr>
+    <Tr {...chakraProps}>
       <Td>{user.id}</Td>
       <Td>{user.email}</Td>
       <Td>{user.name}</Td>
-      <Td>{createdAt}</Td>
+
       <Td>
-        <UserOptionsMenu onDelete={onDelete} />
+        <Flex w="full" justify="flex-end">
+          <UserOptionsMenu onDelete={onDelete} deleteStatus={deleteStatus} />
+        </Flex>
       </Td>
     </Tr>
   );
@@ -21,7 +20,8 @@ function UserRow({ user, onDelete }) {
 
 UserRow.propTypes = {
   user: PropTypes.object.isRequired,
-  onDelete: PropTypes.func.isRequired
+  onDelete: PropTypes.func.isRequired,
+  deleteStatus: PropTypes.string.isRequired
 };
 
 export default UserRow;
