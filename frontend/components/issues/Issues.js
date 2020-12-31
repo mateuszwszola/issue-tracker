@@ -5,6 +5,7 @@ import {
   Flex,
   Icon,
   Link,
+  SimpleGrid,
   Skeleton,
   Stack,
   StackDivider,
@@ -66,7 +67,7 @@ export const Issues = ({
           divider={<StackDivider />}
           width="100%"
           align="stretch"
-          spacing={2}
+          spacing={[3, 2]}
         >
           {tickets.map((ticket) => {
             const done =
@@ -80,7 +81,7 @@ export const Issues = ({
             return (
               <Box as="li" key={ticket.id}>
                 <Flex align="center" justify="space-between" wrap="wrap">
-                  <Flex align="center">
+                  <Flex align="center" flexShrink={0}>
                     <NextLink href={`/project/${encodeURIComponent(projectKey)}`} passHref>
                       <Link textDecoration={done ? 'line-through' : 'none'} fontSize="sm">
                         {ticket.key}
@@ -102,8 +103,8 @@ export const Issues = ({
                   )}
                 </Flex>
 
-                <Flex mt={4} align="center" wrap="wrap">
-                  <Box flex={1} minWidth="100px">
+                <SimpleGrid mt={[3, null, null, 6]} columns={[2, 3, 4, 6]} spacingY={1}>
+                  <Box>
                     <Tooltip label="Priority">
                       <Badge
                         fontSize="xs"
@@ -113,35 +114,40 @@ export const Issues = ({
                       </Badge>
                     </Tooltip>
                   </Box>
-                  <Box flex={1} minWidth="100px">
+
+                  <Box>
                     <Tooltip label="Assignee">
                       <Text as="span" fontSize="sm">
                         {ticket.assignee?.name || 'Unassigned'}
                       </Text>
                     </Tooltip>
                   </Box>
-                  <Box flex={1} minWidth="100px">
+
+                  <Box>
                     <Tooltip label="Type">
                       <Badge fontSize="xs" colorScheme={ticketTypeColors[ticket.type?.name]}>
                         {ticket.type?.name}
                       </Badge>
                     </Tooltip>
                   </Box>
-                  <Box flex={1} minWidth="100px">
+
+                  <Box>
                     <Tooltip label="State">
                       <Badge fontSize="xs" colorScheme={ticketStatusColors[ticket.status?.name]}>
                         {ticket.status?.name}
                       </Badge>
                     </Tooltip>
                   </Box>
-                  <Box flex="none">
+
+                  <Box>
                     <Tooltip label="Created by">
                       <Text fontSize="sm" mr={3}>
                         {ticket.createdBy?.name}
                       </Text>
                     </Tooltip>
                   </Box>
-                  <Box flex="none">
+
+                  <Flex justify={{ lg: 'flex-end' }}>
                     {ticket.updatedBy ? (
                       <Tooltip
                         label={`Updated by ${ticket.updatedBy?.name} on ${format(
@@ -173,18 +179,24 @@ export const Issues = ({
                         </Text>
                       </Tooltip>
                     )}
-                  </Box>
-                </Flex>
+                  </Flex>
+                </SimpleGrid>
               </Box>
             );
           })}
 
-          <Flex py={2} align="center" justify="space-between">
+          <Flex
+            mt={[1, 2]}
+            direction={['column-reverse', 'row']}
+            align="center"
+            justify="space-between"
+          >
             <Button
+              mt={[3, 0]}
               disabled={isLoadingMore || isReachingEnd}
               onClick={fetchMore}
               size="sm"
-              variant="link"
+              variant="outline"
               colorScheme="blue"
             >
               Show more issues
