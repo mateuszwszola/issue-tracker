@@ -1,22 +1,28 @@
-import { useCallback } from 'react';
-import { Layout } from '@/components/Layout';
-import { Box, Flex, Heading, SimpleGrid, Text } from '@chakra-ui/react';
+import DisplayError from '@/components/DisplayError';
 import { InputSearch } from '@/components/InputSearch';
-import { objToQueryString } from '@/utils/query-string';
+import AssignedToMeBtn from '@/components/issues/AssignedToMeBtn';
 import { FilterMenu } from '@/components/issues/FilterMenu';
-import fetcher from '@/utils/api-client';
-import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 import { Issues } from '@/components/issues/Issues';
-import { useDebouncedSearchKey } from '@/hooks/use-search';
+import { Layout } from '@/components/Layout';
+import { useApiUser } from '@/contexts/api-user-context';
+import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 import { useQueryFilter } from '@/hooks/use-query-filter';
+import { useDebouncedSearchKey } from '@/hooks/use-search';
+import fetcher from '@/utils/api-client';
+import { objToQueryString } from '@/utils/query-string';
+import { Box, Flex, Heading, SimpleGrid } from '@chakra-ui/react';
+import { useCallback } from 'react';
 
 const PAGE_SIZE = 10;
 
-const filterNames = ['type_id', 'status_id', 'priority_id'];
+const filterNames = ['type_id', 'status_id', 'priority_id', 'assignee_id'];
 
 function IssuesPage() {
   const { inputValue, handleInputValueChange, searchKey } = useDebouncedSearchKey('');
+
   const { filters, handleFilterChange, getFilters } = useQueryFilter(filterNames);
+
+  const { user } = useApiUser();
 
   const getKey = useCallback(
     (pageIndex) => {
@@ -50,39 +56,51 @@ function IssuesPage() {
 
   return (
     <Layout title="Issues">
-      <Box>
-        <Heading as="h2" fontSize="xl" mt={6}>
-          All Issues
-        </Heading>
-      </Box>
+      <Heading size="lg" mt={2}>
+        All issues
+      </Heading>
 
       <Flex mt={4} direction={['column', null, 'row']} align={{ sm: 'center' }}>
         <Box w="full" maxW={['100%', 'xs']}>
           <InputSearch value={inputValue} handleChange={handleInputValueChange} />
         </Box>
 
-        <SimpleGrid mt={{ base: 2, md: 0 }} ml={{ md: 4 }} columns={[2, 4]} spacing={1}>
+        <SimpleGrid mt={{ base: 2, md: 0 }} ml={{ md: 4 }} columns={[2, 4]} spacing={4}>
           <FilterMenu
             filterName="type"
             filterValue={filters['type_id']}
             handleFilterChange={handleFilterChange('type_id')}
+            fetchUrl={`tickets/type`}
           />
           <FilterMenu
             filterName="status"
             filterValue={filters['status_id']}
             handleFilterChange={handleFilterChange('status_id')}
+            fetchUrl={`tickets/status`}
           />
           <FilterMenu
             filterName="priority"
             filterValue={filters['priority_id']}
             handleFilterChange={handleFilterChange('priority_id')}
+            fetchUrl={`tickets/priority`}
           />
+          {user && (
+            <Box>
+              <AssignedToMeBtn
+                filterValue={String(filters['assignee_id'])}
+                handleFilterChange={handleFilterChange('assignee_id')}
+                userId={user.id}
+              >
+                Assigned to me
+              </AssignedToMeBtn>
+            </Box>
+          )}
         </SimpleGrid>
       </Flex>
 
       <Box my={12}>
         {error ? (
-          <Text>Something went wrong... Try reload the page</Text>
+          <DisplayError message="Something went wrong... Try reload the page" />
         ) : (
           <Issues
             tickets={tickets}

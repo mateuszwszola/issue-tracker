@@ -27,14 +27,22 @@ export const Header = () => {
 
   return (
     <Box as="header" w="full" borderBottom="1px" borderColor={borderColor}>
-      <Flex w="full" justify="space-between" align="center" maxW="6xl" mx="auto" p={[2, 4]}>
+      <Flex
+        w="full"
+        justify="space-between"
+        align="center"
+        maxW="6xl"
+        mx="auto"
+        p={[2, 4]}
+        wrap="wrap"
+      >
         <NextLink href="/" passHref>
           <Link fontSize="lg" fontWeight="bold" letterSpacing="wide">
-            MW_IT
+            MWIT
           </Link>
         </NextLink>
 
-        <HStack spacing={4}>
+        <HStack as="nav" spacing={[2, 4]}>
           <NextLink href="/projects" passHref>
             <Button as="a" variant="link" size="sm" colorScheme="blue">
               Projects

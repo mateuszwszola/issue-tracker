@@ -14,21 +14,26 @@ import {
 } from '@chakra-ui/react';
 import { GoChevronDown } from 'react-icons/go';
 import useSWR from 'swr';
-import fetcher from '@/utils/api-client';
+import client from '@/utils/api-client';
+import DisplayError from '../DisplayError';
 
 const resourceNames = {
   type: 'types',
   status: 'statuses',
-  priority: 'priorities'
+  priority: 'priorities',
+  assignee: 'profiles'
 };
 
-export const FilterMenu = ({ filterName, filterValue, handleFilterChange }) => {
+export const FilterMenu = ({ filterName, filterValue, handleFilterChange, fetchUrl }) => {
   const [startFetching, setStartFetching] = useState(false);
-  const { data, error } = useSWR(startFetching ? `tickets/${filterName}` : null, fetcher);
+
+  const { data, error } = useSWR(startFetching ? fetchUrl : null, client);
+
   const resourceName = resourceNames[filterName];
+
   const options = data && data[resourceName];
 
-  const selected = options?.find((option) => String(option.id) === filterValue);
+  const selected = options?.find((option) => String(option.id) === String(filterValue));
 
   return (
     <Menu isLazy onOpen={() => setStartFetching(true)}>
@@ -40,9 +45,7 @@ export const FilterMenu = ({ filterName, filterValue, handleFilterChange }) => {
       </MenuButton>
       <MenuList>
         {error ? (
-          <Text textAlign="center" p={4}>
-            Something went wrong...
-          </Text>
+          <DisplayError textAlign="center" p={4} message="Something went wrong..." />
         ) : !data ? (
           <SkeletonText p={4} noOfLines={4} spacing="4" />
         ) : (
@@ -67,5 +70,6 @@ export const FilterMenu = ({ filterName, filterValue, handleFilterChange }) => {
 FilterMenu.propTypes = {
   filterName: PropTypes.string.isRequired,
   filterValue: PropTypes.string,
-  handleFilterChange: PropTypes.func.isRequired
+  handleFilterChange: PropTypes.func.isRequired,
+  fetchUrl: PropTypes.string.isRequired
 };

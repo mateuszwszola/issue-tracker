@@ -1,5 +1,5 @@
 import { Flex, Box, Image, Heading, Text, Button } from '@chakra-ui/react';
-import { FiArrowRight } from 'react-icons/fi';
+import { FaArrowRight } from 'react-icons/fa';
 import { projectName } from '@/pages/index';
 import { useAuth0 } from '@auth0/auth0-react';
 
@@ -7,8 +7,8 @@ export const Hero = (props) => {
   const { loginWithRedirect } = useAuth0();
 
   const headingText = 'Manage your project work';
-  const heroText = `Welcome to the ${projectName}. The software for managing
-  project work. Keep track of the tasks, bugs, and feature requests. Collaborate with your team, and see what needs to be done. It will help with keeping the project up to date.`;
+  const heroText = `Welcome to the ${projectName}, software for managing
+  project work. Keep track of the tasks, bugs, and features. Collaborate with your team, and see what needs to be done. It will help with keeping the project up to date.`;
 
   return (
     <Flex
@@ -43,9 +43,8 @@ export const Hero = (props) => {
 
         <Box mt={6}>
           <Button
-            size="md"
             onClick={() => loginWithRedirect()}
-            rightIcon={<FiArrowRight />}
+            rightIcon={<FaArrowRight />}
             cursor="pointer"
             colorScheme="green"
             textTransform="uppercase"

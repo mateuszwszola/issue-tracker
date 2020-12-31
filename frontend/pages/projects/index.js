@@ -9,6 +9,7 @@ import { useDebouncedSearchKey } from '@/hooks/use-search';
 import { objToQueryString } from '@/utils/query-string';
 import { Header as ProjectsHeader } from '@/components/projects/Header';
 import { InputSearch } from '@/components/InputSearch';
+import DisplayError from '@/components/DisplayError';
 
 const PAGE_SIZE = 10;
 
@@ -61,9 +62,11 @@ function ProjectsPage() {
       </ProjectsHeader>
 
       {error ? (
-        <Text textAlign="center" mt={4}>
-          Something went wrong... Please try reload the page
-        </Text>
+        <DisplayError
+          mt={4}
+          textAlign="center"
+          message="Something went wrong... Please try reload the page"
+        />
       ) : (
         <Box mt={8} overflow="auto">
           <Projects

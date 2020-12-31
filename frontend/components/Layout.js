@@ -9,7 +9,7 @@ export const Layout = ({ title, withOverlay, children }) => {
   return (
     <>
       <Head>
-        <title>{title ? `${title} | ` : ''}MW_Issue_Tracker</title>
+        <title>{title ? `${title} | ` : ''}MW Issue Tracker</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 

@@ -5,6 +5,10 @@ import { ButtonSort } from '@/components/projects/ButtonSort';
 import { LoadingRow } from '@/components/projects/LoadingRow';
 import { TableLink } from '@/components/projects/TableLink';
 
+const borderColor = { light: 'gray.200', dark: 'gray.700' };
+const hoverColor = { light: 'gray.100', dark: 'gray.700' };
+const rowBgColor = { light: 'gray.50', dark: 'gray.900' };
+
 export const Projects = ({
   projects,
   isLoadingInitialData,
@@ -17,10 +21,6 @@ export const Projects = ({
   handleOrderByButtonClick
 }) => {
   const { colorMode } = useColorMode();
-
-  const borderColor = { light: 'gray.200', dark: 'gray.700' };
-  const hoverColor = { light: 'gray.100', dark: 'gray.700' };
-  const rowBgColor = { light: 'gray.50', dark: 'gray.900' };
 
   let loadingRows = [];
 

@@ -4,7 +4,7 @@ import Router from 'next/router';
 import { useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 
-export const projectName = 'MW_Issue_Tracker';
+export const projectName = 'MW Issue Tracker';
 
 function Home() {
   const { isAuthenticated } = useAuth0();
