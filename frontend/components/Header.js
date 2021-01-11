@@ -1,17 +1,16 @@
 import NextLink from 'next/link';
 import {
+  Avatar,
   Box,
-  Flex,
-  Link,
-  IconButton,
-  useColorMode,
   Button,
+  Flex,
+  IconButton,
+  Link,
   Menu,
   MenuButton,
-  MenuList,
   MenuItem,
-  Avatar,
-  HStack,
+  MenuList,
+  useColorMode,
   useColorModeValue
 } from '@chakra-ui/react';
 import { FiMoon, FiSun } from 'react-icons/fi';
@@ -36,60 +35,58 @@ export const Header = () => {
         p={[2, 4]}
         wrap="wrap"
       >
-        <NextLink href="/" passHref>
-          <Link fontSize="lg" fontWeight="bold" letterSpacing="wide">
-            MWIT
-          </Link>
-        </NextLink>
+        <Flex as="nav">
+          <NextLink href="/" passHref>
+            <Link fontSize="lg" fontWeight="bold" letterSpacing="wide">
+              MWIT
+            </Link>
+          </NextLink>
 
-        <HStack as="nav" spacing={[2, 4]}>
           <NextLink href="/projects" passHref>
-            <Button as="a" variant="link" size="sm" colorScheme="blue">
+            <Button ml={6} as="a" variant="link" size="sm" colorScheme="blue">
               Projects
             </Button>
           </NextLink>
 
           <NextLink href="/issues" passHref>
-            <Button as="a" variant="link" size="sm" colorScheme="blue">
+            <Button ml={4} as="a" variant="link" size="sm" colorScheme="blue">
               Issues
             </Button>
           </NextLink>
+        </Flex>
 
-          <Box>
-            {user ? (
-              <>
-                <Menu>
-                  <Avatar as={MenuButton} size="sm" variant="ghost" />
-                  <MenuList>
-                    <NextLink href={`/user/${user.id}`} passHref>
-                      <MenuItem as="a">Profile</MenuItem>
-                    </NextLink>
-                    <NextLink href="/dashboard" passHref>
-                      <MenuItem as="a">Dashboard</MenuItem>
-                    </NextLink>
-                    <NextLink href="/settings" passHref>
-                      <MenuItem as="a">Settings</MenuItem>
-                    </NextLink>
-                    <MenuItem onClick={() => logout({ returnTo: window.location.origin })}>
-                      Sign Out
-                    </MenuItem>
-                  </MenuList>
-                </Menu>
-              </>
-            ) : (
-              <Button colorScheme="blue" size="sm" onClick={() => loginWithRedirect()}>
-                Sign In
-              </Button>
-            )}
-          </Box>
-
+        <Box>
+          {user ? (
+            <Menu>
+              <Avatar as={MenuButton} size="sm" variant="ghost" />
+              <MenuList>
+                <NextLink href={`/user/${user.id}`} passHref>
+                  <MenuItem as="a">Profile</MenuItem>
+                </NextLink>
+                <NextLink href="/dashboard" passHref>
+                  <MenuItem as="a">Dashboard</MenuItem>
+                </NextLink>
+                <NextLink href="/settings" passHref>
+                  <MenuItem as="a">Settings</MenuItem>
+                </NextLink>
+                <MenuItem onClick={() => logout({ returnTo: window.location.origin })}>
+                  Sign Out
+                </MenuItem>
+              </MenuList>
+            </Menu>
+          ) : (
+            <Button colorScheme="blue" size="sm" onClick={() => loginWithRedirect()}>
+              Sign In
+            </Button>
+          )}
           <IconButton
+            ml={4}
             size="sm"
             onClick={toggleColorMode}
             aria-label="Toggle theme"
             icon={colorMode === 'dark' ? <FiMoon /> : <FiSun />}
           />
-        </HStack>
+        </Box>
       </Flex>
     </Box>
   );

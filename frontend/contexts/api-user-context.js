@@ -8,19 +8,15 @@ import useSWR from 'swr';
 const apiUserContext = createContext();
 
 function ApiUserProvider(props) {
-  const [loading, setLoading] = useState(true);
-
-  const toast = useToast();
-
   const { isLoading, isAuthenticated } = useAuth0();
-
+  const toast = useToast();
+  const [loading, setLoading] = useState(true);
   const fetcher = useWithTokenFetcher();
 
   const { data: loginData, error: loginError } = useSWR(
     isAuthenticated ? 'auth/login' : null,
     (url) => fetcher(url, { method: 'POST' }),
     {
-      shouldRetryOnError: false,
       onError: () => {
         toast({
           title: 'An error occurred.',

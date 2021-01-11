@@ -136,7 +136,7 @@ export const Projects = ({
       </Box>
 
       <Flex
-        mt={2}
+        mt={4}
         direction={['column-reverse', 'row']}
         align={['center', 'flex-start']}
         justify="space-between"

@@ -42,7 +42,7 @@ function FilterMenus({ filters, handleFilterChange, user }) {
 FilterMenus.propTypes = {
   filters: PropTypes.object.isRequired,
   handleFilterChange: PropTypes.func.isRequired,
-  user: PropTypes.object.isRequired
+  user: PropTypes.object
 };
 
 export default FilterMenus;

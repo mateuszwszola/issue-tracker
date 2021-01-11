@@ -198,7 +198,7 @@ const IssueForm = ({
         type="submit"
         colorScheme="green"
       >
-        Submit
+        {isEditing ? 'Save' : 'Create'}
       </Button>
     </Box>
   );

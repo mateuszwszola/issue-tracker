@@ -14,7 +14,7 @@ function EditIssue({ issueId, issue, onEdit }) {
       {!issue ? (
         <FullPageSpinner />
       ) : (
-        <Box w="full" maxW="500px" mx="auto">
+        <Box w="full" maxW="700px" mx="auto">
           <Heading mb={6} textAlign="center" size="xl">
             Edit Issue
           </Heading>

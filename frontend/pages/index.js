@@ -1,24 +1,36 @@
-import { Layout } from '@/components/Layout';
 import { Hero } from '@/components/Hero';
-import Router from 'next/router';
-import { useEffect } from 'react';
-import { useAuth0 } from '@auth0/auth0-react';
+import Head from 'next/head';
+import { Container } from '@/components/Container';
+import { Header } from '@/components/Header';
+import { Main } from '@/components/Main';
+import { Footer } from '@/components/Footer';
 
 export const projectName = 'MW Issue Tracker';
 
 function Home() {
-  const { isAuthenticated } = useAuth0();
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      Router.replace('/dashboard');
-    }
-  }, [isAuthenticated]);
-
   return (
-    <Layout withOverlay>
-      <Hero />
-    </Layout>
+    <>
+      <Head>
+        <title>MW Issue Tracker</title>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+                if (document.cookie && document.cookie.includes('auth0.is.authenticated')) {
+                  window.location.href = "/dashboard"
+                }
+              `
+          }}
+        />
+      </Head>
+
+      <Container withOverlay>
+        <Header />
+        <Main>
+          <Hero />
+        </Main>
+        <Footer />
+      </Container>
+    </>
   );
 }
 
