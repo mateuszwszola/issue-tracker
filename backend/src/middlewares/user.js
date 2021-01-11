@@ -8,7 +8,7 @@ const preloadApiUser = () => async (req, res, next) => {
 
     const user = await User.query().findOne({ sub });
 
-    if (!user || isEmpty(user)) {
+    if (isEmpty(user)) {
       return next(new ErrorHandler(401, 'Unauthorized'));
     }
 

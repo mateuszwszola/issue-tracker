@@ -40,9 +40,10 @@ describe('Test the auth endpoints', () => {
       expect(response.statusCode).toBe(401);
     });
 
-    it('should respond with a user who already exists in the database', async () => {
-      const user = await UserModel.query().insert(getUserData());
-      const token = getToken({ sub: user.sub });
+    it('should return a user if already exists', async () => {
+      const { sub } = await UserModel.query().insert(getUserData());
+
+      const token = getToken({ sub });
 
       const response = await request(app)
         .post(PATH)
@@ -50,7 +51,7 @@ describe('Test the auth endpoints', () => {
 
       expect(response.statusCode).toBe(200);
       expect(response.body).toHaveProperty('user');
-      expect(response.body.user.sub).toBe(user.sub);
+      expect(response.body.user.sub).toBe(sub);
     });
 
     it('should respond with an error if a request to the auth0 api fails', async () => {
@@ -68,10 +69,12 @@ describe('Test the auth endpoints', () => {
 
     it('should create and respond with newly created user', async () => {
       const { sub, name, email, picture } = getUserData();
-      const token = getToken({ sub });
-      const userProfile = { name, email, picture };
 
-      mockAuth0UserInfoCall(200, userProfile);
+      const profile = { name, email, picture };
+
+      mockAuth0UserInfoCall(200, profile);
+
+      const token = getToken({ sub });
 
       const response = await request(app)
         .post(PATH)
