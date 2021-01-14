@@ -1,36 +1,19 @@
-import { useApiUser } from '@/contexts/api-user-context';
-import { useDeleteComment } from '@/hooks/use-comment';
-import { Avatar, Box, Flex, Heading, Text, useToast } from '@chakra-ui/react';
-import { format } from 'date-fns';
 import NextLink from 'next/link';
 import PropTypes from 'prop-types';
+import { format } from 'date-fns';
+import { Avatar, Box, Flex, Heading, Text } from '@chakra-ui/react';
+import { useApiUser } from '@/contexts/api-user-context';
 import DeleteComment from '@/components/issue/comments/comment/DeleteComment';
+// import { useState } from 'react';
 
 function Comment({ comment, issueId, mutate }) {
   const { user } = useApiUser();
-  const toast = useToast();
-
-  const [deleteComment, deleteCommentStatus] = useDeleteComment(issueId, {
-    onMutate: () => {
-      mutate((data) => {
-        return [
-          ...data.map((d) => ({
-            comments: d.comments.filter((c) => c.id !== comment.id)
-          }))
-        ];
-      }, false);
-      toast({
-        title: 'Comment deleted.',
-        status: 'success',
-        duration: 3000,
-        isClosable: true
-      });
-    }
-  });
 
   const createdAt = format(new Date(comment.created_at), 'MMM dd, yyyy HH:mm');
 
-  const canManage = user.is_admin || user.id === comment.user_id;
+  const canManage = user?.is_admin || user?.id === comment.user_id;
+
+  // const [isEditting, setIsEditting] = useState(false);
 
   return (
     <Box w="full">
@@ -51,12 +34,12 @@ function Comment({ comment, issueId, mutate }) {
         </Flex>
 
         {canManage && (
-          <DeleteComment
-            onDelete={() => deleteComment(comment.id)}
-            deleteStatus={deleteCommentStatus}
-          />
+          <>
+            <DeleteComment issueId={issueId} commentId={comment.id} mutate={mutate} />
+          </>
         )}
       </Flex>
+
       <Box mt={2} pl={10} pr={10}>
         <Text>{comment.comment}</Text>
       </Box>

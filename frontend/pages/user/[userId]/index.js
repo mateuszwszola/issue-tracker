@@ -56,7 +56,7 @@ function UserPage() {
                   <Box flex={1}>
                     <Skeleton isLoaded={!isLoading}>
                       <Heading as="h3" fontSize="xl">
-                        Project manager:
+                        Project manager
                       </Heading>
                       <Box mt={4}>
                         {profile?.managedProjects?.length > 0 ? (
@@ -79,7 +79,7 @@ function UserPage() {
                   <Box flex={1} mt={{ base: 12, md: 0 }}>
                     <Skeleton isLoaded={!isLoading}>
                       <Heading as="h3" fontSize="xl">
-                        Project engineer:
+                        Project engineer
                       </Heading>
                       <Box mt={4}>
                         {profile?.engineeredProjects?.length > 0 ? (
