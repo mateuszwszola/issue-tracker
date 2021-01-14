@@ -2,11 +2,9 @@ import { useSWRInfinite } from 'swr';
 import { useCallback } from 'react';
 import client from '@/utils/api-client';
 
-function useInfiniteScroll(getKey, fetcher = client, resourceName, PAGE_SIZE, config) {
+function useInfiniteScroll(getKey, fetcher = client, resourceName, PAGE_SIZE, config = {}) {
   const { data, isValidating, size, setSize, error, mutate } = useSWRInfinite(getKey, fetcher, {
-    ...(config || null),
-    revalidateAll: true,
-    persistSize: true
+    ...config
   });
 
   const fetchMore = useCallback(() => setSize((s) => s + 1), [setSize]);

@@ -1,10 +1,13 @@
 import { useCallback, useState } from 'react';
-import { useWithTokenFetcher } from '@/hooks/use-token-fetcher';
 import { mutate } from 'swr';
+import { useAuth0 } from '@auth0/auth0-react';
+import client from '@/utils/api-client';
+import useIsMounted from './use-is-mounted';
 
 function useMutation(key, config = {}) {
+  const { getAccessTokenSilently } = useAuth0();
   const [status, setStatus] = useState('idle');
-  const fetcher = useWithTokenFetcher();
+  const isMounted = useIsMounted();
 
   const mutateCallback = useCallback(
     async (url, { body, ...clientOptions } = {}) => {
@@ -12,23 +15,26 @@ function useMutation(key, config = {}) {
 
       onMutate(body);
 
-      setStatus('loading');
+      if (isMounted.current) {
+        setStatus('loading');
+      }
 
       try {
-        const data = await fetcher(url, { body, ...clientOptions });
-
-        setStatus('success');
+        const token = await getAccessTokenSilently();
+        const data = await client(url, { body, token, ...clientOptions });
 
         onSuccess(data);
 
-        await mutate(key);
-      } catch (err) {
-        setStatus('error');
+        mutate(key);
 
+        if (isMounted.current) setStatus('success');
+      } catch (err) {
         onError(err);
+
+        if (isMounted.current) setStatus('error');
       }
     },
-    [key, config, fetcher]
+    [config, isMounted, getAccessTokenSilently, key]
   );
 
   return [mutateCallback, status];

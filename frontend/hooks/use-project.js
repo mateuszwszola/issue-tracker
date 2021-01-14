@@ -43,15 +43,15 @@ export function useAddProjectEngineer(projectId, config = {}) {
   const toast = useToast();
 
   const [addEngineer, addEngineerStatus] = useMutation(['engineers', projectId], {
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast({
         title: 'Engineer added.',
         status: 'success',
-        duration: 5000,
+        duration: 3000,
         isClosable: true
       });
 
-      if (config.onSuccess) config.onSuccess();
+      if (config.onSuccess) config.onSuccess(data);
     },
     onError: (err) => {
       toast({
@@ -62,7 +62,7 @@ export function useAddProjectEngineer(projectId, config = {}) {
         isClosable: true
       });
 
-      if (config.onSuccess) config.onSuccess();
+      if (config.onSuccess) config.onSuccess(err);
     }
   });
 
@@ -77,15 +77,15 @@ export function useRemoveProjectEngineer(projectId, config = {}) {
   const toast = useToast();
 
   const [removeEngineer, removeEngineerStatus] = useMutation(['engineers', projectId], {
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast({
         title: 'Engineer removed.',
         status: 'success',
-        duration: 5000,
+        duration: 3000,
         isClosable: true
       });
 
-      if (config.onSuccess) config.onSuccess();
+      if (config.onSuccess) config.onSuccess(data);
     },
     onError: (err) => {
       toast({
@@ -96,7 +96,7 @@ export function useRemoveProjectEngineer(projectId, config = {}) {
         isClosable: true
       });
 
-      if (config.onSuccess) config.onSuccess();
+      if (config.onSuccess) config.onSuccess(err);
     }
   });
 
@@ -111,27 +111,27 @@ export function useCreateProject(config = {}) {
   const toast = useToast();
 
   const [createProject, createProjectStatus] = useMutation('projects', {
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast({
         title: 'Project created.',
         description: "We've created your project for you.",
         status: 'success',
-        duration: 9000,
+        duration: 3000,
         isClosable: true
       });
 
-      if (config.onSuccess) config.onSuccess();
+      if (config.onSuccess) config.onSuccess(data);
     },
     onError: (err) => {
       toast({
         title: 'An error occurred.',
         description: err.message || 'Unable to create a project',
         status: 'error',
-        duration: 9000,
+        duration: 5000,
         isClosable: true
       });
 
-      if (config.onError) config.onError();
+      if (config.onError) config.onError(err);
     }
   });
 
@@ -146,27 +146,27 @@ export function useUpdateProject(projectId, config = {}) {
   const toast = useToast();
 
   const [updateProject, updateProjectStatus] = useMutation(['projects', projectId], {
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast({
         title: 'Project updated.',
         description: "We've updated your project for you.",
         status: 'success',
-        duration: 9000,
+        duration: 3000,
         isClosable: true
       });
 
-      if (config.onSuccess) config.onSuccess();
+      if (config.onSuccess) config.onSuccess(data);
     },
     onError: (err) => {
       toast({
         title: 'An error occurred.',
         description: err.message || 'Unable to update a project',
         status: 'error',
-        duration: 9000,
+        duration: 5000,
         isClosable: true
       });
 
-      if (config.onError) config.onError();
+      if (config.onError) config.onError(err);
     }
   });
 
@@ -181,27 +181,27 @@ export function useDeleteProject(projectId, config = {}) {
   const toast = useToast();
 
   const [deleteProject, deleteStatus] = useMutation('projects', {
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast({
         title: 'Project deleted.',
         description: "We've successfully deleted project.",
         status: 'success',
-        duration: 9000,
+        duration: 3000,
         isClosable: true
       });
 
-      if (config.onSuccess) config.onSuccess();
+      if (config.onSuccess) config.onSuccess(data);
     },
     onError: (err) => {
       toast({
         title: 'An error occurred.',
         description: err.message || 'Unable to delete a project',
         status: 'error',
-        duration: 9000,
+        duration: 5000,
         isClosable: true
       });
 
-      if (config.onError) config.onError();
+      if (config.onError) config.onError(err);
     }
   });
 

@@ -50,7 +50,10 @@ function ProjectsPage() {
     isEmpty,
     size,
     fetchMore
-  } = useInfiniteScroll(getKey, getProjects, 'projects', PAGE_SIZE);
+  } = useInfiniteScroll(getKey, getProjects, 'projects', PAGE_SIZE, {
+    revalidateAll: true,
+    persistSize: true
+  });
 
   return (
     <Layout title="Projects">
