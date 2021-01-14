@@ -16,6 +16,8 @@ import * as controllers from './ticket.controller';
 import { validTicketOrders } from '../../constants/ticket';
 import { createTicketSchema, updateTicketSchema } from '../../utils/ticket';
 import { ROLES } from '../../constants/roles';
+import registerCommentRoutes from './ticketComment/ticketComment.routes';
+
 const router = Router();
 
 /**
@@ -75,6 +77,8 @@ router.use('/:ticketId', (req, res, next) => {
   preloadTicket({ ticketId })(req, res, next);
 });
 
+registerCommentRoutes(router);
+
 /**
  * @route GET /api/tickets/:ticketId
  * @desc Get ticket
@@ -108,7 +112,7 @@ router.patch('/:ticketId', [
 ]);
 
 /**
- * @route DELETE /api/v1/tickets/:ticketId
+ * @route DELETE /api/tickets/:ticketId
  * @desc  Delete ticket
  * @access Admin, Project Manager, Ticket Owner
  */
