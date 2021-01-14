@@ -16,8 +16,7 @@ const getComments = async (req, res) => {
   const query = TicketComment.query()
     .where('ticket_id', ticketId)
     .offset(skip)
-    .limit(limit)
-    .orderBy('created_at', 'desc');
+    .limit(limit);
 
   withAuthorFetched(query);
 

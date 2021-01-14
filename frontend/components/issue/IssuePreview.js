@@ -20,12 +20,12 @@ function IssuePreview({ isLoading, issue, ...chakraProps }) {
             <SkeletonText noOfLines={3} />
           </Box>
         ) : (
-          <IssueHeaderPreview issue={issue} />
+          <>
+            <IssueHeaderPreview issue={issue} />
+            <Attachments mt={8} />
+            <Comments mt={12} issueId={issue.id} />
+          </>
         )}
-
-        <Attachments mt={8} />
-
-        <Comments mt={12} />
       </Box>
     </Flex>
   );
