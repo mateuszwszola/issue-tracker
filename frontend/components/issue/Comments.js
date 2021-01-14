@@ -2,7 +2,6 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 import NextLink from 'next/link';
 import { format } from 'date-fns';
-import useSWR from 'swr';
 import {
   Avatar,
   Box,
@@ -21,6 +20,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { useApiUser } from '@/contexts/api-user-context';
 import { useCreateComment } from '@/hooks/use-comment';
 import client from '@/utils/api-client';
+import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 
 function Comment({ comment }) {
   const createdAt = format(new Date(comment.created_at), 'MMM dd, yyyy HH:mm');
@@ -59,12 +59,26 @@ function Comments({ issueId }) {
   const { loginWithRedirect } = useAuth0();
   const { user } = useApiUser();
   const [text, setText] = useState('');
-  const { data, error, mutate } = useSWR(`tickets/${issueId}/comments`, client);
+  const {
+    results: comments,
+    error,
+    mutate,
+    isLoadingInitialData,
+    isLoadingMore,
+    isReachingEnd,
+    isEmpty,
+    size,
+    fetchMore
+  } = useInfiniteScroll(
+    (index) => `tickets/${issueId}/comments?page=${index}&limit=10`,
+    client,
+    'comments',
+    10
+  );
 
   const [addComment, addCommentStatus] = useCreateComment(issueId, {
     onMutate: () => {
       const newComment = {
-        id: new Date(),
         comment: text,
         user_id: user.id,
         ticket_id: issueId,
@@ -75,9 +89,10 @@ function Comments({ issueId }) {
       };
 
       mutate(
-        (data) => ({
-          comments: [...(data.comments || []), newComment]
-        }),
+        (data) => [
+          ...data.slice(0, size - 1),
+          { comments: data[size - 1].comments.concat(newComment) }
+        ],
         false
       );
     },
@@ -114,20 +129,39 @@ function Comments({ issueId }) {
         </Button>
       )}
 
-      <Text textAlign="right" fontSize="sm" mt={1} mb={1} color="gray.500">
-        Comments {!data ? '...' : data.comments?.length}
+      <Text textAlign="right" fontSize="sm" mt={1} mb={2} color="gray.500">
+        Comments {isLoadingMore ? '...' : comments?.length || 0}
       </Text>
 
       {error ? (
         <Text textAlign="center">Unable to load comments</Text>
-      ) : !data ? (
-        <Text textAlign="center">No comments found</Text>
+      ) : isLoadingInitialData ? (
+        <Text textAlign="center">Loading...</Text>
       ) : (
-        <VStack spacing={8} mt={4} divider={<StackDivider />}>
-          {data.comments.map((comment) => (
-            <Comment key={comment.id} comment={comment} />
-          ))}
-        </VStack>
+        <>
+          {isEmpty && <Text textAlign="center">No comments found</Text>}
+
+          <VStack spacing={8} mt={4} divider={<StackDivider />}>
+            {comments.map((comment) => (
+              <Comment key={comment.created_at} comment={comment} />
+            ))}
+          </VStack>
+
+          {!isEmpty && (
+            <Button
+              size="sm"
+              variant="ghost"
+              d="block"
+              mx="auto"
+              mt={4}
+              disabled={isReachingEnd}
+              isLoading={isLoadingMore}
+              onClick={fetchMore}
+            >
+              Load more comments
+            </Button>
+          )}
+        </>
       )}
     </Box>
   );
