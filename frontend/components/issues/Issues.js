@@ -96,7 +96,7 @@ export const Issues = ({
                   </Flex>
 
                   {ticket.comments?.length > 0 && (
-                    <Flex align="center" color="gray.600">
+                    <Flex align="center" color="gray.500">
                       <Text>{ticket.comments?.length}</Text>
                       <Icon ml={1} as={FaRegCommentAlt} />
                     </Flex>

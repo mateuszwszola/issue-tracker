@@ -107,7 +107,7 @@ function ProjectPage() {
               <Box w="full" maxW="400px" mt={{ base: 12, md: 0 }}>
                 <Flex align="center" wrap="wrap">
                   <Heading as="h3" size="md">
-                    Project engineers:
+                    Project engineers
                   </Heading>
                   {(isAdmin || isProjectManager) && (
                     <AddProjectEngineer ml={3} projectId={projectId} authUserId={user?.id} />

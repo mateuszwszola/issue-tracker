@@ -39,13 +39,6 @@ export function useUpdateComment(issueId, config = {}) {
       if (config.onMutate) config.onMutate(body);
     },
     onSuccess: (data) => {
-      toast({
-        title: 'Comment updated.',
-        status: 'success',
-        duration: 3000,
-        isClosable: true
-      });
-
       if (config.onSuccess) config.onSuccess(data);
     },
     onError: (err) => {
