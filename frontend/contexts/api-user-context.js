@@ -1,15 +1,13 @@
 import { FullPageSpinner } from '@/components/Loading';
 import { useWithTokenFetcher } from '@/hooks/use-token-fetcher';
 import { useAuth0 } from '@auth0/auth0-react';
-import { useToast } from '@chakra-ui/react';
 import { createContext, useContext, useEffect, useState } from 'react';
 import useSWR from 'swr';
 
 const apiUserContext = createContext();
 
 function ApiUserProvider(props) {
-  const { isLoading, isAuthenticated } = useAuth0();
-  const toast = useToast();
+  const { isLoading, isAuthenticated, logout } = useAuth0();
   const [loading, setLoading] = useState(true);
   const fetcher = useWithTokenFetcher();
 
@@ -18,14 +16,9 @@ function ApiUserProvider(props) {
     (url) => fetcher(url, { method: 'POST' }),
     {
       onError: () => {
-        toast({
-          title: 'An error occurred.',
-          description: loginError?.message || 'Unable to log in a user',
-          status: 'error',
-          duration: 9000,
-          isClosable: true
-        });
-      }
+        logout();
+      },
+      revalidateOnFocus: false
     }
   );
 

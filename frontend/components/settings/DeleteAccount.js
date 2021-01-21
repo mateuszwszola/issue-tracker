@@ -1,12 +1,11 @@
-import { useDeleteUser } from '@/hooks/use-user';
+import { useDeleteAccount } from '@/hooks/use-user';
 import { ButtonGroup, Flex, Text } from '@chakra-ui/react';
 import { useState } from 'react';
 import { ActionButton } from '../Button';
 
 function DeleteAccount() {
   const [isDeleting, setIsDeleting] = useState(false);
-
-  const [deleteUser, deleteStatus] = useDeleteUser();
+  const [deleteAccount, deleteStatus] = useDeleteAccount();
 
   return (
     <>
@@ -20,7 +19,7 @@ function DeleteAccount() {
           <ButtonGroup mt={2} spacing="4">
             <ActionButton
               isLoading={deleteStatus === 'loading'}
-              onClick={deleteUser}
+              onClick={deleteAccount}
               colorScheme="red"
             >
               Delete

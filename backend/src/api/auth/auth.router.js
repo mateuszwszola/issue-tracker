@@ -14,6 +14,6 @@ router.get('/user', ...authenticate(), controllers.getAuthUser);
  @route /api/auth/login
  @desc Return user if exists, if not - create one fetching profile information from Auth0
  */
-router.post('/login', checkJwt(), controllers.loginUser);
+router.post('/login', checkJwt, controllers.loginUser);
 
 export default router;

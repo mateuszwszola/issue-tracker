@@ -39,12 +39,13 @@ router.post(
 /**
  * @route /api/users/:userId
  */
-router.use('/:userId', [
+router.use(
+  '/:userId',
   (req, res, next) => {
     const { userId } = req.params;
     preloadUser({ userId })(req, res, next);
   },
-  (req, res, next) => {
+  (req, _res, next) => {
     const { api_user, preloaded_user } = req;
 
     if (api_user && preloaded_user && api_user.id === preloaded_user.id) {
@@ -53,40 +54,28 @@ router.use('/:userId', [
 
     next();
   },
-]);
+  authorize(ROLES.admin, ROLES.owner)
+);
 
 /**
  * @route GET /api/users/:userId
  * @desc Get a user by Id
  * @access Admin, Profile Owner
  */
-router.get(
-  '/:userId',
-  authorize(ROLES.admin, ROLES.owner),
-  controllers.getUserById
-);
+router.get('/:userId', controllers.getUserById);
 
 /**
  * @route PATCH /api/users/:userId
  * @desc Update a user
  * @access Admin, Profile Owner
  */
-router.patch(
-  '/:userId',
-  authorize(ROLES.admin, ROLES.owner),
-  updateUserSchema,
-  controllers.updateUser
-);
+router.patch('/:userId', updateUserSchema, controllers.updateUser);
 
 /**
  * @route DELETE /api/users/:userId
  * @desc Delete a user
  * @access Admin, Profile Owner
  */
-router.delete(
-  '/:userId',
-  authorize(ROLES.admin, ROLES.owner),
-  controllers.deleteUser
-);
+router.delete('/:userId', controllers.deleteUser);
 
 export default router;

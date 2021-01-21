@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import UserOptionsMenu from '@/components/dashboard/users/userRow/OptionsMenu';
 import { Tr, Td, Flex } from '@chakra-ui/react';
 
-function UserRow({ user, onDelete, deleteStatus, ...chakraProps }) {
+function UserRow({ user, ...chakraProps }) {
   return (
     <Tr {...chakraProps}>
       <Td>{user.id}</Td>
@@ -11,7 +11,7 @@ function UserRow({ user, onDelete, deleteStatus, ...chakraProps }) {
 
       <Td>
         <Flex w="full" justify="flex-end">
-          <UserOptionsMenu onDelete={onDelete} deleteStatus={deleteStatus} />
+          <UserOptionsMenu />
         </Flex>
       </Td>
     </Tr>
@@ -19,9 +19,7 @@ function UserRow({ user, onDelete, deleteStatus, ...chakraProps }) {
 }
 
 UserRow.propTypes = {
-  user: PropTypes.object.isRequired,
-  onDelete: PropTypes.func.isRequired,
-  deleteStatus: PropTypes.string.isRequired
+  user: PropTypes.object.isRequired
 };
 
 export default UserRow;

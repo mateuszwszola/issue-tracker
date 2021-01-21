@@ -79,25 +79,18 @@ export function useUpdateUser(config = {}) {
   return [onSubmit, updateStatus];
 }
 
-export function useDeleteUser(config = {}) {
+export function useDeleteAccount(config = {}) {
   const toast = useToast();
+  const { user } = useApiUser();
 
   const [deleteUser, deleteStatus] = useMutation('auth/login', {
     onSuccess: () => {
-      toast({
-        title: 'User deleted.',
-        description: "We've deleted a user for you.",
-        status: 'success',
-        duration: 9000,
-        isClosable: true
-      });
-
       if (config.onSuccess) config.onSuccess();
     },
     onError: (err) => {
       toast({
         title: 'An error occurred.',
-        description: err.message || 'Unable to delete a user',
+        description: err.message || 'Unable to delete an account',
         status: 'error',
         duration: 9000,
         isClosable: true
@@ -107,8 +100,8 @@ export function useDeleteUser(config = {}) {
     }
   });
 
-  const onSubmit = async (userId) => {
-    await deleteUser(`users/${userId}`, { method: 'DELETE' });
+  const onSubmit = async () => {
+    await deleteUser(`users/${user?.id}`, { method: 'DELETE' });
   };
 
   return [onSubmit, deleteStatus];

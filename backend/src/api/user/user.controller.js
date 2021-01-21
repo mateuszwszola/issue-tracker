@@ -1,4 +1,5 @@
 import { User } from './user.model';
+import { deleteUser as deleteUserFromAuth0 } from '../../lib/auth0';
 
 const getUsers = async (req, res) => {
   const { skip, limit, orderBy } = req.query;
@@ -35,9 +36,11 @@ const updateUser = async (req, res) => {
 };
 
 const deleteUser = async (req, res) => {
-  const { userId } = req.params;
+  const { id, sub } = req.preloaded_user;
 
-  const user = await User.query().findById(userId).returning('*').delete();
+  await deleteUserFromAuth0(sub);
+
+  const user = await User.query().findById(id).delete().returning('*');
 
   return res.status(200).json({ user });
 };

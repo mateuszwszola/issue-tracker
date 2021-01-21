@@ -24,8 +24,7 @@ function formatUserProfile(user, rawProfile) {
     name: name === email && nickname ? nickname : name,
     email,
     picture,
-    is_admin:
-      getUserRoles(user).includes('ADMIN') || email === config.adminUserEmail,
+    is_admin: getUserRoles(user).includes('ADMIN'),
   };
 }
 

@@ -26,7 +26,7 @@ const createUserTable = (knex) =>
     table.increments().primary();
     table.string('sub').unique();
     table.string('name');
-    table.string('email').unique().notNullable();
+    table.string('email').notNullable();
     addUrl(table, 'picture');
     table.boolean('is_admin').defaultTo(false);
     table.boolean('blocked').defaultTo(false);

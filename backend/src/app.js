@@ -23,7 +23,7 @@ registerApi(router);
 
 app.use('/api', router);
 
-app.get('/api/auth', checkJwt(), (req, res) => {
+app.get('/api/auth', checkJwt, (req, res) => {
   console.log(req.user);
   res.json({ message: 'You have accessed the protected route' });
 });

@@ -25,14 +25,16 @@ function Comment({ comment, issueId, mutate }) {
 
   return (
     <>
-      <Flex w="full" justify="flex-end" align="center">
-        <IconButton
-          variant="ghost"
-          onClick={() => setIsEditing(true)}
-          aria-label="Edit comment"
-          icon={<MdEdit />}
-        />
-      </Flex>
+      {canEdit && (
+        <Flex w="full" justify="flex-end" align="center">
+          <IconButton
+            variant="ghost"
+            onClick={() => setIsEditing(true)}
+            aria-label="Edit comment"
+            icon={<MdEdit />}
+          />
+        </Flex>
+      )}
       <CommentPreview comment={comment} />
     </>
   );

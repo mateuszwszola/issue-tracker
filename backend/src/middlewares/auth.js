@@ -6,25 +6,24 @@ import { ErrorHandler } from '../utils/error';
 import { preloadApiUser } from './user';
 import { ROLES } from '../constants/roles';
 
-const checkJwt = () =>
-  jwt({
-    // Dynamically provide a signing key
-    // based on the kid in the header and
-    // the signing keys provided by the JWKS endpoint.
-    secret: jwksRsa.expressJwtSecret({
-      cache: true,
-      rateLimit: true,
-      jwksRequestsPerMinute: 5,
-      jwksUri: `${config.auth0.issuer}.well-known/jwks.json`,
-    }),
+const checkJwt = jwt({
+  // Dynamically provide a signing key
+  // based on the kid in the header and
+  // the signing keys provided by the JWKS endpoint.
+  secret: jwksRsa.expressJwtSecret({
+    cache: true,
+    rateLimit: true,
+    jwksRequestsPerMinute: 5,
+    jwksUri: `${config.auth0.issuer}.well-known/jwks.json`,
+  }),
 
-    // Validate the audience and the issuer.
-    audience: config.auth0.audience,
-    issuer: config.auth0.issuer,
-    algorithms: ['RS256'],
-  });
+  // Validate the audience and the issuer.
+  audience: config.auth0.audience,
+  issuer: config.auth0.issuer,
+  algorithms: ['RS256'],
+});
 
-const authenticate = () => [checkJwt(), preloadApiUser()];
+const authenticate = () => [checkJwt, preloadApiUser()];
 
 const authorize = (...permittedRoles) => (req, res, next) => {
   const { api_user } = req;
