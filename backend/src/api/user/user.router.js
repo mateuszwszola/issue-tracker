@@ -1,14 +1,15 @@
 import { Router } from 'express';
-import * as controllers from './user.controller';
+import { ROLES } from '../../constants/roles';
+import { validUserOrders } from '../../constants/user';
 import { authenticate, authorize, checkAdmin } from '../../middlewares/auth';
 import {
   parsePageQueryParam,
   validateOrderByParam,
 } from '../../middlewares/queryParams';
-import { validUserOrders } from '../../constants/user';
-import { createUserSchema, updateUserSchema } from '../../utils/user';
-import { ROLES } from '../../constants/roles';
 import { preloadUser } from '../../middlewares/user';
+import { updateUserSchema } from '../../utils/user';
+import * as controllers from './user.controller';
+
 const router = Router();
 
 router.use(...authenticate(), checkAdmin());
@@ -23,17 +24,6 @@ router.get(
   parsePageQueryParam(),
   validateOrderByParam(validUserOrders),
   controllers.getUsers
-);
-
-/**
- * @route POST /api/users
- * @desc Create a user
- */
-router.post(
-  '/',
-  authorize(ROLES.admin),
-  createUserSchema,
-  controllers.createUser
 );
 
 /**
@@ -53,8 +43,7 @@ router.use(
     }
 
     next();
-  },
-  authorize(ROLES.admin, ROLES.owner)
+  }
 );
 
 /**
@@ -62,20 +51,29 @@ router.use(
  * @desc Get a user by Id
  * @access Admin, Profile Owner
  */
-router.get('/:userId', controllers.getUserById);
+router.get(
+  '/:userId',
+  authorize(ROLES.admin, ROLES.owner),
+  controllers.getUserById
+);
 
 /**
  * @route PATCH /api/users/:userId
  * @desc Update a user
  * @access Admin, Profile Owner
  */
-router.patch('/:userId', updateUserSchema, controllers.updateUser);
+router.patch(
+  '/:userId',
+  authorize(ROLES.admin, ROLES.owner),
+  updateUserSchema,
+  controllers.updateUser
+);
 
 /**
  * @route DELETE /api/users/:userId
- * @desc Delete a user
- * @access Admin, Profile Owner
+ * @desc Delete account
+ * @access Profile Owner
  */
-router.delete('/:userId', controllers.deleteUser);
+router.delete('/', authorize(ROLES.owner), controllers.deleteUser);
 
 export default router;

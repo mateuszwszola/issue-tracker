@@ -36,7 +36,7 @@ const updateUser = async (req, res) => {
 };
 
 const deleteUser = async (req, res) => {
-  const { id, sub } = req.preloaded_user;
+  const { id, sub } = req.api_user;
 
   await deleteUserFromAuth0(sub);
 
