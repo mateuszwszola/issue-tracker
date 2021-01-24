@@ -2,6 +2,27 @@ import { Project } from './project.model';
 import { getProjectGraphQuery } from '../../utils/project';
 import { User } from '../user/user.model';
 
+const getDashboardProjects = async (req, res) => {
+  const { skip, limit, orderBy, withGraph } = req.query;
+  const { id: userId } = req.api_user;
+
+  // Get projects where user is a manager or an engineer
+  const query = Project.query()
+    .whereIn(
+      'id',
+      User.relatedQuery('engineeredProjects').for(userId).select('Project.id')
+    )
+    .orWhere('manager_id', userId);
+
+  query.offset(skip).limit(limit).orderBy(orderBy);
+
+  if (withGraph) {
+    getProjectGraphQuery(query, withGraph);
+  }
+
+  return res.status(200).json({ projects: await query });
+};
+
 const getProjects = async (req, res) => {
   const {
     skip,
@@ -85,4 +106,11 @@ const deleteProject = async (req, res) => {
   return res.status(200).json({ project });
 };
 
-export { getProjects, getProject, createProject, updateProject, deleteProject };
+export {
+  getProjects,
+  getDashboardProjects,
+  getProject,
+  createProject,
+  updateProject,
+  deleteProject,
+};

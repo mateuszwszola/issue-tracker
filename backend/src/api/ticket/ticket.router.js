@@ -53,18 +53,10 @@ router.get(
 /**
  * @route POST /api/tickets
  * @desc Create project ticket
- * @access Admin, Project Manager, Project Engineer
+ * @access Private
  */
 router.post('/', [
   ...authenticate(),
-  (req, res, next) => {
-    const { project_id: projectId } = req.body;
-    preloadProject({ projectId })(req, res, next);
-  },
-  checkProjectEngineer(),
-  checkProjectManager(),
-  checkAdmin(),
-  authorize(ROLES.project_engineer, ROLES.project_manager, ROLES.admin),
   createTicketSchema,
   controllers.createTicket,
 ]);

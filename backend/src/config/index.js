@@ -19,7 +19,6 @@ const baseConfig = {
     audience: process.env.AUTH0_AUDIENCE,
     issuer: process.env.AUTH0_ISSUER,
   },
-  adminUserEmail: process.env.ADMIN_USER_EMAIL,
 };
 
 let envConfig = {};

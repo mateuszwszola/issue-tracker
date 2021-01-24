@@ -1,17 +1,16 @@
+import DashboardNav from '@/components/dashboard/Nav';
 import UserRow from '@/components/dashboard/users/UserRow';
 import { Layout } from '@/components/Layout';
-import { NextButtonLink } from '@/components/Link';
 import { FullPageSpinner } from '@/components/Loading';
 import PageControls from '@/components/PageControls';
 import { tableBorderColor } from '@/components/Table';
 import { useWithTokenFetcher } from '@/hooks/use-token-fetcher';
-import { useDeleteUser, useWithAdmin } from '@/hooks/use-user';
+import { useWithAdmin } from '@/hooks/use-user';
 import { withAuthenticationRequired } from '@auth0/auth0-react';
 import {
   Box,
   Flex,
   Heading,
-  HStack,
   Table,
   Tbody,
   Td,
@@ -28,18 +27,10 @@ const PAGE_SIZE = 10;
 
 function UsersManagement() {
   const { isLoading: isLoadingPage } = useWithAdmin('/dashboard');
-
   const { colorMode } = useColorMode();
-
-  const [onDelete, deleteStatus] = useDeleteUser({
-    onSuccess: () => mutate()
-  });
-
   const [pageIndex, setPageIndex] = useState(0);
-
   const withTokenFetcher = useWithTokenFetcher();
-
-  const { data: usersData, error: usersError, mutate } = useSWR(
+  const { data: usersData, error: usersError } = useSWR(
     `users?page=${pageIndex}&limit=${PAGE_SIZE}`,
     withTokenFetcher
   );
@@ -53,9 +44,7 @@ function UsersManagement() {
 
   return (
     <Layout title="User management">
-      <HStack as="nav">
-        <NextButtonLink href="/dashboard">Overview</NextButtonLink>
-      </HStack>
+      <DashboardNav isAdmin />
 
       <Box mt={{ base: 8, md: 16 }}>
         <Heading size="lg">Users</Heading>
@@ -94,12 +83,7 @@ function UsersManagement() {
                   ) : (
                     <>
                       {users.map((user) => (
-                        <UserRow
-                          key={user.id}
-                          user={user}
-                          onDelete={() => onDelete(user.id)}
-                          deleteStatus={deleteStatus}
-                        />
+                        <UserRow key={user.id} user={user} />
                       ))}
                     </>
                   )}

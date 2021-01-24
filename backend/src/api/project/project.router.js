@@ -22,6 +22,18 @@ registerProjectTypeRoutes(router);
 registerProjectEngineerRoutes(router);
 
 /**
+ * @route GET /api/projects/dashboard
+ * @desc Get user projects
+ * @access Private
+ */
+router.get('/dashboard', [
+  ...authenticate(),
+  parsePageQueryParam(),
+  validateOrderByParam(validProjectOrders),
+  controllers.getDashboardProjects,
+]);
+
+/**
  * @route GET /api/projects
  * @desc Get projects
  * @access Public

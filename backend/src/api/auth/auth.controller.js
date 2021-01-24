@@ -1,7 +1,11 @@
 import { isEmpty } from 'lodash';
 import { User } from '../user/user.model';
 import { ErrorHandler } from '../../utils/error';
-import { fetchUserProfile, formatUserProfile } from '../../utils/auth';
+import {
+  fetchUserProfile,
+  formatUserProfile,
+  getUserRoles,
+} from '../../utils/auth';
 
 const loginUser = async (req, res, next) => {
   const { sub } = req.user;
@@ -14,7 +18,15 @@ const loginUser = async (req, res, next) => {
   const user = await User.query().findOne({ sub });
 
   if (!isEmpty(user)) {
-    // User exists - return it
+    // User exists
+    // Update is_admin property if needed
+    const isAdmin = getUserRoles(req.user).includes('ADMIN');
+    const roleMatches = isAdmin === user.is_admin;
+
+    if (!roleMatches) {
+      await user.$query().patch({ is_admin: isAdmin });
+    }
+
     return res.status(200).json({ user });
   } else {
     // User does not exists, fetch user profile from Auth0 and create a new user

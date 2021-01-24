@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { Box, Heading, Text } from '@chakra-ui/react';
+import { Box, Heading } from '@chakra-ui/react';
 import { Projects } from '@/components/projects/Projects';
 import { Layout } from '@/components/Layout';
 import { getProjects } from 'utils/projects-client';

@@ -1,14 +1,15 @@
 import { Router } from 'express';
-import * as controllers from './user.controller';
+import { ROLES } from '../../constants/roles';
+import { validUserOrders } from '../../constants/user';
 import { authenticate, authorize, checkAdmin } from '../../middlewares/auth';
 import {
   parsePageQueryParam,
   validateOrderByParam,
 } from '../../middlewares/queryParams';
-import { validUserOrders } from '../../constants/user';
-import { createUserSchema, updateUserSchema } from '../../utils/user';
-import { ROLES } from '../../constants/roles';
 import { preloadUser } from '../../middlewares/user';
+import { updateUserSchema } from '../../utils/user';
+import * as controllers from './user.controller';
+
 const router = Router();
 
 router.use(...authenticate(), checkAdmin());
@@ -26,25 +27,15 @@ router.get(
 );
 
 /**
- * @route POST /api/users
- * @desc Create a user
- */
-router.post(
-  '/',
-  authorize(ROLES.admin),
-  createUserSchema,
-  controllers.createUser
-);
-
-/**
  * @route /api/users/:userId
  */
-router.use('/:userId', [
+router.use(
+  '/:userId',
   (req, res, next) => {
     const { userId } = req.params;
     preloadUser({ userId })(req, res, next);
   },
-  (req, res, next) => {
+  (req, _res, next) => {
     const { api_user, preloaded_user } = req;
 
     if (api_user && preloaded_user && api_user.id === preloaded_user.id) {
@@ -52,8 +43,8 @@ router.use('/:userId', [
     }
 
     next();
-  },
-]);
+  }
+);
 
 /**
  * @route GET /api/users/:userId
@@ -80,13 +71,9 @@ router.patch(
 
 /**
  * @route DELETE /api/users/:userId
- * @desc Delete a user
- * @access Admin, Profile Owner
+ * @desc Delete account
+ * @access Profile Owner
  */
-router.delete(
-  '/:userId',
-  authorize(ROLES.admin, ROLES.owner),
-  controllers.deleteUser
-);
+router.delete('/', authorize(ROLES.owner), controllers.deleteUser);
 
 export default router;
