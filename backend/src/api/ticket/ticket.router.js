@@ -17,9 +17,11 @@ import { validTicketOrders } from '../../constants/ticket';
 import { createTicketSchema, updateTicketSchema } from '../../utils/ticket';
 import { ROLES } from '../../constants/roles';
 import registerCommentRoutes from './ticketComment/ticketComment.routes';
+import registerAttachmentRoutes from './ticketAttachment/ticketAttachment.routes';
 
 const router = Router();
 
+registerAttachmentRoutes(router);
 /**
  * @route GET /api/tickets/type
  * @desc Get ticket types

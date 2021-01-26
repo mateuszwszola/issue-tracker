@@ -22,29 +22,27 @@ Entities:
 - [ ] Notification
 
 Every record has these fields:
-  - Created At
-  - Updated At
+
+- Created At
+- Updated At
 
 ## Authentication:
-  - Auth0 will handle user authentication
-  - when user logins or signs up with Auth0 on the frontend it will call `/api/v1/login` endpoint sending access_token, then the backend will check if the user with specific sub exists
+
+- Auth0 is used for authentication
+- when user logins or signs up with Auth0 on the frontend it will call `/api/login` endpoint sending access_token, then
+  the backend will check if the user with specific sub exists
     - if exists, it will simply respond with a user
-    - if not exists, the backend will call Auth0 asking for profile information and will create and then respond with a new user
+    - if not exists, the backend will call Auth0 asking for profile information and will create and then respond with a
+      new user
 
 ## Roles & Permissions:
-- Admin:
-    - users and roles management
-    - assigns project manager
-- Project Manager:
-    - manage a project
-    - add and remove project engineers
-- Project Engineer
-    - work on the tickets
-- User
-  - manage their own profile
 
-API's endpoints authorization will rely on checking if:
-  - user is an admin
-  - user is a manager of a project
-  - user is engineer within a project
-  
+- Admin:
+    - manage projects
+- Project Manager:
+    - manage project engineers
+- Project Engineer
+    - work on tickets
+- User
+    - submit a ticket
+    - comment on tickets
