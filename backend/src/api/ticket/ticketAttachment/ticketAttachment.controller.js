@@ -3,12 +3,13 @@ import { nanoid } from 'nanoid';
 
 export const signTicketAttachment = async (req, res) => {
   const s3 = new aws.S3();
-  const fileName = req.query['file-name'];
   const fileType = req.query['file-type'];
+  // Generate random key for an image
+  const fileKey = nanoid();
 
   const s3Params = {
     Bucket: S3_BUCKET,
-    Key: fileName,
+    Key: fileKey,
     Expires: 120,
     ContentType: fileType,
     ACL: 'public-read',
@@ -21,7 +22,7 @@ export const signTicketAttachment = async (req, res) => {
       } else {
         resolve({
           signedRequest: data,
-          url: `https://${S3_BUCKET}.s3.amazonaws.com/${nanoid()}`,
+          url: `https://${S3_BUCKET}.s3.amazonaws.com/${fileKey}`,
         });
       }
     });
