@@ -74,7 +74,7 @@ function Comments({ issueId }) {
 }
 
 Comments.propTypes = {
-  issueId: PropTypes.number.isRequired
+  issueId: PropTypes.number
 };
 
 export default Comments;

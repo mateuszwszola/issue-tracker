@@ -1,27 +1,36 @@
 import { useRef, useState } from 'react';
+import useSWR from 'swr';
+import PropTypes from 'prop-types';
 import { useAuth0 } from '@auth0/auth0-react';
-import { Box, Button, CircularProgress, Image, Text, useToast } from '@chakra-ui/react';
+import { Box, Button, Image, Link, SimpleGrid, Spinner, Text, useToast } from '@chakra-ui/react';
 import client from '@/utils/api-client';
 import { FaPlus } from 'react-icons/fa';
 
-function AddAttachment() {
+function AddAttachment({ issueId, onUpload }) {
   const inputRef = useRef();
   const toast = useToast();
   const { getAccessTokenSilently } = useAuth0();
   const [loading, setLoading] = useState(false);
-  const [imageUrl, setImageUrl] = useState(null);
 
-  const uploadFile = async (file, signedRequest, url) => {
+  const uploadFile = async (file, signedRequest, url, token) => {
     try {
       await fetch(signedRequest, { method: 'PUT', body: file });
+
+      // Add image url on the backend
+      const { attachment } = await client(`tickets/${issueId}/attachment`, {
+        token,
+        body: { attachment_url: url }
+      });
+
       toast({
         title: 'Attachment uploaded.',
         status: 'success',
         duration: 3000,
         isClosable: true
       });
-      setImageUrl(url);
+
       inputRef.current.value = '';
+      onUpload(attachment);
     } catch (err) {
       toast({
         title: 'An error occurred.',
@@ -42,7 +51,7 @@ function AddAttachment() {
       const token = await getAccessTokenSilently();
 
       const { data } = await client(
-        `tickets/attachment/sign-s3?file-name=${encodeURIComponent(
+        `tickets/${issueId}/attachment/sign-s3?file-name=${encodeURIComponent(
           file.name
         )}&file-type=${encodeURIComponent(file.type)}`,
         {
@@ -50,7 +59,7 @@ function AddAttachment() {
         }
       );
 
-      await uploadFile(file, data.signedRequest, data.url);
+      await uploadFile(file, data.signedRequest, data.url, token);
     } catch (err) {
       toast({
         title: 'An error occurred.',
@@ -73,10 +82,9 @@ function AddAttachment() {
 
   return (
     <>
-      {loading && <CircularProgress isIndeterminate />}
-      <Box boxSize="100px">{imageUrl && <Image w="full" objectFit="cover" src={imageUrl} />}</Box>
-
       <Button
+        isLoading={loading}
+        loadingText="Uploading..."
         mt={2}
         onClick={() => inputRef.current.click()}
         leftIcon={<FaPlus />}
@@ -92,17 +100,58 @@ function AddAttachment() {
   );
 }
 
-function Attachments({ ...chakraProps }) {
-  const { isAuthenticated } = useAuth0();
+AddAttachment.propTypes = {
+  issueId: PropTypes.number,
+  onUpload: PropTypes.func.isRequired
+};
+
+function Attachments({ issueId, canUpload, ...chakraProps }) {
+  const { data, error, mutate } = useSWR(`tickets/${issueId}/attachment`, client);
+  const attachments = data?.attachments || [];
+
+  const onUpload = async (attachment) => {
+    await mutate(
+      (data) => ({
+        attachments: [...(data?.attachments || []), attachment]
+      }),
+      false
+    );
+  };
 
   return (
     <Box {...chakraProps}>
-      <Text fontSize="sm" fontWeight="medium">
-        Attachments 0
-      </Text>
-      {isAuthenticated && <AddAttachment />}
+      {error ? (
+        <Text>Unable to load attachments</Text>
+      ) : !data ? (
+        <Spinner />
+      ) : (
+        <>
+          <Text fontSize="sm" fontWeight="medium">
+            Attachments {attachments?.length}
+          </Text>
+          <SimpleGrid mt={2} columns={[3, 5]} spacing={2}>
+            {attachments.map((attachment) => (
+              <Box
+                as={Link}
+                key={attachment.id}
+                boxSize="100px"
+                href={attachment.attachment_url}
+                isExternal
+              >
+                <Image src={attachment.attachment_url} boxSize="100px" objectFit="cover" />
+              </Box>
+            ))}
+          </SimpleGrid>
+          {canUpload && <AddAttachment issueId={issueId} onUpload={onUpload} />}
+        </>
+      )}
     </Box>
   );
 }
+
+Attachments.propTypes = {
+  issueId: PropTypes.number,
+  canUpload: PropTypes.bool.isRequired
+};
 
 export default Attachments;
