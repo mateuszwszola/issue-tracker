@@ -29,7 +29,12 @@ function formatUserProfile(user, rawProfile) {
 }
 
 function getUserRoles(user) {
-  let roles = user[`${config.auth0.audience}/roles`] || [];
+  let namespace = config.auth0.audience;
+  if (namespace[namespace.length - 1] === '/') {
+    namespace = namespace.slice(0, -1);
+  }
+
+  let roles = user[`${namespace}/roles`] || [];
 
   if (typeof roles === 'string') {
     roles = [roles];

@@ -13,7 +13,7 @@
     "db:migrate": "knex migrate:latest --esm",
     "db:rollback": "knex migrate:rollback --esm",
     "db:seed": "knex seed:run --esm",
-    "db:reset": "npm run rollback && npm run migrate && npm run seed",
+    "db:reset": "npm run db:rollback && npm run db:migrate && npm run db:seed",
     "test": "jest --runInBand",
     "test:watch": "jest --runInBand --watch"
   },
