@@ -9,7 +9,7 @@ class Attachment extends Model {
   static get jsonSchema() {
     return {
       type: 'object',
-      required: ['ticket_id, attachment_url'],
+      required: ['ticket_id', 'attachment_url'],
 
       properties: {
         id: { type: 'integer' },
