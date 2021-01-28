@@ -184,7 +184,7 @@ describe('Test a ticket endpoints', () => {
         .post(`${BASE_PATH}`)
         .set('Authorization', `Bearer ${token}`);
 
-      expect(response.statusCode).toBe(400);
+      expect(response.statusCode).toBe(422);
     });
 
     it('should fail if project does not exists', async () => {
@@ -203,25 +203,6 @@ describe('Test a ticket endpoints', () => {
         .send({ ...ticketData, project_id: 123 });
 
       expect(response.statusCode).toBe(404);
-    });
-
-    it('should fail if auth user is not authorized', async () => {
-      const user = await UserModel.query().insert(getUserData());
-      const token = getToken({ sub: user.sub });
-
-      const ticketData = pick(
-        getTicketData({
-          projectId: project.id,
-        }),
-        ['project_id', 'name', 'type_id', 'status_id', 'priority_id']
-      );
-
-      const response = await request(app)
-        .post(`${BASE_PATH}`)
-        .set('Authorization', `Bearer ${token}`)
-        .send(ticketData);
-
-      expect(response.statusCode).toBe(403);
     });
 
     it('should fail if required properties are not provided', async () => {

@@ -44,4 +44,17 @@ function updateTicketSchema(req, res, next) {
   validateRequest(req, next, schema);
 }
 
-export { createTicketSchema, updateTicketSchema, getTicketGraphQuery };
+function createTicketAttachmentSchema(req, res, next) {
+  const schema = Joi.object({
+    attachment_url: Joi.string().required(),
+  });
+
+  validateRequest(req, next, schema);
+}
+
+export {
+  createTicketSchema,
+  updateTicketSchema,
+  createTicketAttachmentSchema,
+  getTicketGraphQuery,
+};

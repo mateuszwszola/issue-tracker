@@ -1,8 +1,8 @@
 import {
   addTimestamps,
   addUrl,
-  referenceTable,
   createNameTable,
+  referenceTable,
 } from './tableHelpers';
 import tableNames from '../constants/tableNames';
 
@@ -147,8 +147,6 @@ const createSprintTable = (knex) =>
 const createAttachmentTable = (knex) =>
   knex.schema.createTable(tableNames.attachment, (table) => {
     table.increments().primary();
-    table.string('name');
-    table.string('description');
     referenceTable(table, 'ticket_id', tableNames.ticket, false).onDelete(
       'SET NULL'
     );

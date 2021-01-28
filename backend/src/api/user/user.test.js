@@ -58,66 +58,6 @@ describe('Test the users endpoints', () => {
     });
   });
 
-  describe(`POST /api/users`, () => {
-    it('should respond with an error if token not provided', async () => {
-      const response = await request(app).post(BASE_PATH);
-
-      expect(response.statusCode).toBe(401);
-    });
-
-    it('should respond with an error if user is not authorized', async () => {
-      const user = await UserModel.query().insert(getUserData());
-      const token = getToken({ sub: user.sub });
-
-      const response = await request(app)
-        .post(BASE_PATH)
-        .set('Authorization', `Bearer ${token}`);
-
-      expect(response.statusCode).toBe(403);
-    });
-
-    it('should respond with an error if req body does not pass schema validation', async () => {
-      const user = await UserModel.query().insert(
-        getUserData({ isAdmin: true })
-      );
-      const token = getToken({ sub: user.sub });
-
-      const body = {
-        email: 'this-is-not-a-valid-email',
-        name: '',
-      };
-
-      const response = await request(app)
-        .post(BASE_PATH)
-        .set('Authorization', `Bearer ${token}`)
-        .send(body);
-
-      expect(response.statusCode).toBe(422);
-    });
-
-    it('should create a user with extra props (that only admin can add) and respond with a user', async () => {
-      const user = await UserModel.query().insert(
-        getUserData({ isAdmin: true })
-      );
-      const token = getToken({ sub: user.sub });
-
-      const { name, email } = getUserData();
-
-      const response = await request(app)
-        .post(BASE_PATH)
-        .set('Authorization', `Bearer ${token}`)
-        .send({ name, email, is_admin: true });
-
-      const { body, statusCode } = response;
-
-      expect(statusCode).toBe(201);
-      expect(body).toHaveProperty('user');
-      expect(body.user.name).toBe(name);
-      expect(body.user.email).toBe(email);
-      expect(body.user.is_admin).toBe(true);
-    });
-  });
-
   describe(`GET /api/users/:userId`, () => {
     it('should respond with an error if token not provided', async () => {
       const user = await UserModel.query().insert(getUserData());

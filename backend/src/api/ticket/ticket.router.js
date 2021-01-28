@@ -17,9 +17,9 @@ import { validTicketOrders } from '../../constants/ticket';
 import { createTicketSchema, updateTicketSchema } from '../../utils/ticket';
 import { ROLES } from '../../constants/roles';
 import registerCommentRoutes from './ticketComment/ticketComment.routes';
+import registerAttachmentRoutes from './ticketAttachment/ticketAttachment.routes';
 
 const router = Router();
-
 /**
  * @route GET /api/tickets/type
  * @desc Get ticket types
@@ -58,6 +58,10 @@ router.get(
 router.post('/', [
   ...authenticate(),
   createTicketSchema,
+  (req, res, next) => {
+    const { project_id } = req.body;
+    preloadProject({ projectId: project_id })(req, res, next);
+  },
   controllers.createTicket,
 ]);
 
@@ -70,6 +74,8 @@ router.use('/:ticketId', (req, res, next) => {
 });
 
 registerCommentRoutes(router);
+
+registerAttachmentRoutes(router);
 
 /**
  * @route GET /api/tickets/:ticketId

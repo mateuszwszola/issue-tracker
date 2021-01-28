@@ -58,7 +58,7 @@ function CreateComment({ issueId, mutate, size }) {
       />
 
       {!user ? (
-        <Button mt={1} colorScheme="blue" size="sm" onClick={loginWithRedirect}>
+        <Button mt={1} variant="solid" colorScheme="blue" size="sm" onClick={loginWithRedirect}>
           Sign in to add a comment
         </Button>
       ) : (

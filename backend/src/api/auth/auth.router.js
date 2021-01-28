@@ -6,7 +6,7 @@ const router = Router();
 
 /**
  @route /api/auth/user
- @desc Return authenticated user if exists
+ @desc Return authenticated user
  */
 router.get('/user', ...authenticate(), controllers.getAuthUser);
 

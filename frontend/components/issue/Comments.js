@@ -28,11 +28,11 @@ function Comments({ issueId }) {
 
   return (
     <Box mt={2} width="full" maxWidth="700px">
-      <CreateComment issueId={issueId} mutate={mutate} size={size} />
-
       <Text textAlign="right" fontSize="sm" mt={1} mb={2} color="gray.500">
         Comments {isLoadingMore ? '...' : comments?.length || 0}
       </Text>
+
+      <CreateComment issueId={issueId} mutate={mutate} size={size} />
 
       {error ? (
         <Text textAlign="center">Unable to load comments</Text>
@@ -74,7 +74,7 @@ function Comments({ issueId }) {
 }
 
 Comments.propTypes = {
-  issueId: PropTypes.number.isRequired
+  issueId: PropTypes.number
 };
 
 export default Comments;

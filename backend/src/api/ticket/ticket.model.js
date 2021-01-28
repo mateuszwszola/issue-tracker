@@ -83,6 +83,7 @@ class Ticket extends Model {
     const { TicketType } = require('./ticketType/ticketType.model');
     const { TicketStatus } = require('./ticketStatus/ticketStatus.model');
     const { TicketPriority } = require('./ticketPriority/ticketPriority.model');
+    const { Attachment } = require('./ticketAttachment/ticketAttachment.model');
 
     return {
       project: {
@@ -168,6 +169,14 @@ class Ticket extends Model {
             extra: ['comment'],
           },
           to: `${tableNames.user}.id`,
+        },
+      },
+      attachments: {
+        relation: Model.HasManyRelation,
+        modelClass: Attachment,
+        join: {
+          from: `${tableNames.ticket}.id`,
+          to: `${tableNames.attachment}.ticket_id`,
         },
       },
     };

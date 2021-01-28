@@ -3,7 +3,7 @@ import { formatDistanceToNow } from 'date-fns';
 import PropTypes from 'prop-types';
 import { NextButtonLink } from '@/components/Link';
 
-function IssueHeaderPreview({ issue }) {
+function Header({ issue }) {
   const secondaryColor = useColorModeValue('gray.500', 'gray.500');
 
   return (
@@ -51,8 +51,8 @@ function IssueHeaderPreview({ issue }) {
   );
 }
 
-IssueHeaderPreview.propTypes = {
-  issue: PropTypes.object.isRequired
+Header.propTypes = {
+  issue: PropTypes.object
 };
 
-export default IssueHeaderPreview;
+export default Header;
