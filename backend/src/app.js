@@ -4,16 +4,20 @@ import logger from 'morgan';
 import compression from 'compression';
 import helmet from 'helmet';
 import cors from 'cors';
-import { handleNotFound, handleError } from './utils/error';
+import { handleError, handleNotFound } from './utils/error';
 import { checkJwt } from './middlewares/auth';
 import registerApi from './api';
 import './db';
+import config from './config';
 
 const router = express.Router();
 const app = express();
 
-app.use(compression());
-app.use(helmet());
+if (config.isProd) {
+  app.use(compression());
+  app.use(helmet());
+}
+
 app.use(cors());
 app.use(logger('dev'));
 app.use(json());

@@ -58,6 +58,10 @@ router.get(
 router.post('/', [
   ...authenticate(),
   createTicketSchema,
+  (req, res, next) => {
+    const { project_id } = req.body;
+    preloadProject({ projectId: project_id })(req, res, next);
+  },
   controllers.createTicket,
 ]);
 
