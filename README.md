@@ -2,9 +2,9 @@
 
 Application to track projects, tasks and collaborate with the team.
 
-https://mwit.vercel.app
+[https://mwit.vercel.app](https://mwit.vercel.app)
 
-![dashboard](https://github.com/mateuszwszola/issue-tracker/blob/assets/admin-dashboard.png?raw=true)
+![dashboard](https://github.com/mateuszwszola/issue-tracker/blob/master/assets/admin-dashboard.png?raw=true)
 
 ## Tech Stack
 
@@ -17,11 +17,11 @@ https://mwit.vercel.app
 - Login
     - Auth0
 - Images storage
-    - S3
+    - AWS S3
     
 ## Database Entities Diagram
 
-![DB diagram](https://github.com/mateuszwszola/issue-tracker/blob/assets/db-diagram.png?raw=true)
+![DB diagram](https://github.com/mateuszwszola/issue-tracker/blob/master/assets/db-diagram.png?raw=true)
 
 ## Running Locally
 
