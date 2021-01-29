@@ -1,22 +1,58 @@
 # MW Issue Tracker
 
-Application to track the project work and collaborate with the team
+Application to track projects, tasks and collaborate with the team.
 
-## Server Setup
+https://mwit.vercel.app
 
-```bash
-  $ cd backend
+![dashboard](https://github.com/mateuszwszola/issue-tracker/blob/assets/admin-dashboard.png?raw=true)
+
+## Tech Stack
+
+- Frontend
+    - Next.js / React.js
+    - Chakra UI
+- Backend
+    - Node.js / Express.js
+    - PostgreSQL
+- Login
+    - Auth0
+- Images storage
+    - S3
+    
+## Database Entities Diagram
+
+![DB diagram](https://github.com/mateuszwszola/issue-tracker/blob/assets/db-diagram.png?raw=true)
+
+## Running Locally
+
+### Server
+
+```shell
+$ cd backend
 ```
 
+- Copy the [backend/.env.sample](backend/.env.sample) file to `backend/.env` and update the values
 - Install dependencies: `npm install`
-- Run PostgreSQL database with Adminer (db client): `docker-compose up`
-- Migrate the database: `npm run migrate`
-- Seed the database: `npm run seed`
+- Run PostgreSQL along with Adminer (DB client) and a test database: `docker-compose up`
+- Migrate a database: `npm run db:migrate`
+- Seed a database: `npm run db:seed`
 
-If you need to rollback the migration:
+To rollback migration, run:
 
-- Rollback migration: `npm run rollback`
+```shell
+$ npm run db:rollback
+```
+
+### Client
+
+```shell
+$ cd frontend
+```
+
+- Copy the [frontend/.env](frontend/.env) file to `frontend/.env.local` and update the values
+- Install dependencies: `npm install`
+
 
 ## Running tests
 
-To test the API endpoints with Jest, run `npm test`
+To test the API endpoints with Jest, run `npm test` within backend folder
