@@ -31,18 +31,18 @@ Every record has these fields:
 - Auth0 is used for authentication
 - when user logins or signs up with Auth0 on the frontend it will call `/api/login` endpoint sending access_token, then
   the backend will check if the user with specific sub exists
-    - if exists, it will simply respond with a user
-    - if not exists, the backend will call Auth0 asking for profile information and will create and then respond with a
-      new user
+  - if exists, it will simply respond with a user
+  - if not exists, the backend will call Auth0 asking for profile information and will create and then respond with a
+    new user
 
 ## Roles & Permissions:
 
 - Admin:
-    - manage projects
+  - manage projects
 - Project Manager:
-    - manage project engineers
+  - manage project engineers
 - Project Engineer
-    - work on tickets
-- User
-    - submit a ticket
-    - comment on tickets
+  - work on tickets
+- Authenticated User
+  - submit tickets
+  - add comments

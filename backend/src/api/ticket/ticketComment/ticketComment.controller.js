@@ -63,8 +63,8 @@ const updateComment = async (req, res) => {
     throw new ErrorHandler(404, `Comment with ${commentId} id not found`);
   }
 
-  if (!isAdmin || comment.user_id !== userId) {
-    throw new ErrorHandler(403, `You are not authorized to delete a comment`);
+  if (!isAdmin && String(comment.user_id) !== String(userId)) {
+    throw new ErrorHandler(403, `You are not authorized to update a comment`);
   }
 
   const query = comment.$query().patch({ comment: newComment }).returning('*');
@@ -84,7 +84,7 @@ const deleteComment = async (req, res) => {
     throw new ErrorHandler(404, `Comment with ${commentId} id not found`);
   }
 
-  if (!isAdmin || comment.user_id !== userId) {
+  if (!isAdmin && String(comment.user_id) !== String(userId)) {
     throw new ErrorHandler(403, `You are not authorized to delete a comment`);
   }
 
