@@ -12,16 +12,16 @@ function useDebouncedSearchKey(initialValue = '') {
     [setInputValue]
   );
 
-  const debouncedSearchKeyUpdate = debounce(() => {
-    setSearchKey(inputValue);
-  }, 500);
-
   useEffect(() => {
+    const debouncedSearchKeyUpdate = debounce(() => {
+      setSearchKey(inputValue);
+    }, 500);
+
     debouncedSearchKeyUpdate();
     return () => {
       debouncedSearchKeyUpdate.cancel();
     };
-  }, [inputValue, debouncedSearchKeyUpdate]);
+  }, [inputValue]);
 
   return { inputValue, handleInputValueChange, searchKey };
 }

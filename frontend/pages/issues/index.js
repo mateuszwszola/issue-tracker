@@ -1,32 +1,38 @@
 import DisplayError from '@/components/DisplayError';
 import { InputSearch } from '@/components/InputSearch';
 import FilterMenus from '@/components/issues/FilterMenus';
+import AssignedToMeBtn from '@/components/issues/filterMenus/AssignedToMeBtn';
+import { FilterMenu } from '@/components/issues/filterMenus/FilterMenu';
 import { Issues } from '@/components/issues/Issues';
 import { Layout } from '@/components/Layout';
 import { useApiUser } from '@/contexts/api-user-context';
-import { useQueryFilter } from '@/hooks/use-query-filter';
 import { useDebouncedSearchKey } from '@/hooks/use-search';
 import { useTickets } from '@/hooks/use-ticket';
+import { filterObjectFalsy } from '@/utils/helpers';
 import { Box, Flex, Heading } from '@chakra-ui/react';
+import { useRouter } from 'next/router';
 import { useCallback } from 'react';
 
 const PAGE_SIZE = 10;
 
-const filterNames = ['type_id', 'status_id', 'priority_id', 'assignee_id'];
-
 function IssuesPage() {
-  const { inputValue, handleInputValueChange, searchKey } = useDebouncedSearchKey('');
-
-  const { filters, handleFilterChange, getFilters } = useQueryFilter(filterNames);
-
+  const { replace, query } = useRouter();
   const { user } = useApiUser();
+  // Get query filters
+  const { type_id, status_id, priority_id, assignee_id, search } = query;
+  const { inputValue, handleInputValueChange, searchKey } = useDebouncedSearchKey(search);
 
-  const getQueryObj = useCallback(() => {
-    return {
-      search: searchKey,
-      ...getFilters()
+  const getQueryFilters = useCallback(() => {
+    const filters = {
+      type_id,
+      status_id,
+      priority_id,
+      assignee_id,
+      search: searchKey
     };
-  }, [getFilters, searchKey]);
+    return filterObjectFalsy(filters);
+    // If one of the filter changes, return new function
+  }, [assignee_id, priority_id, searchKey, status_id, type_id]);
 
   const {
     error,
@@ -38,7 +44,26 @@ function IssuesPage() {
     isEmpty,
     size,
     fetchMore
-  } = useTickets(getQueryObj, PAGE_SIZE);
+  } = useTickets(getQueryFilters, PAGE_SIZE);
+
+  const filtersToUrl = useCallback(
+    (filters) => {
+      const searchParams = new URLSearchParams();
+      Object.entries(filters).forEach(([filterName, filterValue]) => {
+        searchParams.append(filterName, encodeURIComponent(filterValue));
+      });
+      searchParams.sort();
+      replace(`?${searchParams.toString()}`);
+    },
+    [replace]
+  );
+
+  const handleFilterChange = (filterName) => (filterValue) => {
+    filtersToUrl({
+      ...getQueryFilters(),
+      [filterName]: filterValue
+    });
+  };
 
   return (
     <Layout title="Issues">
@@ -51,7 +76,37 @@ function IssuesPage() {
           <InputSearch value={inputValue} handleChange={handleInputValueChange} />
         </Box>
 
-        <FilterMenus filters={filters} handleFilterChange={handleFilterChange} user={user} />
+        <FilterMenus>
+          <FilterMenu
+            filterName="type"
+            filterValue={type_id}
+            handleFilterChange={handleFilterChange('type_id')}
+            fetchUrl={`tickets/type`}
+          />
+          <FilterMenu
+            filterName="status"
+            filterValue={status_id}
+            handleFilterChange={handleFilterChange('status_id')}
+            fetchUrl={`tickets/status`}
+          />
+          <FilterMenu
+            filterName="priority"
+            filterValue={priority_id}
+            handleFilterChange={handleFilterChange('priority_id')}
+            fetchUrl={`tickets/priority`}
+          />
+          {user && (
+            <Box>
+              <AssignedToMeBtn
+                filterValue={assignee_id}
+                handleFilterChange={handleFilterChange('assignee_id')}
+                userId={user.id}
+              >
+                Assigned to me
+              </AssignedToMeBtn>
+            </Box>
+          )}
+        </FilterMenus>
       </Flex>
 
       <Box my={12}>
