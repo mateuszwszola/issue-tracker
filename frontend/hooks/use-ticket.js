@@ -29,10 +29,7 @@ export function useTickets(getQueryObj, PAGE_SIZE = 10) {
     [PAGE_SIZE, getQueryObj]
   );
 
-  return useInfiniteScroll(getKey, client, 'tickets', PAGE_SIZE, {
-    revalidateAll: true,
-    persistSize: true
-  });
+  return useInfiniteScroll(getKey, client, 'tickets', PAGE_SIZE);
 }
 
 export function useCreateTicket(config = {}) {

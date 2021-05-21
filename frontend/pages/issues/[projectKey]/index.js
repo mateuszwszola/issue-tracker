@@ -14,7 +14,8 @@ import { getProjectIdFromProjectKey } from '@/utils/projects-client';
 import { Box, Flex, Heading, Link } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
+import pick from 'lodash/pick';
 
 const PAGE_SIZE = 10;
 
@@ -25,16 +26,16 @@ function ProjectIssuesPage() {
   const projectId = projectKey && getProjectIdFromProjectKey(projectKey);
   const { inputValue, handleInputValueChange, searchKey } = useDebouncedSearchKey(search);
 
-  const getQueryObj = useCallback(() => {
+  const getQueryFilters = useCallback(() => {
     return {
       type_id,
       status_id,
       priority_id,
       assignee_id,
-      search: searchKey,
+      search,
       project_id: projectId
     };
-  }, [assignee_id, priority_id, projectId, searchKey, status_id, type_id]);
+  }, [assignee_id, priority_id, projectId, search, status_id, type_id]);
 
   const {
     error,
@@ -47,7 +48,11 @@ function ProjectIssuesPage() {
     size,
     fetchMore,
     mutate
-  } = useTickets(getQueryObj, PAGE_SIZE);
+  } = useTickets(getQueryFilters, PAGE_SIZE);
+
+  useEffect(() => {
+    handleFilterChange('search')(searchKey);
+  }, [handleFilterChange, searchKey]);
 
   const filtersToUrl = useCallback(
     (filters) => {
@@ -56,21 +61,30 @@ function ProjectIssuesPage() {
         searchParams.append(filterName, encodeURIComponent(filterValue));
       });
       searchParams.sort();
-      replace(`/issues/${projectKey}?${searchParams.toString()}`);
+      replace(
+        searchParams.toString()
+          ? `/issues/${projectKey}?${searchParams.toString()}`
+          : `/issues/${projectKey}`
+      );
     },
     [projectKey, replace]
   );
 
-  const handleFilterChange = (filterName) => (filterValue) => {
-    filtersToUrl({
-      type_id,
-      status_id,
-      priority_id,
-      assignee_id,
-      search,
-      [filterName]: filterValue
-    });
-  };
+  const handleFilterChange = useCallback(
+    (filterName) => (filterValue) => {
+      filtersToUrl({
+        ...pick(getQueryFilters(), [
+          'type_id',
+          'status_id',
+          'priority_id',
+          'assignee_id',
+          'search'
+        ]),
+        [filterName]: filterValue
+      });
+    },
+    [filtersToUrl, getQueryFilters]
+  );
 
   return (
     <Layout title={`Issues for ${projectKey}`}>

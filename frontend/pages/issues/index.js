@@ -11,28 +11,27 @@ import { useTickets } from '@/hooks/use-ticket';
 import { filterObjectFalsy } from '@/utils/helpers';
 import { Box, Flex, Heading } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 
 const PAGE_SIZE = 10;
 
 function IssuesPage() {
   const { replace, query } = useRouter();
   const { user } = useApiUser();
-  // Get query filters
+  // Get query filters from the URL
   const { type_id, status_id, priority_id, assignee_id, search } = query;
   const { inputValue, handleInputValueChange, searchKey } = useDebouncedSearchKey(search);
 
   const getQueryFilters = useCallback(() => {
-    const filters = {
+    return {
       type_id,
       status_id,
       priority_id,
       assignee_id,
-      search: searchKey
+      search
     };
-    return filterObjectFalsy(filters);
     // If one of the filter changes, return new function
-  }, [assignee_id, priority_id, searchKey, status_id, type_id]);
+  }, [assignee_id, priority_id, search, status_id, type_id]);
 
   const {
     error,
@@ -46,24 +45,31 @@ function IssuesPage() {
     fetchMore
   } = useTickets(getQueryFilters, PAGE_SIZE);
 
+  useEffect(() => {
+    handleFilterChange('search')(searchKey);
+  }, [handleFilterChange, searchKey]);
+
   const filtersToUrl = useCallback(
     (filters) => {
       const searchParams = new URLSearchParams();
-      Object.entries(filters).forEach(([filterName, filterValue]) => {
+      Object.entries(filterObjectFalsy(filters)).forEach(([filterName, filterValue]) => {
         searchParams.append(filterName, encodeURIComponent(filterValue));
       });
       searchParams.sort();
-      replace(`?${searchParams.toString()}`);
+      replace(searchParams.toString() ? `/issues/?${searchParams.toString()}` : '/issues');
     },
     [replace]
   );
 
-  const handleFilterChange = (filterName) => (filterValue) => {
-    filtersToUrl({
-      ...getQueryFilters(),
-      [filterName]: filterValue
-    });
-  };
+  const handleFilterChange = useCallback(
+    (filterName) => (filterValue) => {
+      filtersToUrl({
+        ...getQueryFilters(),
+        [filterName]: filterValue
+      });
+    },
+    [filtersToUrl, getQueryFilters]
+  );
 
   return (
     <Layout title="Issues">
