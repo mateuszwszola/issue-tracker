@@ -80,7 +80,7 @@ function ProjectIssuesPage() {
           'assignee_id',
           'search'
         ]),
-        [filterName]: filterValue
+        [filterName]: filterValue === 'All' ? '' : filterValue
       });
     },
     [filtersToUrl, getQueryFilters]
