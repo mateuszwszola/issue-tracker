@@ -14,7 +14,7 @@ function Home() {
         <title>MW Issue Tracker</title>
       </Head>
 
-      <Container withOverlay>
+      <Container>
         <Header />
         <Main>
           <Hero />

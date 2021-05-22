@@ -5,6 +5,10 @@ function useDebouncedSearchKey(initialValue = '') {
   const [inputValue, setInputValue] = useState(initialValue);
   const [searchKey, setSearchKey] = useState('');
 
+  useEffect(() => {
+    setInputValue(initialValue);
+  }, [initialValue]);
+
   const handleInputValueChange = useCallback(
     (e) => {
       setInputValue(e.target.value);

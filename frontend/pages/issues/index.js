@@ -9,7 +9,7 @@ import { useApiUser } from '@/contexts/api-user-context';
 import { useDebouncedSearchKey } from '@/hooks/use-search';
 import { useTickets } from '@/hooks/use-ticket';
 import { filterObjectFalsy } from '@/utils/helpers';
-import { Box, Flex, Heading } from '@chakra-ui/react';
+import { Box, Flex, Heading, HStack, Tag, TagCloseButton, TagLabel } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect } from 'react';
 
@@ -65,11 +65,13 @@ function IssuesPage() {
     (filterName) => (filterValue) => {
       filtersToUrl({
         ...getQueryFilters(),
-        [filterName]: filterValue
+        [filterName]: filterValue === 'All' ? '' : filterValue
       });
     },
     [filtersToUrl, getQueryFilters]
   );
+
+  const filtersApplied = Object.keys(filterObjectFalsy(getQueryFilters())).length > 0;
 
   return (
     <Layout title="Issues">
@@ -114,6 +116,15 @@ function IssuesPage() {
           )}
         </FilterMenus>
       </Flex>
+
+      {filtersApplied && (
+        <HStack spacing={4} mt={4}>
+          <Tag borderRadius="full" variant="solid">
+            <TagLabel>Clear filter</TagLabel>
+            <TagCloseButton onClick={() => filtersToUrl({})} />
+          </Tag>
+        </HStack>
+      )}
 
       <Box my={12}>
         {error ? (
