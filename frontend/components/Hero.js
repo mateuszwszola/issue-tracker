@@ -3,7 +3,7 @@ import { FaArrowRight } from 'react-icons/fa';
 import { useAuth0 } from '@auth0/auth0-react';
 
 const headingText = 'Project Tracker';
-const heroText = `MWIT is a ticketing system that allows to create and manage project issues. Easily keep track of the tasks, bugs, and features. Collaborate with team, and see what needs to be done.`;
+const heroText = `MWIT is a ticketing system that allows to create and manage project issues. Easily keep track of the tasks, bugs, and features. Collaborate with the team, and see what needs to be done.`;
 
 export const Hero = (props) => {
   const { loginWithRedirect, isAuthenticated } = useAuth0();

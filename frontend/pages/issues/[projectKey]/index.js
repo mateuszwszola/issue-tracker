@@ -11,7 +11,7 @@ import { useDebouncedSearchKey } from '@/hooks/use-search';
 import { useTickets } from '@/hooks/use-ticket';
 import { filterObjectFalsy } from '@/utils/helpers';
 import { getProjectIdFromProjectKey } from '@/utils/projects-client';
-import { Box, Flex, Heading, Link } from '@chakra-ui/react';
+import { Box, Flex, Heading, HStack, Link, Tag, TagCloseButton, TagLabel } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect } from 'react';
@@ -86,6 +86,13 @@ function ProjectIssuesPage() {
     [filtersToUrl, getQueryFilters]
   );
 
+  const filtersApplied =
+    Object.keys(
+      filterObjectFalsy(
+        pick(getQueryFilters(), ['type_id', 'status_id', 'priority_id', 'assignee_id', 'search'])
+      )
+    ).length > 0;
+
   return (
     <Layout title={`Issues for ${projectKey}`}>
       <Flex mt={2} w="full" justify="space-between" align="center" wrap="wrap">
@@ -136,6 +143,15 @@ function ProjectIssuesPage() {
           )}
         </FilterMenus>
       </Flex>
+
+      {filtersApplied && (
+        <HStack spacing={4} mt={4}>
+          <Tag borderRadius="full" variant="solid">
+            <TagLabel>Clear filter</TagLabel>
+            <TagCloseButton onClick={() => filtersToUrl({})} />
+          </Tag>
+        </HStack>
+      )}
 
       <Box my={12}>
         {error ? (

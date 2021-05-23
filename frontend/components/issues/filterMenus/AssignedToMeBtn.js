@@ -11,7 +11,6 @@ function AssignedToMeBtn({ filterValue, handleFilterChange, userId, children, ..
     <Button
       onClick={handleBtnClick}
       size="sm"
-      rounded="full"
       rightIcon={filterValue ? <MdClose /> : null}
       {...props}
     >
