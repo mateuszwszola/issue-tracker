@@ -21,7 +21,8 @@ const resourceNames = {
   type: 'types',
   status: 'statuses',
   priority: 'priorities',
-  assignee: 'profiles'
+  assignee: 'profiles',
+  project: 'projects'
 };
 
 export const FilterMenu = ({ filterName, filterValue, handleFilterChange, fetchUrl }) => {

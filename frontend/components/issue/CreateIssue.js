@@ -5,13 +5,13 @@ import PropTypes from 'prop-types';
 import { useCreateTicket } from '@/hooks/use-ticket';
 import IssueForm, { IssueFormModal } from '@/components/issue/IssueForm';
 
-function CreateIssue({ projectId, refreshIssues }) {
+function CreateIssue({ projectId, onCreate }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const [createIssue, createIssueStatus] = useCreateTicket({
     onSuccess: () => {
       onClose();
-      refreshIssues();
+      onCreate();
     }
   });
 
@@ -34,7 +34,7 @@ function CreateIssue({ projectId, refreshIssues }) {
 
 CreateIssue.propTypes = {
   projectId: PropTypes.number.isRequired,
-  refreshIssues: PropTypes.func.isRequired
+  onCreate: PropTypes.func.isRequired
 };
 
 export default CreateIssue;

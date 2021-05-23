@@ -96,7 +96,7 @@ function ProjectIssuesPage() {
           </NextLink>
         </Heading>
 
-        {user && <CreateIssue projectId={Number(projectId)} refreshIssues={() => mutate()} />}
+        {user && <CreateIssue projectId={Number(projectId)} onCreate={() => mutate()} />}
       </Flex>
 
       <Flex mt={4} direction={['column', null, 'row']} align={{ sm: 'center' }}>

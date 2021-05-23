@@ -19,19 +19,20 @@ function IssuesPage() {
   const { replace, query } = useRouter();
   const { user } = useApiUser();
   // Get query filters from the URL
-  const { type_id, status_id, priority_id, assignee_id, search } = query;
+  const { project_id, type_id, status_id, priority_id, assignee_id, search } = query;
   const { inputValue, handleInputValueChange, searchKey } = useDebouncedSearchKey(search);
 
   const getQueryFilters = useCallback(() => {
     return {
+      project_id,
       type_id,
       status_id,
       priority_id,
       assignee_id,
       search
     };
-    // If one of the filter changes, return new function
-  }, [assignee_id, priority_id, search, status_id, type_id]);
+    // If one of the filter changes, return a new function
+  }, [assignee_id, priority_id, project_id, search, status_id, type_id]);
 
   const {
     error,
@@ -76,7 +77,7 @@ function IssuesPage() {
   return (
     <Layout title="Issues">
       <Heading size="lg" mt={2}>
-        All issues
+        Issues
       </Heading>
 
       <Flex mt={4} direction={['column', null, 'row']} align={{ sm: 'center' }}>
@@ -85,6 +86,12 @@ function IssuesPage() {
         </Box>
 
         <FilterMenus>
+          <FilterMenu
+            filterName="project"
+            filterValue={project_id}
+            handleFilterChange={handleFilterChange('project_id')}
+            fetchUrl={`projects`}
+          />
           <FilterMenu
             filterName="type"
             filterValue={type_id}

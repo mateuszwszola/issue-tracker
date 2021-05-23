@@ -51,7 +51,7 @@ export const Hero = (props) => {
               fontSize="sm"
               letterSpacing="wide"
             >
-              Log In
+              Sign In
             </Button>
           )}
         </Box>
