@@ -1,14 +1,12 @@
 import { Flex, Box, Image, Heading, Text, Button } from '@chakra-ui/react';
 import { FaArrowRight } from 'react-icons/fa';
-import { projectName } from '@/pages/index';
 import { useAuth0 } from '@auth0/auth0-react';
 
-export const Hero = (props) => {
-  const { loginWithRedirect } = useAuth0();
+const headingText = 'Project Tracker';
+const heroText = `MWIT is a ticketing system that allows to create and manage project issues. Easily keep track of the tasks, bugs, and features. Collaborate with the team, and see what needs to be done.`;
 
-  const headingText = 'Manage your project work';
-  const heroText = `Welcome to the ${projectName}, software for managing
-  project work. Keep track of the tasks, bugs, and features. Collaborate with your team, and see what needs to be done. It will help with keeping the project up to date.`;
+export const Hero = (props) => {
+  const { loginWithRedirect, isAuthenticated } = useAuth0();
 
   return (
     <Flex
@@ -42,18 +40,20 @@ export const Hero = (props) => {
         </Text>
 
         <Box mt={6}>
-          <Button
-            onClick={() => loginWithRedirect()}
-            rightIcon={<FaArrowRight />}
-            cursor="pointer"
-            colorScheme="green"
-            textTransform="uppercase"
-            fontWeight="bold"
-            fontSize="sm"
-            letterSpacing="wide"
-          >
-            Let&apos;s get started
-          </Button>
+          {!isAuthenticated && (
+            <Button
+              onClick={() => loginWithRedirect()}
+              rightIcon={<FaArrowRight />}
+              cursor="pointer"
+              colorScheme="green"
+              textTransform="uppercase"
+              fontWeight="bold"
+              fontSize="sm"
+              letterSpacing="wide"
+            >
+              Sign In
+            </Button>
+          )}
         </Box>
       </Box>
     </Flex>

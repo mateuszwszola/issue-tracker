@@ -21,7 +21,8 @@ const resourceNames = {
   type: 'types',
   status: 'statuses',
   priority: 'priorities',
-  assignee: 'profiles'
+  assignee: 'profiles',
+  project: 'projects'
 };
 
 export const FilterMenu = ({ filterName, filterValue, handleFilterChange, fetchUrl }) => {
@@ -33,13 +34,11 @@ export const FilterMenu = ({ filterName, filterValue, handleFilterChange, fetchU
 
   const options = data && data[resourceName];
 
-  const selected = options?.find((option) => String(option.id) === String(filterValue));
-
   return (
     <Menu isLazy onOpen={() => setStartFetching(true)}>
-      <MenuButton as={Button} d="block" w="full" size="sm" variant="ghost">
+      <MenuButton as={Button} d="block" w="full" size="sm">
         <Flex justify="space-between" align="center">
-          <Text textTransform="capitalize">{selected?.name || filterName}</Text>
+          <Text textTransform="capitalize">{filterName}</Text>
           <Icon ml={1} as={GoChevronDown} />
         </Flex>
       </MenuButton>
@@ -49,14 +48,16 @@ export const FilterMenu = ({ filterName, filterValue, handleFilterChange, fetchU
         ) : !data ? (
           <SkeletonText p={4} noOfLines={4} spacing="4" />
         ) : (
-          <MenuOptionGroup type="radio" onChange={handleFilterChange}>
-            <MenuItemOption>All</MenuItemOption>
+          <MenuOptionGroup
+            defaultValue="All"
+            value={filterValue}
+            type="radio"
+            title={`Select ${filterName}`}
+            onChange={handleFilterChange}
+          >
+            <MenuItemOption value="All">All</MenuItemOption>
             {options?.map((option) => (
-              <MenuItemOption
-                key={option.id}
-                value={String(option.id)}
-                isChecked={filterValue === String(option.id)}
-              >
+              <MenuItemOption key={option.id} value={String(option.id)}>
                 {option.name}
               </MenuItemOption>
             ))}

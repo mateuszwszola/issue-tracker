@@ -12,18 +12,9 @@ function Home() {
     <>
       <Head>
         <title>MW Issue Tracker</title>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-                if (document.cookie && document.cookie.includes('auth0.is.authenticated')) {
-                  window.location.href = "/dashboard"
-                }
-              `
-          }}
-        />
       </Head>
 
-      <Container withOverlay>
+      <Container>
         <Header />
         <Main>
           <Hero />

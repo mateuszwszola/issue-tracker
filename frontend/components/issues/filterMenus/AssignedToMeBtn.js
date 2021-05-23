@@ -11,8 +11,6 @@ function AssignedToMeBtn({ filterValue, handleFilterChange, userId, children, ..
     <Button
       onClick={handleBtnClick}
       size="sm"
-      rounded="full"
-      variant="outline"
       rightIcon={filterValue ? <MdClose /> : null}
       {...props}
     >
@@ -22,7 +20,7 @@ function AssignedToMeBtn({ filterValue, handleFilterChange, userId, children, ..
 }
 
 AssignedToMeBtn.propTypes = {
-  filterValue: PropTypes.string.isRequired,
+  filterValue: PropTypes.string,
   handleFilterChange: PropTypes.func.isRequired,
   userId: PropTypes.number.isRequired,
   children: PropTypes.string.isRequired

@@ -58,7 +58,7 @@ export const Header = () => {
         <Box>
           {user ? (
             <Menu>
-              <Avatar as={MenuButton} size="sm" variant="ghost" />
+              <Avatar src={user.picture} as={MenuButton} size="sm" variant="ghost" />
               <MenuList>
                 <NextLink href={`/user/${user.id}`} passHref>
                   <MenuItem as="a">Profile</MenuItem>

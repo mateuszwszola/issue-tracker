@@ -31,8 +31,8 @@ function Issue() {
   const isAssignee = user && issue && user.id === issue.assignee_id;
   const isSubmitter = user && issue && user.id === issue.created_by;
 
-  const canDelete = isAdmin || isProjectManager || isSubmitter;
-  const canEdit = canDelete || isAssignee;
+  const canDelete = !!(isAdmin || isProjectManager || isSubmitter);
+  const canEdit = !!(canDelete || isAssignee);
 
   return (
     <Layout title={`Issue - ${issueKey}`}>

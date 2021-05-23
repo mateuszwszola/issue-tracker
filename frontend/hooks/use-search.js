@@ -5,6 +5,10 @@ function useDebouncedSearchKey(initialValue = '') {
   const [inputValue, setInputValue] = useState(initialValue);
   const [searchKey, setSearchKey] = useState('');
 
+  useEffect(() => {
+    setInputValue(initialValue);
+  }, [initialValue]);
+
   const handleInputValueChange = useCallback(
     (e) => {
       setInputValue(e.target.value);
@@ -12,16 +16,16 @@ function useDebouncedSearchKey(initialValue = '') {
     [setInputValue]
   );
 
-  const debouncedSearchKeyUpdate = debounce(() => {
-    setSearchKey(inputValue);
-  }, 500);
-
   useEffect(() => {
+    const debouncedSearchKeyUpdate = debounce(() => {
+      setSearchKey(inputValue);
+    }, 500);
+
     debouncedSearchKeyUpdate();
     return () => {
       debouncedSearchKeyUpdate.cancel();
     };
-  }, [inputValue, debouncedSearchKeyUpdate]);
+  }, [inputValue]);
 
   return { inputValue, handleInputValueChange, searchKey };
 }
