@@ -35,11 +35,7 @@ describe('Test project engineers endpoints', () => {
 
   describe('GET /api/projects/:projectId/engineers', () => {
     it('should respond with 404 error if project does not exists', async () => {
-      const token = getToken({ sub: admin.sub });
-
-      const response = await request(app)
-        .get(`${BASE_PATH}/123/engineers`)
-        .set('Authorization', `Bearer ${token}`);
+      const response = await request(app).get(`${BASE_PATH}/123/engineers`);
 
       expect(response.statusCode).toBe(404);
     });
@@ -50,16 +46,38 @@ describe('Test project engineers endpoints', () => {
         .for(project.id)
         .relate(engineer.id);
 
-      const token = getToken({ sub: admin.sub });
-
-      const response = await request(app)
-        .get(`${BASE_PATH}/${project.id}/engineers`)
-        .set('Authorization', `Bearer ${token}`);
+      const response = await request(app).get(
+        `${BASE_PATH}/${project.id}/engineers`
+      );
 
       expect(response.statusCode).toBe(200);
       expect(response.body).toHaveProperty('engineers');
       expect(response.body.engineers.length).toBe(1);
       expect(response.body.engineers[0].id).toBe(engineer.id);
+    });
+  });
+
+  describe('GET /api/projects/:projectId/engineers/:userId', () => {
+    it('When there is no project engineer with given id, should respond with 404 error', async () => {
+      const response = await request(app).get(
+        `${BASE_PATH}/${project.id}/engineers/123`
+      );
+
+      expect(response.statusCode).toBe(404);
+    });
+
+    it('When there is project engineer with given id, should respond with a user', async () => {
+      const user = await UserModel.query().insert(getUserData());
+      await ProjectModel.relatedQuery('engineers')
+        .for(project.id)
+        .relate(user.id);
+
+      const response = await request(app).get(
+        `${BASE_PATH}/${project.id}/engineers/${user.id}`
+      );
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body.engineer.id).toBe(user.id);
     });
   });
 
