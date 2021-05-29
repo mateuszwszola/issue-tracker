@@ -4,7 +4,7 @@ import { ErrorHandler } from '../utils/error';
 const preloadProject = ({ projectId }) => async (req, res, next) => {
   try {
     if (!projectId) {
-      return next(new ErrorHandler(400, 'Project id is required'));
+      return next(new ErrorHandler(422, 'Project id is required'));
     }
 
     const project = await Project.query().findById(projectId);

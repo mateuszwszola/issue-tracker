@@ -9,6 +9,8 @@ import {
   ticketSearchProps,
   validTicketState,
 } from '../../constants/ticket';
+import { ROLES } from '../../constants/roles';
+import { ErrorHandler } from '../../utils/error';
 
 const getTickets = async (req, res) => {
   const {
@@ -73,27 +75,40 @@ const createTicket = async (req, res) => {
   const ticketData = req.body;
   const { id: createdById } = req.api_user;
 
-  const { id: submittedStatusId } = await TicketStatus.query()
-    .findOne({
-      name: TICKET_STATUSES.submitted,
-    })
-    .select('id');
-
   const ticket = await Ticket.query()
     .insert({
       ...ticketData,
-      status_id: submittedStatusId,
+      status_id:
+        ticketData.status_id ||
+        (
+          await TicketStatus.query()
+            .findOne({
+              name: TICKET_STATUSES.submitted,
+            })
+            .select('id')
+        ).id,
       created_by: createdById,
     })
     .returning('*');
 
-  return res.status(200).json({ ticket });
+  return res.status(201).json({ ticket });
 };
 
 const updateTicket = async (req, res) => {
+  const { id: ticketId, status_id: ticketStatusId } = req.ticket;
+  const ticketStatus = await TicketStatus.query().findById(ticketStatusId);
+
+  // When the ticket is no longer in the submitted state, the submitter can no longer update it, unless they are
+  // admin user, project manager or project engineer
+  if (
+    ticketStatus.name !== TICKET_STATUSES.submitted &&
+    req.api_user.role === ROLES.owner
+  ) {
+    throw new ErrorHandler(403, 'You are not authorized to update a ticket');
+  }
+
   const newTicketData = req.body;
   const { id: apiUserId } = req.api_user;
-  const { id: ticketId } = req.ticket;
 
   const ticket = await Ticket.query()
     .findById(ticketId)
@@ -104,7 +119,18 @@ const updateTicket = async (req, res) => {
 };
 
 const deleteTicket = async (req, res) => {
-  const { id: ticketId } = req.ticket;
+  const { id: ticketId, status_id: ticketStatusId } = req.ticket;
+
+  const ticketStatus = await TicketStatus.query().findById(ticketStatusId);
+
+  // When the ticket is no longer in the submitted state, the submitter can no longer update it, unless they are
+  // admin user, project manager or project engineer
+  if (
+    ticketStatus.name !== TICKET_STATUSES.submitted &&
+    req.api_user.role === ROLES.owner
+  ) {
+    throw new ErrorHandler(403, 'You are not authorized to delete a ticket');
+  }
 
   const ticket = await Ticket.query()
     .findById(ticketId)
