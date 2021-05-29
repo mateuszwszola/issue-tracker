@@ -12,6 +12,7 @@ import { useState } from 'react';
 import Header from '@/components/issue/Header';
 import Attachments from '@/components/issue/Attachments';
 import Comments from '@/components/issue/Comments';
+import { useIsUserProjectEngineer } from '@/hooks/use-project';
 
 function Issue() {
   const router = useRouter();
@@ -21,18 +22,16 @@ function Issue() {
   const [isEditing, setIsEditing] = useState(false);
   const { user } = useApiUser();
   const issueId = issueKey && getIssueIdFromKey(issueKey);
-  const { data, error } = useTicket(issueId);
-
-  const isLoading = !error && !data;
-  const issue = data?.ticket;
+  const { ticket: issue, isLoading: isLoadingIssue, error } = useTicket(issueId);
+  const { isEngineer: isProjectEngineer } = useIsUserProjectEngineer(user?.id, issue?.project.id);
 
   const isAdmin = user?.is_admin;
   const isProjectManager = user && issue && user.id === issue.project?.manager_id;
-  const isAssignee = user && issue && user.id === issue.assignee_id;
-  const isSubmitter = user && issue && user.id === issue.created_by;
+  const isTicketAuthor = user && issue && user.id === issue.created_by;
+  const isTicketSubmitted = issue?.status?.name === 'Submitted';
 
-  const canDelete = !!(isAdmin || isProjectManager || isSubmitter);
-  const canEdit = !!(canDelete || isAssignee);
+  const canManage = !!(isAdmin || isProjectManager || isProjectEngineer);
+  const canEdit = canManage || !!(isTicketAuthor && isTicketSubmitted);
 
   return (
     <Layout title={`Issue - ${issueKey}`}>
@@ -45,11 +44,11 @@ function Issue() {
           />
         ) : (
           <>
-            {canEdit && issue && (
+            {issue && canEdit && (
               <EditIssueControls
                 isEditing={isEditing}
                 setIsEditing={setIsEditing}
-                canDelete={canDelete}
+                canDelete={canEdit}
                 onDelete={() => router.push(`/issues`)}
                 issueId={issueId}
               />
@@ -60,9 +59,9 @@ function Issue() {
                 <EditIssue issueId={issueId} issue={issue} onEdit={() => setIsEditing(false)} />
               ) : (
                 <>
-                  <IssuePreview isLoading={isLoading} issue={issue}>
+                  <IssuePreview isLoading={isLoadingIssue} issue={issue}>
                     <Header issue={issue} />
-                    <Attachments mt={8} issueId={issue?.id} canUpload={canDelete} />
+                    <Attachments mt={8} issueId={issue?.id} canUpload={canEdit} />
                     <Comments mt={12} issueId={issue?.id} />
                   </IssuePreview>
                 </>

@@ -33,9 +33,9 @@ function createTicketSchema(req, _res, next) {
       api_user.role
     )
   ) {
-    schemaRules.priority_id = Joi.number();
-    schemaRules.assignee_id = Joi.number();
-    schemaRules.status_id = Joi.number();
+    schemaRules.priority_id = Joi.number().empty('');
+    schemaRules.assignee_id = Joi.number().empty('');
+    schemaRules.status_id = Joi.number().empty('');
   }
 
   const schema = Joi.object(schemaRules);

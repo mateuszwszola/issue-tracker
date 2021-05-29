@@ -1,5 +1,5 @@
 import client from '@/utils/api-client';
-import { getProject, getProjectEngineers } from '@/utils/projects-client';
+import { getProject, getProjectEngineer, getProjectEngineers } from '@/utils/projects-client';
 import useSWR from 'swr';
 import { useToast } from '@chakra-ui/react';
 import useMutation from '@/hooks/use-mutation';
@@ -10,6 +10,35 @@ export function useProject(projectId) {
   return {
     isLoading: !data && !error,
     project: data?.project,
+    error,
+    ...swrData
+  };
+}
+
+export function useIsUserProjectEngineer(userId, projectId) {
+  const { data, error, ...swrData } = useSWR(
+    userId && projectId ? ['engineers', projectId, userId] : null,
+    () => getProjectEngineer(projectId, userId),
+    {
+      shouldRetryOnError: false,
+      revalidateOnFocus: false
+    }
+  );
+
+  return {
+    isLoading: !error && !data,
+    isEngineer: !!data?.engineer,
+    error,
+    ...swrData
+  };
+}
+
+export function useIsUserProjectManager(userId, projectId) {
+  const { data, error, ...swrData } = useSWR(['projects', projectId], () => getProject(projectId));
+
+  return {
+    isLoading: !error && !data,
+    isManager: data && String(data.project.manager_id) === String(userId),
     error,
     ...swrData
   };
