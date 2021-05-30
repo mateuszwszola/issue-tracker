@@ -8,7 +8,16 @@ import { useCallback } from 'react';
 import { getTicket } from '@/utils/tickets-client';
 
 export function useTicket(ticketId) {
-  return useSWR(ticketId ? ['tickets', ticketId] : null, () => getTicket(ticketId));
+  const { data, error, ...swrData } = useSWR(ticketId ? ['tickets', ticketId] : null, () =>
+    getTicket(ticketId)
+  );
+
+  return {
+    isLoading: !data && !error,
+    ticket: data?.ticket,
+    error,
+    ...swrData
+  };
 }
 
 export function useTickets(getQueryObj, PAGE_SIZE = 10) {

@@ -1,4 +1,3 @@
-import { isEmpty } from 'lodash';
 import {
   ForeignKeyViolationError,
   NotFoundError,
@@ -39,8 +38,7 @@ const handleError = (err, req, res, next) => {
     res.status(statusCode);
     res.json({
       message: err.message || 'Internal Server Error',
-      ...(isEmpty(customError) ? null : customError),
-      ...(config.isProd ? null : { stack: err.stack }),
+      ...(config.isProd ? null : { stack: err.stack, ...customError }),
     });
   }
 };

@@ -57,11 +57,14 @@ router.get(
  */
 router.post('/', [
   ...authenticate(),
-  createTicketSchema,
   (req, res, next) => {
     const { project_id } = req.body;
     preloadProject({ projectId: project_id })(req, res, next);
   },
+  checkProjectEngineer(),
+  checkProjectManager(),
+  checkAdmin(),
+  createTicketSchema,
   controllers.createTicket,
 ]);
 
@@ -90,7 +93,10 @@ router.get('/:ticketId', controllers.getTicket);
 router.use('/:ticketId', [
   ...authenticate(),
   (req, res, next) => {
-    const { project_id: projectId } = req.ticket;
+    const { project_id: projectId, created_by: createdBy } = req.ticket;
+    if (req.api_user.id === createdBy) {
+      req.api_user.role = ROLES.owner;
+    }
     preloadProject({ projectId })(req, res, next);
   },
   checkProjectEngineer(),
@@ -101,10 +107,14 @@ router.use('/:ticketId', [
 /**
  * @route PATCH /api/tickets/:ticketId
  * @desc Update ticket
- * @access Admin, Project Manager, Project Engineer
  */
 router.patch('/:ticketId', [
-  authorize(ROLES.project_engineer, ROLES.project_manager, ROLES.admin),
+  authorize(
+    ROLES.project_engineer,
+    ROLES.project_manager,
+    ROLES.admin,
+    ROLES.owner
+  ),
   updateTicketSchema,
   controllers.updateTicket,
 ]);
@@ -112,10 +122,14 @@ router.patch('/:ticketId', [
 /**
  * @route DELETE /api/tickets/:ticketId
  * @desc  Delete ticket
- * @access Admin, Project Manager, Ticket Owner
  */
 router.delete('/:ticketId', [
-  authorize(ROLES.project_manager, ROLES.admin),
+  authorize(
+    ROLES.project_engineer,
+    ROLES.project_manager,
+    ROLES.admin,
+    ROLES.owner
+  ),
   controllers.deleteTicket,
 ]);
 

@@ -134,7 +134,7 @@ function Attachments({ issueId, canUpload, ...chakraProps }) {
   const onDelete = async (attachmentId) => {
     const token = await getAccessTokenSilently();
     client(`tickets/${issueId}/attachment/${attachmentId}`, { method: 'DELETE', token }).catch(
-      (_err) => {
+      () => {
         toast({
           title: 'Unable to delete an attachment.',
           status: 'error',

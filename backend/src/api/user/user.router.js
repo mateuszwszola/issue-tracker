@@ -6,7 +6,6 @@ import {
   parsePageQueryParam,
   validateOrderByParam,
 } from '../../middlewares/queryParams';
-import { preloadUser } from '../../middlewares/user';
 import { updateUserSchema } from '../../utils/user';
 import * as controllers from './user.controller';
 
@@ -26,30 +25,18 @@ router.get(
   controllers.getUsers
 );
 
-/**
- * @route /api/users/:userId
- */
-router.use(
-  '/:userId',
-  (req, res, next) => {
-    const { userId } = req.params;
-    preloadUser({ userId })(req, res, next);
-  },
-  (req, _res, next) => {
-    const { api_user, preloaded_user } = req;
-
-    if (api_user && preloaded_user && api_user.id === preloaded_user.id) {
-      api_user.role = ROLES.owner;
-    }
-
-    next();
+router.use('/:userId', (req, _res, next) => {
+  const { userId } = req.params;
+  if (userId === String(req.api_user.id)) {
+    req.api_user.role = ROLES.owner;
   }
-);
+  next();
+});
 
 /**
  * @route GET /api/users/:userId
  * @desc Get a user by Id
- * @access Admin, Profile Owner
+ * @access Admin, Owner
  */
 router.get(
   '/:userId',
@@ -60,7 +47,7 @@ router.get(
 /**
  * @route PATCH /api/users/:userId
  * @desc Update a user
- * @access Admin, Profile Owner
+ * @access Admin, Owner
  */
 router.patch(
   '/:userId',
@@ -72,7 +59,7 @@ router.patch(
 /**
  * @route DELETE /api/users/:userId
  * @desc Delete account
- * @access Profile Owner
+ * @access Owner
  */
 router.delete('/', authorize(ROLES.owner), controllers.deleteUser);
 

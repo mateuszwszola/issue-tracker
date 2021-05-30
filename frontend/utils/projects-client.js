@@ -17,8 +17,18 @@ function getProjectEngineers(projectId) {
   return client(`projects/${projectId}/engineers`);
 }
 
+function getProjectEngineer(projectId, userId) {
+  return client(`projects/${projectId}/engineers/${userId}`);
+}
+
 function getProjectIdFromProjectKey(key) {
   return key.split('-').slice(-1)[0];
 }
 
-export { getProjects, getProject, getProjectIdFromProjectKey, getProjectEngineers };
+export {
+  getProjects,
+  getProject,
+  getProjectIdFromProjectKey,
+  getProjectEngineers,
+  getProjectEngineer
+};

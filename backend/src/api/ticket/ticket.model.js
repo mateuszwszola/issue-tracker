@@ -35,14 +35,7 @@ class Ticket extends Model {
   static get jsonSchema() {
     return {
       type: 'object',
-      required: [
-        'project_id',
-        'name',
-        'type_id',
-        'status_id',
-        'priority_id',
-        'created_by',
-      ],
+      required: ['project_id', 'name', 'type_id', 'status_id', 'created_by'],
 
       properties: {
         id: { type: 'integer' },

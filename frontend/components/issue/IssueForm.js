@@ -21,7 +21,7 @@ import { useForm } from 'react-hook-form';
 import PropTypes from 'prop-types';
 import useSWR from 'swr';
 import client from '@/utils/api-client';
-import { useProjectEngineers } from '@/hooks/use-project';
+import { useIsUserProjectEngineer, useProject, useProjectEngineers } from '@/hooks/use-project';
 import { useApiUser } from '@/contexts/api-user-context';
 
 const IssueForm = ({
@@ -38,27 +38,24 @@ const IssueForm = ({
   ...chakraProps
 }) => {
   const { register, handleSubmit, errors } = useForm();
-
   const inputBgColor = useColorModeValue('white', 'transparent');
-
   const { user } = useApiUser();
+  const { project } = useProject(projectId);
+  const { isEngineer: isProjectEngineer } = useIsUserProjectEngineer(user?.id, projectId);
 
+  const canManage =
+    isProjectEngineer || (user && (user.is_admin || (project && user.id === project.manager_id)));
+
+  const { engineers, isLoading: isLoadingEngineers, error: engineersError } = useProjectEngineers(
+    canManage && projectId
+  );
   const { data: tData, error: tError } = useSWR('tickets/type', client);
-  const { data: pData, error: pError } = useSWR('tickets/priority', client);
-  const { data: sData, error: sError } = useSWR(isEditing ? 'tickets/status' : null, client);
+  const { data: pData, error: pError } = useSWR(canManage ? 'tickets/priority' : null, client);
+  const { data: sData, error: sError } = useSWR(canManage ? 'tickets/status' : null, client);
 
   const types = tData?.types;
   const priorities = pData?.priorities;
   const statuses = sData?.statuses;
-
-  const { engineers, isLoading: isLoadingEngineers, error: engineersError } = useProjectEngineers(
-    projectId
-  );
-
-  const assignees = [
-    { id: user?.id, name: user?.name },
-    ...(engineers?.filter((u) => u.id !== user?.id) || [])
-  ];
 
   return (
     <Box as="form" onSubmit={handleSubmit(onSubmit)} {...chakraProps}>
@@ -111,85 +108,85 @@ const IssueForm = ({
         {errors.type_id && <FormErrorMessage>This field is required</FormErrorMessage>}
       </FormControl>
 
-      {isEditing && (
-        <FormControl mt={3} id="status_id" isInvalid={errors.status_id}>
-          <FormLabel>Status</FormLabel>
+      {canManage && (
+        <>
+          <FormControl mt={3} id="status_id" isInvalid={errors.status_id}>
+            <FormLabel>Status</FormLabel>
 
-          {sError ? (
-            <Text>Unable to load</Text>
-          ) : !statuses ? (
-            <Text>Loading...</Text>
-          ) : (
-            <Select
-              defaultValue={initialStatusValue}
-              name="status_id"
-              ref={register({ required: true })}
-              bgColor={inputBgColor}
-              placeholder="Select a ticket status"
-            >
-              {statuses.map((status) => (
-                <option key={status.id} value={status.id}>
-                  {status.name}
-                </option>
-              ))}
-            </Select>
-          )}
+            {sError ? (
+              <Text>Unable to load</Text>
+            ) : !statuses ? (
+              <Text>Loading...</Text>
+            ) : (
+              <Select
+                defaultValue={initialStatusValue}
+                name="status_id"
+                ref={register}
+                bgColor={inputBgColor}
+                placeholder="Select a ticket status"
+              >
+                {statuses.map((status) => (
+                  <option key={status.id} value={status.id}>
+                    {status.name}
+                  </option>
+                ))}
+              </Select>
+            )}
 
-          {errors.status_id && <FormErrorMessage>This field is required</FormErrorMessage>}
-        </FormControl>
+            {errors.status_id && <FormErrorMessage>This field is required</FormErrorMessage>}
+          </FormControl>
+          <FormControl mt={3} id="priority_id" isInvalid={errors.priority_id}>
+            <FormLabel>Priority</FormLabel>
+
+            {pError ? (
+              <Text>Unable to load</Text>
+            ) : !priorities ? (
+              <Text>Loading...</Text>
+            ) : (
+              <Select
+                defaultValue={initialPriorityValue}
+                name="priority_id"
+                ref={register}
+                bgColor={inputBgColor}
+                placeholder="Select a ticket priority"
+              >
+                {priorities.map((priority) => (
+                  <option key={priority.id} value={priority.id}>
+                    {priority.name}
+                  </option>
+                ))}
+              </Select>
+            )}
+
+            {errors.priority_id && <FormErrorMessage>This field is required</FormErrorMessage>}
+          </FormControl>
+          <FormControl mt={3} id="assignee_id" isInvalid={errors.assignee_id}>
+            <FormLabel>Assignee</FormLabel>
+
+            {engineersError ? (
+              <Text>Unable to load users...</Text>
+            ) : isLoadingEngineers ? (
+              <Text>Loading...</Text>
+            ) : (
+              <Select
+                defaultValue={initialAssigneeValue}
+                name="assignee_id"
+                ref={register}
+                bgColor={inputBgColor}
+                placeholder="Select a user"
+              >
+                {engineers.map((user) => (
+                  <option key={user.id} value={user.id}>
+                    {user.name}
+                  </option>
+                ))}
+              </Select>
+            )}
+
+            {errors.assignee_id && <FormErrorMessage>This field is required</FormErrorMessage>}
+          </FormControl>
+        </>
       )}
-
-      <FormControl mt={3} id="priority_id" isInvalid={errors.priority_id}>
-        <FormLabel>Priority</FormLabel>
-
-        {pError ? (
-          <Text>Unable to load</Text>
-        ) : !priorities ? (
-          <Text>Loading...</Text>
-        ) : (
-          <Select
-            defaultValue={initialPriorityValue}
-            name="priority_id"
-            ref={register({ required: true })}
-            bgColor={inputBgColor}
-            placeholder="Select a ticket priority"
-          >
-            {priorities.map((priority) => (
-              <option key={priority.id} value={priority.id}>
-                {priority.name}
-              </option>
-            ))}
-          </Select>
-        )}
-
-        {errors.priority_id && <FormErrorMessage>This field is required</FormErrorMessage>}
-      </FormControl>
-
-      <FormControl mt={3} id="assignee_id" isInvalid={errors.assignee_id}>
-        <FormLabel>Assignee</FormLabel>
-
-        {engineersError ? (
-          <Text>Unable to load users...</Text>
-        ) : isLoadingEngineers ? (
-          <Text>Loading...</Text>
-        ) : (
-          <Select
-            defaultValue={initialAssigneeValue}
-            name="assignee_id"
-            ref={register({ required: true })}
-            bgColor={inputBgColor}
-            placeholder="Select a user"
-          >
-            {assignees.map((user) => (
-              <option key={user.id} value={user.id}>
-                {user.name}
-              </option>
-            ))}
-          </Select>
-        )}
-
-        {errors.assignee_id && <FormErrorMessage>This field is required</FormErrorMessage>}
-      </FormControl>
 
       <Button
         isLoading={submitStatus === 'loading'}

@@ -1,5 +1,6 @@
 import { User } from './user.model';
 import { deleteUser as deleteUserFromAuth0 } from '../../lib/auth0';
+import { ErrorHandler } from '../../utils/error';
 
 const getUsers = async (req, res) => {
   const { skip, limit, orderBy } = req.query;
@@ -10,9 +11,15 @@ const getUsers = async (req, res) => {
 };
 
 const getUserById = async (req, res) => {
-  const { preloaded_user } = req;
+  const { userId } = req.params;
 
-  return res.status(200).json({ user: preloaded_user });
+  const user = await User.query().findById(userId);
+
+  if (!user) {
+    throw new ErrorHandler(404, `User with ${userId} id not found`);
+  }
+
+  return res.status(200).json({ user });
 };
 
 const createUser = async (req, res) => {
@@ -31,6 +38,10 @@ const updateUser = async (req, res) => {
     .findById(userId)
     .patch(newUserData)
     .returning('*');
+
+  if (!user) {
+    throw new ErrorHandler(404, `User with ${userId} id not found`);
+  }
 
   return res.status(200).json({ user });
 };
