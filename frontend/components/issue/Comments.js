@@ -42,7 +42,7 @@ function Comments({ issueId }) {
         <>
           {isEmpty && <Text textAlign="center">No comments found</Text>}
 
-          <VStack spacing={8} mt={4} divider={<StackDivider />}>
+          <VStack spacing={4} mt={4} divider={<StackDivider />}>
             {comments.map((comment) => (
               <Comment
                 key={comment.created_at}

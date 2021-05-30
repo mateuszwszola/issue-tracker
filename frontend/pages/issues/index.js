@@ -80,7 +80,7 @@ function IssuesPage() {
         Issues
       </Heading>
 
-      <Flex mt={4} direction={['column', null, 'row']} align={{ sm: 'center' }}>
+      <Flex mt={4} direction={['column', null, 'row']} align={{ sm: 'center' }} wrap="wrap">
         <Box w="full" maxW={['100%', 'xs']}>
           <InputSearch value={inputValue} handleChange={handleInputValueChange} />
         </Box>
@@ -111,7 +111,7 @@ function IssuesPage() {
             fetchUrl={`tickets/priority`}
           />
           {user && (
-            <Box>
+            <Box m={2}>
               <AssignedToMeBtn
                 filterValue={assignee_id}
                 handleFilterChange={handleFilterChange('assignee_id')}

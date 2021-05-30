@@ -10,7 +10,8 @@ import {
   MenuItemOption,
   Flex,
   Text,
-  SkeletonText
+  SkeletonText,
+  Box
 } from '@chakra-ui/react';
 import { GoChevronDown } from 'react-icons/go';
 import useSWR from 'swr';
@@ -35,36 +36,38 @@ export const FilterMenu = ({ filterName, filterValue, handleFilterChange, fetchU
   const options = data && data[resourceName];
 
   return (
-    <Menu isLazy onOpen={() => setStartFetching(true)}>
-      <MenuButton as={Button} d="block" w="full" size="sm">
-        <Flex justify="space-between" align="center">
-          <Text textTransform="capitalize">{filterName}</Text>
-          <Icon ml={1} as={GoChevronDown} />
-        </Flex>
-      </MenuButton>
-      <MenuList>
-        {error ? (
-          <DisplayError textAlign="center" p={4} message="Something went wrong..." />
-        ) : !data ? (
-          <SkeletonText p={4} noOfLines={4} spacing="4" />
-        ) : (
-          <MenuOptionGroup
-            defaultValue="All"
-            value={filterValue}
-            type="radio"
-            title={`Select ${filterName}`}
-            onChange={handleFilterChange}
-          >
-            <MenuItemOption value="All">All</MenuItemOption>
-            {options?.map((option) => (
-              <MenuItemOption key={option.id} value={String(option.id)}>
-                {option.name}
-              </MenuItemOption>
-            ))}
-          </MenuOptionGroup>
-        )}
-      </MenuList>
-    </Menu>
+    <Box m={2}>
+      <Menu isLazy onOpen={() => setStartFetching(true)}>
+        <MenuButton as={Button} d="block" w="full" size="sm">
+          <Flex justify="space-between" align="center">
+            <Text textTransform="capitalize">{filterName}</Text>
+            <Icon ml={1} as={GoChevronDown} />
+          </Flex>
+        </MenuButton>
+        <MenuList>
+          {error ? (
+            <DisplayError textAlign="center" p={4} message="Something went wrong..." />
+          ) : !data ? (
+            <SkeletonText p={4} noOfLines={4} spacing="4" />
+          ) : (
+            <MenuOptionGroup
+              defaultValue="All"
+              value={filterValue}
+              type="radio"
+              title={`Select ${filterName}`}
+              onChange={handleFilterChange}
+            >
+              <MenuItemOption value="All">All</MenuItemOption>
+              {options?.map((option) => (
+                <MenuItemOption key={option.id} value={String(option.id)}>
+                  {option.name}
+                </MenuItemOption>
+              ))}
+            </MenuOptionGroup>
+          )}
+        </MenuList>
+      </Menu>
+    </Box>
   );
 };
 

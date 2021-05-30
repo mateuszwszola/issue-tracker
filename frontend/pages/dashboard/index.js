@@ -13,7 +13,8 @@ import {
   Text,
   Th,
   Thead,
-  Tr
+  Tr,
+  useColorModeValue
 } from '@chakra-ui/react';
 import { useApiUser } from 'contexts/api-user-context';
 import CreateProject from '@/components/dashboard/admin/CreateProject';
@@ -26,6 +27,7 @@ function Dashboard() {
   const { user } = useApiUser();
   const isAdmin = user?.is_admin;
   const [pageIndex, setPageIndex] = useState(0);
+  const boxBgColor = useColorModeValue('gray.50', 'gray.900');
   const withTokenFetcher = useWithTokenFetcher();
   const { data, error } = useSWR(
     `projects/dashboard?withGraph=${encodeURIComponent(
@@ -42,7 +44,7 @@ function Dashboard() {
 
       <Box mt={8}>
         <Flex justify="space-between">
-          <Heading size="lg">My Projects</Heading>
+          <Heading size="xl">My Projects</Heading>
           {isAdmin && <CreateProject />}
         </Flex>
 
@@ -51,6 +53,34 @@ function Dashboard() {
             <Text>Unable to fetch projects</Text>
           ) : !projects ? (
             <Text>Loading...</Text>
+          ) : projects.length === 0 ? (
+            <Flex
+              flexDirection="column"
+              justify="center"
+              align="center"
+              bgColor={boxBgColor}
+              py="16"
+              px="8"
+              borderRadius="md"
+              boxShadow="md"
+            >
+              <Box maxWidth="500px" textAlign="center">
+                <Heading as="h3" size="md">
+                  You do not have any projects yet.
+                </Heading>
+                <Text mt="8">
+                  Welcome{' '}
+                  <span role="img" aria-label="welcome emoji">
+                    👋🏼{' '}
+                  </span>
+                  !{' '}
+                </Text>
+                <Text mt="2">Feel free to submit tickets and add comments.</Text>
+                <Text>
+                  To submit a ticket, visit the project issues page and click the create button.
+                </Text>
+              </Box>
+            </Flex>
           ) : (
             <>
               <Table>
