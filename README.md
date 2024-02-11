@@ -2,8 +2,6 @@
 
 Application to track projects, tasks and collaborate with the team.
 
-[https://mwit.vercel.app](https://mwit.vercel.app)
-
 ![dashboard](https://github.com/mateuszwszola/issue-tracker/blob/master/assets/admin-dashboard.png?raw=true)
 
 ## Tech Stack
